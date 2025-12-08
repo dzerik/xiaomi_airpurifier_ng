@@ -183,8 +183,8 @@ class XiaomiMiioNumber(XiaomiMiioEntity, NumberEntity):
         try:
             method = getattr(device, method_name, None)
             if method:
-                # Convert to int if step is 1 (most Xiaomi devices expect int)
-                set_value = int(value) if self.entity_description.native_step == 1 else value
+                # Always convert to int (Xiaomi devices expect int values)
+                set_value = int(value)
                 await self.hass.async_add_executor_job(method, set_value)
                 await self.coordinator.async_request_refresh()
                 _LOGGER.debug(
