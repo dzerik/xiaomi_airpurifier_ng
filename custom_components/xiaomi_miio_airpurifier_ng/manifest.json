@@ -1,0 +1,17 @@
+{
+  "domain": "xiaomi_miio_airpurifier_ng",
+  "name": "Xiaomi Air Purifier NG",
+  "codeowners": [
+    "@dzerik"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/dzerik/xiaomi_airpurifier_ng",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/dzerik/xiaomi_airpurifier_ng/issues",
+  "requirements": [
+    "construct==2.10.68",
+    "python-miio>=0.5.12"
+  ],
+  "version": "3.0.0-alpha.1"
+}

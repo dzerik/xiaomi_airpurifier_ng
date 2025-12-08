@@ -195,56 +195,29 @@ All fan entities support these services:
 | `xiaomi_miio_airpurifier_ng.climate_set_led_on/off` | Turn LED on/off |
 | `xiaomi_miio_airpurifier_ng.climate_set_child_lock_on/off` | Turn child lock on/off |
 
-## Entity Attributes
+## Entities
 
-Each device exposes relevant attributes. Common attributes include:
+The integration automatically creates the following entities for each device:
 
-- `model`: Device model
-- `temperature`: Current temperature
-- `humidity`: Current humidity
-- `mode`: Current operation mode
-- `buzzer`: Buzzer state
-- `child_lock`: Child lock state
-- `led`: LED state
+### Sensors
+- Temperature, humidity, AQI, PM2.5, CO2 (where supported)
+- Filter life remaining, motor speed, water level
+- Device-specific measurements
 
-Device-specific attributes are documented in the [docs](docs/) folder.
+### Switches
+- Buzzer, LED, child lock
+- Dry mode, PTC heater (where supported)
 
-## Template Examples
+### Numbers
+- Target humidity, favorite level, motor speed
 
-### Create Sensors from Attributes
+### Selects
+- Operation mode, LED brightness, PTC level
 
-```yaml
-sensor:
-  - platform: template
-    sensors:
-      airpurifier_aqi:
-        friendly_name: Air Quality Index
-        value_template: "{{ state_attr('fan.xiaomi_air_purifier', 'aqi') }}"
-        unit_of_measurement: 'AQI'
-      airpurifier_temperature:
-        friendly_name: Air Purifier Temperature
-        value_template: "{{ state_attr('fan.xiaomi_air_purifier', 'temperature') }}"
-        unit_of_measurement: '°C'
-```
+### Buttons
+- Reset filter
 
-### Create Switches from Services
-
-```yaml
-switch:
-  - platform: template
-    switches:
-      airpurifier_buzzer:
-        friendly_name: "Buzzer"
-        value_template: "{{ is_state_attr('fan.xiaomi_air_purifier', 'buzzer', true) }}"
-        turn_on:
-          service: xiaomi_miio_airpurifier_ng.fan_set_buzzer_on
-          target:
-            entity_id: fan.xiaomi_air_purifier
-        turn_off:
-          service: xiaomi_miio_airpurifier_ng.fan_set_buzzer_off
-          target:
-            entity_id: fan.xiaomi_air_purifier
-```
+All entities are created automatically based on device capabilities.
 
 ## Debugging
 

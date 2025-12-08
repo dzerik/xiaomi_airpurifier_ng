@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure Xiaomi Air Purifier",
+        "description": "Enter the connection details for your Xiaomi device.",
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "name": "Name (optional)",
+          "model": "Model (optional, auto-detected)"
+        },
+        "data_description": {
+          "host": "The IP address or hostname of your Xiaomi device.",
+          "token": "The 32-character token for device authentication. You can obtain this using various methods described in the documentation.",
+          "name": "A friendly name for the device.",
+          "model": "The device model. Leave empty for auto-detection."
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Xiaomi Air Purifier",
+        "description": "Update the connection details for your Xiaomi device.",
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "model": "Model"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the device. Please check the host and token.",
+      "unknown": "An unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This device is already configured.",
+      "reconfigure_successful": "Configuration updated successfully."
+    }
+  }
+}

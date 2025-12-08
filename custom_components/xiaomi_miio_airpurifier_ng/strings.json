@@ -1,0 +1,380 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configure Xiaomi Air Purifier",
+        "description": "Enter the connection details for your Xiaomi device.",
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "name": "Name",
+          "model": "Model"
+        },
+        "data_description": {
+          "host": "The IP address or hostname of your Xiaomi device.",
+          "token": "The 32-character token for device authentication.",
+          "name": "A friendly name for the device (optional).",
+          "model": "The device model (optional, auto-detected)."
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Xiaomi Air Purifier",
+        "description": "Update the connection details for your Xiaomi device.",
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "model": "Model"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the device. Please check the host and token.",
+      "unknown": "An unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This device is already configured.",
+      "reconfigure_successful": "Configuration updated successfully."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "aqi": {
+        "name": "Air Quality Index"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "average_aqi": {
+        "name": "Average AQI"
+      },
+      "temperature": {
+        "name": "Temperature"
+      },
+      "humidity": {
+        "name": "Humidity"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "filter_life_remaining": {
+        "name": "Filter Life"
+      },
+      "filter_hours_used": {
+        "name": "Filter Hours Used"
+      },
+      "motor_speed": {
+        "name": "Motor Speed"
+      },
+      "use_time": {
+        "name": "Use Time"
+      },
+      "purify_volume": {
+        "name": "Purify Volume"
+      },
+      "water_level": {
+        "name": "Water Level"
+      },
+      "target_humidity": {
+        "name": "Target Humidity"
+      },
+      "battery": {
+        "name": "Battery"
+      },
+      "mode": {
+        "name": "Mode"
+      }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "Buzzer"
+      },
+      "led": {
+        "name": "LED"
+      },
+      "child_lock": {
+        "name": "Child Lock"
+      },
+      "dry": {
+        "name": "Dry Mode"
+      },
+      "learn_mode": {
+        "name": "Learn Mode"
+      },
+      "auto_detect": {
+        "name": "Auto Detect"
+      },
+      "oscillate": {
+        "name": "Oscillation"
+      },
+      "ptc": {
+        "name": "PTC Heater"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "Reset Filter"
+      },
+      "filters_cleaned": {
+        "name": "Mark Filters Cleaned"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "Favorite Level"
+      },
+      "fan_level": {
+        "name": "Fan Level"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "target_humidity": {
+        "name": "Target Humidity"
+      },
+      "angle": {
+        "name": "Oscillation Angle"
+      },
+      "delay_off_countdown": {
+        "name": "Delay Off"
+      }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "LED Brightness",
+        "state": {
+          "bright": "Bright",
+          "dim": "Dim",
+          "off": "Off"
+        }
+      },
+      "display_orientation": {
+        "name": "Display Orientation",
+        "state": {
+          "forward": "Forward",
+          "left": "Left",
+          "right": "Right"
+        }
+      },
+      "ptc_level": {
+        "name": "PTC Level",
+        "state": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
+      }
+    }
+  },
+  "services": {
+    "fan_set_buzzer_on": {
+      "name": "Set buzzer on",
+      "description": "Turn the buzzer on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_buzzer_off": {
+      "name": "Set buzzer off",
+      "description": "Turn the buzzer off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_child_lock_on": {
+      "name": "Set child lock on",
+      "description": "Turn the child lock on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_child_lock_off": {
+      "name": "Set child lock off",
+      "description": "Turn the child lock off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_favorite_level": {
+      "name": "Set favorite level",
+      "description": "Set the favorite level.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        },
+        "level": {
+          "name": "Level",
+          "description": "Level, between 0 and 16."
+        }
+      }
+    },
+    "fan_set_fan_level": {
+      "name": "Set fan level",
+      "description": "Set the fan level.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        },
+        "level": {
+          "name": "Level",
+          "description": "Level, between 1 and 3."
+        }
+      }
+    },
+    "fan_set_led_brightness": {
+      "name": "Set LED brightness",
+      "description": "Set the LED brightness.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        },
+        "brightness": {
+          "name": "Brightness",
+          "description": "Brightness (0 = Bright, 1 = Dim, 2 = Off)"
+        }
+      }
+    },
+    "fan_set_auto_detect_on": {
+      "name": "Set auto detect on",
+      "description": "Turn the auto detect on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_auto_detect_off": {
+      "name": "Set auto detect off",
+      "description": "Turn the auto detect off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_learn_mode_on": {
+      "name": "Set learn mode on",
+      "description": "Turn the learn mode on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_learn_mode_off": {
+      "name": "Set learn mode off",
+      "description": "Turn the learn mode off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_volume": {
+      "name": "Set volume",
+      "description": "Set the sound volume.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        },
+        "volume": {
+          "name": "Volume",
+          "description": "Volume, between 0 and 100."
+        }
+      }
+    },
+    "fan_reset_filter": {
+      "name": "Reset filter",
+      "description": "Reset the filter lifetime and usage.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_extra_features": {
+      "name": "Set extra features",
+      "description": "Manipulates a storage register which advertises extra features.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        },
+        "features": {
+          "name": "Features",
+          "description": "Integer, known values are 0 (default) and 1 (turbo mode)."
+        }
+      }
+    },
+    "fan_set_target_humidity": {
+      "name": "Set target humidity",
+      "description": "Set the target humidity.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        },
+        "humidity": {
+          "name": "Humidity",
+          "description": "Target humidity. Allowed values are 30, 40, 50, 60, 70 and 80."
+        }
+      }
+    },
+    "fan_set_dry_on": {
+      "name": "Set dry on",
+      "description": "Turn the dry mode on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_dry_off": {
+      "name": "Set dry off",
+      "description": "Turn the dry mode off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    },
+    "fan_set_filters_cleaned": {
+      "name": "Set filters cleaned",
+      "description": "Inform the device that filters are cleaned.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the xiaomi miio airpurifier entity."
+        }
+      }
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "YAML Configuration Deprecated",
+      "description": "YAML configuration for {integration} ({platform}) is deprecated and will be removed in a future version. Please use the UI to configure this integration by going to Settings > Devices & Services > Add Integration."
+    }
+  }
+}

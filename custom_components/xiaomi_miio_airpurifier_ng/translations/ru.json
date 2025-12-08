@@ -1,0 +1,374 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Настройка Xiaomi Air Purifier",
+        "description": "Введите данные для подключения к вашему устройству Xiaomi.",
+        "data": {
+          "host": "Адрес",
+          "token": "Токен",
+          "name": "Имя (опционально)",
+          "model": "Модель (опционально, определяется автоматически)"
+        },
+        "data_description": {
+          "host": "IP-адрес или имя хоста вашего устройства Xiaomi.",
+          "token": "32-символьный токен для аутентификации устройства. Его можно получить различными способами, описанными в документации.",
+          "name": "Понятное имя для устройства.",
+          "model": "Модель устройства. Оставьте пустым для автоопределения."
+        }
+      },
+      "reconfigure": {
+        "title": "Перенастройка Xiaomi Air Purifier",
+        "description": "Обновите данные подключения для вашего устройства Xiaomi.",
+        "data": {
+          "host": "Адрес",
+          "token": "Токен",
+          "model": "Модель"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Не удалось подключиться к устройству. Проверьте адрес и токен.",
+      "unknown": "Произошла непредвиденная ошибка."
+    },
+    "abort": {
+      "already_configured": "Это устройство уже настроено.",
+      "reconfigure_successful": "Конфигурация успешно обновлена."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "aqi": {
+        "name": "Индекс качества воздуха"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "average_aqi": {
+        "name": "Средний AQI"
+      },
+      "temperature": {
+        "name": "Температура"
+      },
+      "humidity": {
+        "name": "Влажность"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "filter_life_remaining": {
+        "name": "Ресурс фильтра"
+      },
+      "filter_hours_used": {
+        "name": "Часы работы фильтра"
+      },
+      "motor_speed": {
+        "name": "Скорость мотора"
+      },
+      "use_time": {
+        "name": "Время работы"
+      },
+      "purify_volume": {
+        "name": "Объем очистки"
+      },
+      "water_level": {
+        "name": "Уровень воды"
+      },
+      "target_humidity": {
+        "name": "Целевая влажность"
+      },
+      "battery": {
+        "name": "Батарея"
+      },
+      "mode": {
+        "name": "Режим"
+      }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "Звуковой сигнал"
+      },
+      "led": {
+        "name": "Подсветка"
+      },
+      "child_lock": {
+        "name": "Блокировка от детей"
+      },
+      "dry": {
+        "name": "Режим сушки"
+      },
+      "learn_mode": {
+        "name": "Режим обучения"
+      },
+      "auto_detect": {
+        "name": "Автоопределение"
+      },
+      "oscillate": {
+        "name": "Вращение"
+      },
+      "ptc": {
+        "name": "PTC нагреватель"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "Сброс фильтра"
+      },
+      "filters_cleaned": {
+        "name": "Фильтры очищены"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "Избранный уровень"
+      },
+      "fan_level": {
+        "name": "Уровень вентилятора"
+      },
+      "volume": {
+        "name": "Громкость"
+      },
+      "target_humidity": {
+        "name": "Целевая влажность"
+      },
+      "angle": {
+        "name": "Угол вращения"
+      },
+      "delay_off_countdown": {
+        "name": "Таймер отключения"
+      }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "Яркость подсветки",
+        "state": {
+          "bright": "Ярко",
+          "dim": "Тускло",
+          "off": "Выкл"
+        }
+      },
+      "display_orientation": {
+        "name": "Ориентация дисплея",
+        "state": {
+          "forward": "Вперед",
+          "left": "Влево",
+          "right": "Вправо"
+        }
+      },
+      "ptc_level": {
+        "name": "Уровень PTC",
+        "state": {
+          "low": "Низкий",
+          "medium": "Средний",
+          "high": "Высокий"
+        }
+      }
+    }
+  },
+  "services": {
+    "fan_set_buzzer_on": {
+      "name": "Включить звуковой сигнал",
+      "description": "Включить звуковой сигнал.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_buzzer_off": {
+      "name": "Выключить звуковой сигнал",
+      "description": "Выключить звуковой сигнал.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_child_lock_on": {
+      "name": "Включить блокировку от детей",
+      "description": "Включить блокировку от детей.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_child_lock_off": {
+      "name": "Выключить блокировку от детей",
+      "description": "Выключить блокировку от детей.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_favorite_level": {
+      "name": "Установить избранный уровень",
+      "description": "Установить избранный уровень.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        },
+        "level": {
+          "name": "Уровень",
+          "description": "Уровень от 0 до 16."
+        }
+      }
+    },
+    "fan_set_fan_level": {
+      "name": "Установить уровень вентилятора",
+      "description": "Установить уровень вентилятора.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        },
+        "level": {
+          "name": "Уровень",
+          "description": "Уровень от 1 до 3."
+        }
+      }
+    },
+    "fan_set_led_brightness": {
+      "name": "Установить яркость подсветки",
+      "description": "Установить яркость подсветки.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        },
+        "brightness": {
+          "name": "Яркость",
+          "description": "Яркость (0 = Ярко, 1 = Тускло, 2 = Выкл)"
+        }
+      }
+    },
+    "fan_set_auto_detect_on": {
+      "name": "Включить автоопределение",
+      "description": "Включить автоопределение.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_auto_detect_off": {
+      "name": "Выключить автоопределение",
+      "description": "Выключить автоопределение.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_learn_mode_on": {
+      "name": "Включить режим обучения",
+      "description": "Включить режим обучения.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_learn_mode_off": {
+      "name": "Выключить режим обучения",
+      "description": "Выключить режим обучения.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_volume": {
+      "name": "Установить громкость",
+      "description": "Установить громкость звука.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        },
+        "volume": {
+          "name": "Громкость",
+          "description": "Громкость от 0 до 100."
+        }
+      }
+    },
+    "fan_reset_filter": {
+      "name": "Сбросить фильтр",
+      "description": "Сбросить время работы и ресурс фильтра.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_extra_features": {
+      "name": "Установить дополнительные функции",
+      "description": "Управляет регистром хранения дополнительных функций.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        },
+        "features": {
+          "name": "Функции",
+          "description": "Целое число, известные значения: 0 (по умолчанию) и 1 (турбо режим)."
+        }
+      }
+    },
+    "fan_set_target_humidity": {
+      "name": "Установить целевую влажность",
+      "description": "Установить целевую влажность.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        },
+        "humidity": {
+          "name": "Влажность",
+          "description": "Целевая влажность. Допустимые значения: 30, 40, 50, 60, 70 и 80."
+        }
+      }
+    },
+    "fan_set_dry_on": {
+      "name": "Включить режим сушки",
+      "description": "Включить режим сушки.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_dry_off": {
+      "name": "Выключить режим сушки",
+      "description": "Выключить режим сушки.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    },
+    "fan_set_filters_cleaned": {
+      "name": "Отметить фильтры очищенными",
+      "description": "Сообщить устройству, что фильтры очищены.",
+      "fields": {
+        "entity_id": {
+          "name": "Объект",
+          "description": "Имя объекта xiaomi miio airpurifier."
+        }
+      }
+    }
+  }
+}
