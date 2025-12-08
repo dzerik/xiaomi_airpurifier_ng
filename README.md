@@ -197,25 +197,103 @@ All fan entities support these services:
 
 ## Entities
 
-The integration automatically creates the following entities for each device:
+The integration automatically creates entities based on device capabilities.
 
 ### Sensors
-- Temperature, humidity, AQI, PM2.5, CO2 (where supported)
-- Filter life remaining, motor speed, water level
-- Device-specific measurements
+
+| Entity | Description | Unit | Device Class |
+|--------|-------------|------|--------------|
+| `aqi` | Air Quality Index | AQI | - |
+| `pm25` | PM2.5 particulate matter | µg/m³ | PM25 |
+| `pm10` | PM10 particulate matter | µg/m³ | PM10 |
+| `average_aqi` | Average Air Quality Index | AQI | - |
+| `temperature` | Current temperature | °C | Temperature |
+| `humidity` | Current humidity | % | Humidity |
+| `co2` | CO2 level | ppm | CO2 |
+| `tvoc` | Total Volatile Organic Compounds | µg/m³ | VOC |
+| `illuminance` | Light level | lx | Illuminance |
+| `filter_life_remaining` | Filter life remaining | % | - |
+| `filter_hours_used` | Filter usage hours | h | Duration |
+| `filter_left_time` | Filter days left | days | - |
+| `filter_type` | Filter type | - | - |
+| `motor_speed` | Motor speed | RPM | - |
+| `motor2_speed` | Secondary motor speed | RPM | - |
+| `use_time` | Device usage time | s | Duration |
+| `purify_volume` | Air purified volume | m³ | - |
+| `water_level` | Water level in tank | % | - |
+| `target_humidity` | Target humidity setting | % | - |
+| `volume` | Buzzer/speaker volume | % | - |
+| `battery` | Battery level | % | Battery |
+| `mode` | Current operation mode | - | - |
+| `temperature_outside` | Outside temperature (Air Fresh) | °C | Temperature |
+| `dust_filter_life_remaining` | Dust filter life (Air Fresh) | % | - |
+| `dust_filter_life_remaining_days` | Dust filter days left | days | - |
+| `upper_filter_life_remaining` | Upper filter life (Air Fresh) | % | - |
+| `upper_filter_life_remaining_days` | Upper filter days left | days | - |
+| `favorite_speed` | Favorite speed setting | RPM | - |
+| `control_speed` | Control speed | RPM | - |
+| `speed` | Fan speed | - | - |
+| `natural_speed` | Natural mode speed | - | - |
+| `direct_speed` | Direct mode speed | - | - |
+| `angle` | Oscillation angle | ° | - |
+
+### Binary Sensors
+
+| Entity | Description | Device Class | Devices |
+|--------|-------------|--------------|---------|
+| `water_tank` | Water tank installed | Connectivity | JSQS Humidifiers |
+| `water_shortage` | Water shortage fault | Problem | JSQS Humidifiers |
+| `water_tank_detached` | Water tank removed | Problem | MJJSQ Humidifiers |
+| `no_water` | No water in tank | Problem | MJJSQ Humidifiers |
+| `ac_power` | AC power connected | Plug | Pedestal Fans |
+| `battery_charge` | Battery charging | Battery Charging | Pedestal Fans |
+| `oscillate` | Oscillation active | - | Pedestal Fans |
+| `ptc_status` | PTC heater active | Heat | Air Fresh |
 
 ### Switches
-- Buzzer, LED, child lock
-- Dry mode, PTC heater (where supported)
 
-### Numbers
-- Target humidity, favorite level, motor speed
+| Entity | Description | Icon | Devices |
+|--------|-------------|------|---------|
+| `buzzer` | Buzzer on/off | mdi:volume-high | All |
+| `led` | LED on/off | mdi:led-on | Air Purifiers, Zhimi Humidifiers |
+| `led_light` | LED light on/off | mdi:led-on | JSQS Humidifiers |
+| `child_lock` | Child lock on/off | mdi:lock | All |
+| `dry` | Dry mode | mdi:water-off | Zhimi Humidifiers |
+| `learn_mode` | Learn mode | mdi:school | Air Purifiers |
+| `auto_detect` | Auto detect | mdi:auto-fix | Air Purifiers Pro |
+| `oscillate` | Oscillation | mdi:rotate-3d-variant | Pedestal Fans |
+| `ptc` | PTC heater | mdi:radiator | Air Fresh |
+| `display` | Display on/off | mdi:monitor | Air Fresh T2017 |
+| `overwet_protect` | Overwet protection | mdi:water-alert | JSQS Humidifiers |
+| `anion` | Ionizer | mdi:atom | Air Purifiers |
+| `gestures` | Gesture control | mdi:gesture-tap | Air Purifiers |
 
-### Selects
-- Operation mode, LED brightness, PTC level
+### Numbers (Sliders)
+
+| Entity | Description | Range | Step | Unit |
+|--------|-------------|-------|------|------|
+| `favorite_level` | Favorite level | 0-16 | 1 | - |
+| `fan_level` | Fan level | 1-3 | 1 | - |
+| `volume` | Buzzer volume | 0-100 | 1 | % |
+| `target_humidity` | Target humidity | 30-80 | 10 | % |
+| `angle` | Oscillation angle | 30-120 | 30 | ° |
+| `delay_off_countdown` | Delay off timer | 0-480 | 1 | min |
+
+### Selects (Dropdowns)
+
+| Entity | Description | Options |
+|--------|-------------|---------|
+| `led_brightness` | LED brightness | bright, dim, off |
+| `display_orientation` | Display orientation (T2017) | forward, left, right |
+| `ptc_level` | PTC heater level (T2017) | low, medium, high |
+| `mode` | Operation mode | Device-specific (Auto, Silent, Low, Medium, High, etc.) |
 
 ### Buttons
-- Reset filter
+
+| Entity | Description | Devices |
+|--------|-------------|---------|
+| `reset_filter` | Reset filter counter | Air Purifiers, Air Fresh |
+| `filters_cleaned` | Mark filters as cleaned | Humidifiers |
 
 All entities are created automatically based on device capabilities.
 

@@ -233,6 +233,9 @@ class XiaomiAirHumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["power"] = status.power
         if hasattr(status, "humidity"):
             data["humidity"] = status.humidity
+        # JSQS models use relative_humidity instead of humidity
+        elif hasattr(status, "relative_humidity"):
+            data["humidity"] = status.relative_humidity
         if hasattr(status, "target_humidity"):
             data["target_humidity"] = status.target_humidity
         if hasattr(status, "temperature"):
