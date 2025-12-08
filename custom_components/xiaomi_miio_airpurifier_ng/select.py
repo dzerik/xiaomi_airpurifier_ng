@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from enum import Enum
 import logging
 from typing import Any
 
@@ -12,7 +13,22 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import (
+    DOMAIN,
+    HUMIDIFIER_MIOT,
+    MODEL_AIRHUMIDIFIER_CA1,
+    MODEL_AIRHUMIDIFIER_CA4,
+    MODEL_AIRHUMIDIFIER_CB1,
+    MODEL_AIRHUMIDIFIER_CB2,
+    MODEL_AIRHUMIDIFIER_JSQ,
+    MODEL_AIRHUMIDIFIER_JSQ001,
+    MODEL_AIRHUMIDIFIER_JSQ1,
+    MODEL_AIRHUMIDIFIER_JSQ2W,
+    MODEL_AIRHUMIDIFIER_JSQ3,
+    MODEL_AIRHUMIDIFIER_JSQ5,
+    MODEL_AIRHUMIDIFIER_JSQS,
+    MODEL_AIRHUMIDIFIER_MJJSQ,
+)
 from .coordinator import XiaomiMiioDataUpdateCoordinator
 from .entity import XiaomiMiioEntity
 
@@ -115,13 +131,20 @@ async def async_setup_entry(
     if not coordinator.data:
         await coordinator.async_config_entry_first_refresh()
 
-    entities: list[XiaomiMiioSelect] = []
+    entities: list[SelectEntity] = []
 
     # Create selects based on available data
     for description in SELECT_DESCRIPTIONS:
         if description.exists_fn and coordinator.data:
             if description.exists_fn(coordinator.data):
                 entities.append(XiaomiMiioSelect(coordinator, description))
+
+    # Create mode select if mode is available
+    if coordinator.data and "mode" in coordinator.data:
+        mode_select = XiaomiMiioModeSelect(coordinator)
+        # Only add if we have valid mode options
+        if mode_select._attr_options:
+            entities.append(mode_select)
 
     async_add_entities(entities)
 
@@ -189,3 +212,98 @@ class XiaomiMiioSelect(XiaomiMiioEntity, SelectEntity):
                 option,
                 ex,
             )
+
+
+class XiaomiMiioModeSelect(XiaomiMiioEntity, SelectEntity):
+    """Representation of a Xiaomi Miio mode select entity.
+
+    This entity provides a select for operation mode with device-specific options.
+    """
+
+    _attr_translation_key = "mode"
+    _attr_icon = "mdi:tune"
+
+    def __init__(
+        self,
+        coordinator: XiaomiMiioDataUpdateCoordinator,
+    ) -> None:
+        """Initialize the mode select entity."""
+        super().__init__(coordinator, unique_id_suffix="mode_select")
+        self._attr_name = "Mode"
+        self._mode_enum = self._get_mode_enum()
+        self._attr_options = self._get_mode_options()
+
+    def _get_mode_enum(self) -> type[Enum] | None:
+        """Get the appropriate OperationMode enum for this device."""
+        model = self.coordinator.model
+        if not model:
+            return None
+
+        # Humidifier models
+        if model in [MODEL_AIRHUMIDIFIER_JSQ2W, MODEL_AIRHUMIDIFIER_JSQ3,
+                     MODEL_AIRHUMIDIFIER_JSQ5, MODEL_AIRHUMIDIFIER_JSQS]:
+            from miio.integrations.humidifier.deerma.airhumidifier_jsqs import (
+                OperationMode as JsqsOperationMode,
+            )
+            return JsqsOperationMode
+        if model in [MODEL_AIRHUMIDIFIER_MJJSQ, MODEL_AIRHUMIDIFIER_JSQ,
+                     MODEL_AIRHUMIDIFIER_JSQ1]:
+            from miio.integrations.humidifier.deerma.airhumidifier_mjjsq import (
+                OperationMode as MjjsqOperationMode,
+            )
+            return MjjsqOperationMode
+        if model == MODEL_AIRHUMIDIFIER_JSQ001:
+            from miio.integrations.humidifier.shuii.airhumidifier_jsq import (
+                OperationMode as JsqOperationMode,
+            )
+            return JsqOperationMode
+        if model == MODEL_AIRHUMIDIFIER_CA4 or model in HUMIDIFIER_MIOT:
+            from miio.integrations.humidifier.zhimi.airhumidifier_miot import (
+                OperationMode as MiotOperationMode,
+            )
+            return MiotOperationMode
+        if model in [MODEL_AIRHUMIDIFIER_CA1, MODEL_AIRHUMIDIFIER_CB1,
+                     MODEL_AIRHUMIDIFIER_CB2]:
+            from miio.integrations.humidifier.zhimi.airhumidifier import (
+                OperationMode as ZhimiOperationMode,
+            )
+            return ZhimiOperationMode
+        if model.startswith("zhimi.humidifier."):
+            from miio.integrations.humidifier.zhimi.airhumidifier import (
+                OperationMode as ZhimiOperationMode,
+            )
+            return ZhimiOperationMode
+
+        return None
+
+    def _get_mode_options(self) -> list[str]:
+        """Get available mode options for this device."""
+        if self._mode_enum:
+            return [mode.name for mode in self._mode_enum]
+        return []
+
+    @property
+    def current_option(self) -> str | None:
+        """Return the current mode."""
+        if self.coordinator.data:
+            return self.coordinator.data.get("mode")
+        return None
+
+    async def async_select_option(self, option: str) -> None:
+        """Change the selected mode."""
+        if not self._mode_enum:
+            _LOGGER.error("No mode enum available for model %s", self.coordinator.model)
+            return
+
+        try:
+            # Convert option string to enum
+            mode_enum = self._mode_enum[option]
+            await self.hass.async_add_executor_job(
+                self.coordinator.device.set_mode, mode_enum
+            )
+            await self.coordinator.async_request_refresh()
+            _LOGGER.debug("Successfully set mode to %s", option)
+        except KeyError:
+            _LOGGER.error("Invalid mode option: %s", option)
+        except Exception as ex:  # noqa: BLE001
+            _LOGGER.error("Failed to set mode to %s: %s", option, ex)

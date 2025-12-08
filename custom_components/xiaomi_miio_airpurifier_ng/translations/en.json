@@ -229,6 +229,46 @@
       "gestures": {
         "name": "Gesture Control"
       }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "LED Brightness",
+        "state": {
+          "bright": "Bright",
+          "dim": "Dim",
+          "off": "Off"
+        }
+      },
+      "display_orientation": {
+        "name": "Display Orientation",
+        "state": {
+          "forward": "Forward",
+          "left": "Left",
+          "right": "Right"
+        }
+      },
+      "ptc_level": {
+        "name": "PTC Level",
+        "state": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
+      },
+      "mode": {
+        "name": "Mode",
+        "state": {
+          "Low": "Low",
+          "Medium": "Medium",
+          "High": "High",
+          "Humidity": "Auto",
+          "Auto": "Auto",
+          "Silent": "Silent",
+          "Strong": "Strong",
+          "Favorite": "Favorite",
+          "WetAndProtect": "Wet & Protect"
+        }
+      }
     }
   }
 }
