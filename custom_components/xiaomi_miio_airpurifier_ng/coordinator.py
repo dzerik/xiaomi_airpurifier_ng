@@ -219,6 +219,16 @@ class XiaomiAirHumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["use_time"] = status.use_time
         if hasattr(status, "water_level"):
             data["water_level"] = status.water_level
+        # Water tank status (Jsqs models)
+        if hasattr(status, "tank_filed"):
+            data["tank_filed"] = status.tank_filed
+        if hasattr(status, "water_shortage_fault"):
+            data["water_shortage_fault"] = status.water_shortage_fault
+        # Water tank status (Mjjsq models)
+        if hasattr(status, "no_water"):
+            data["no_water"] = status.no_water
+        if hasattr(status, "water_tank_detached"):
+            data["water_tank_detached"] = status.water_tank_detached
 
         return data
 

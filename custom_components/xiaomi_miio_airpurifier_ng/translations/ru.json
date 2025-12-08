@@ -62,6 +62,20 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Бак для воды"
+      },
+      "water_shortage": {
+        "name": "Нет воды"
+      },
+      "water_tank_detached": {
+        "name": "Бак снят"
+      },
+      "no_water": {
+        "name": "Отсутствие воды"
+      }
+    },
     "sensor": {
       "aqi": {
         "name": "Индекс качества воздуха"

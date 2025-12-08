@@ -60,5 +60,21 @@
       "reconfigure_successful": "Configuration updated successfully.",
       "reauth_successful": "Reauthentication successful."
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Water Tank"
+      },
+      "water_shortage": {
+        "name": "Water Shortage"
+      },
+      "water_tank_detached": {
+        "name": "Water Tank Detached"
+      },
+      "no_water": {
+        "name": "No Water"
+      }
+    }
   }
 }
