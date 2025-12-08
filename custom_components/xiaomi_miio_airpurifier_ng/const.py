@@ -11,6 +11,10 @@ DEFAULT_RETRIES: Final = 20
 # Configuration constants
 CONF_MODEL: Final = "model"
 CONF_RETRIES: Final = "retries"
+CONF_SCAN_INTERVAL: Final = "scan_interval"
+
+# Default values
+DEFAULT_SCAN_INTERVAL: Final = 30  # seconds
 
 # Platform types
 PLATFORMS: Final = ["fan", "climate"]

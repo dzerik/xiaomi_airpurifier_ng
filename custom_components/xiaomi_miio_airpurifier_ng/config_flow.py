@@ -8,9 +8,17 @@ from typing import Any
 from miio import Device, DeviceException
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import (
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+    OptionsFlowWithConfigEntry,
+)
 from homeassistant.const import CONF_HOST, CONF_NAME, CONF_TOKEN
 from homeassistant.helpers.selector import (
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
@@ -21,7 +29,9 @@ from homeassistant.helpers.selector import (
 
 from .const import (
     CONF_MODEL,
+    CONF_SCAN_INTERVAL,
     DEFAULT_NAME,
+    DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     SUPPORTED_MODELS,
 )
@@ -34,6 +44,13 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
     MINOR_VERSION = 1
+
+    @staticmethod
+    def async_get_options_flow(
+        config_entry,
+    ) -> OptionsFlow:
+        """Get the options flow for this handler."""
+        return XiaomiMiioOptionsFlowHandler(config_entry)
 
     def __init__(self) -> None:
         """Initialize the config flow."""
@@ -246,3 +263,38 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
             "firmware": info.firmware_version,
             "hardware": info.hardware_version,
         }
+
+
+class XiaomiMiioOptionsFlowHandler(OptionsFlowWithConfigEntry):
+    """Handle options flow for Xiaomi Air Purifier NG."""
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manage the options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        current_interval = self.options.get(
+            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+        )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(
+                        CONF_SCAN_INTERVAL,
+                        default=current_interval,
+                    ): NumberSelector(
+                        NumberSelectorConfig(
+                            min=10,
+                            max=300,
+                            step=5,
+                            unit_of_measurement="seconds",
+                            mode=NumberSelectorMode.SLIDER,
+                        )
+                    ),
+                }
+            ),
+        )

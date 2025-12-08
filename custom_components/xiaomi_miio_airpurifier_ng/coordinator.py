@@ -18,12 +18,9 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 
-from .const import CONF_MODEL, DOMAIN
+from .const import CONF_MODEL, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-
-# Default update interval
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=30)
 
 
 class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -42,14 +39,32 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.model = config_entry.data.get(CONF_MODEL)
         self._available = True
 
+        # Get scan interval from options or use default
+        scan_interval = config_entry.options.get(
+            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+        )
+        self._scan_interval_seconds = scan_interval
+
         super().__init__(
             hass,
             _LOGGER,
             name=f"{DOMAIN}_{config_entry.data[CONF_HOST]}",
             config_entry=config_entry,
-            update_interval=DEFAULT_SCAN_INTERVAL,
+            update_interval=timedelta(seconds=scan_interval),
             always_update=True,
         )
+
+        # Listen for option updates
+        config_entry.async_on_unload(
+            config_entry.add_update_listener(self._async_options_updated)
+        )
+
+    @staticmethod
+    async def _async_options_updated(
+        hass: HomeAssistant, entry: ConfigEntry
+    ) -> None:
+        """Handle options update."""
+        await hass.config_entries.async_reload(entry.entry_id)
 
     @property
     def available(self) -> bool:

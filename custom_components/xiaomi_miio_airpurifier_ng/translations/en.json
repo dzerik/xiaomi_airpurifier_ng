@@ -1,4 +1,18 @@
 {
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "description": "Configure the integration settings.",
+        "data": {
+          "scan_interval": "Update interval"
+        },
+        "data_description": {
+          "scan_interval": "How often to poll the device for updates (in seconds)."
+        }
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
