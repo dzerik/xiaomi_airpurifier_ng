@@ -273,6 +273,12 @@ class XiaomiAirHumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["no_water"] = status.no_water
         if hasattr(status, "water_tank_detached"):
             data["water_tank_detached"] = status.water_tank_detached
+        # LED light for jsqs models (uses led_light, not led)
+        if hasattr(status, "led_light"):
+            data["led_light"] = status.led_light
+        # Overwet protect for jsqs models
+        if hasattr(status, "overwet_protect"):
+            data["overwet_protect"] = status.overwet_protect
 
         return data
 

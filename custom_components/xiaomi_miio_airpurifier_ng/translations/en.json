@@ -188,6 +188,47 @@
       "angle": {
         "name": "Oscillation Angle"
       }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "Buzzer"
+      },
+      "led": {
+        "name": "LED"
+      },
+      "led_light": {
+        "name": "LED Light"
+      },
+      "child_lock": {
+        "name": "Child Lock"
+      },
+      "dry": {
+        "name": "Dry Mode"
+      },
+      "learn_mode": {
+        "name": "Learn Mode"
+      },
+      "auto_detect": {
+        "name": "Auto Detect"
+      },
+      "oscillate": {
+        "name": "Oscillation"
+      },
+      "ptc": {
+        "name": "PTC Heater"
+      },
+      "overwet_protect": {
+        "name": "Overwet Protection"
+      },
+      "display": {
+        "name": "Display"
+      },
+      "anion": {
+        "name": "Ionizer"
+      },
+      "gestures": {
+        "name": "Gesture Control"
+      }
     }
   }
 }

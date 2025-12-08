@@ -111,6 +111,61 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         turn_on_fn="set_ptc",
         turn_off_fn="set_ptc",
     ),
+    # JSQS humidifiers use led_light/set_light instead of led/set_led
+    XiaomiMiioSwitchEntityDescription(
+        key="led_light",
+        translation_key="led_light",
+        name="LED Light",
+        icon="mdi:led-on",
+        value_fn=lambda data: data.get("led_light"),
+        exists_fn=lambda data: "led_light" in data,
+        turn_on_fn="set_light",
+        turn_off_fn="set_light",
+    ),
+    # JSQS humidifiers overwet protection
+    XiaomiMiioSwitchEntityDescription(
+        key="overwet_protect",
+        translation_key="overwet_protect",
+        name="Overwet Protection",
+        icon="mdi:water-alert",
+        value_fn=lambda data: data.get("overwet_protect"),
+        exists_fn=lambda data: "overwet_protect" in data,
+        turn_on_fn="set_overwet_protect",
+        turn_off_fn="set_overwet_protect",
+    ),
+    # Display for Air Fresh T2017
+    XiaomiMiioSwitchEntityDescription(
+        key="display",
+        translation_key="display",
+        name="Display",
+        icon="mdi:monitor",
+        value_fn=lambda data: data.get("display"),
+        exists_fn=lambda data: "display" in data,
+        turn_on_fn="set_display",
+        turn_off_fn="set_display",
+    ),
+    # Anion/ionizer for air purifiers
+    XiaomiMiioSwitchEntityDescription(
+        key="anion",
+        translation_key="anion",
+        name="Ionizer",
+        icon="mdi:atom",
+        value_fn=lambda data: data.get("anion"),
+        exists_fn=lambda data: "anion" in data,
+        turn_on_fn="set_anion",
+        turn_off_fn="set_anion",
+    ),
+    # Gesture control for air purifiers
+    XiaomiMiioSwitchEntityDescription(
+        key="gestures",
+        translation_key="gestures",
+        name="Gesture Control",
+        icon="mdi:gesture-tap",
+        value_fn=lambda data: data.get("gestures"),
+        exists_fn=lambda data: "gestures" in data,
+        turn_on_fn="set_gestures",
+        turn_off_fn="set_gestures",
+    ),
 )
 
 
