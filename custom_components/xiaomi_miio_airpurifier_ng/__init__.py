@@ -201,13 +201,12 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
     if model in (
         MODEL_AIRHUMIDIFIER_JSQ,
         MODEL_AIRHUMIDIFIER_JSQ1,
-        MODEL_AIRHUMIDIFIER_JSQ2W,
         MODEL_AIRHUMIDIFIER_JSQ3,
-        MODEL_AIRHUMIDIFIER_JSQ5,
         MODEL_AIRHUMIDIFIER_JSQ001,
     ):
         return AirHumidifierJsq(ip=host, token=token, model=model)
-    if model == MODEL_AIRHUMIDIFIER_JSQS:
+    if model in (MODEL_AIRHUMIDIFIER_JSQS, MODEL_AIRHUMIDIFIER_JSQ2W, MODEL_AIRHUMIDIFIER_JSQ5):
+        # jsq2w and jsq5 use MiOT protocol like jsqs
         return AirHumidifierJsqs(ip=host, token=token, model=model)
 
     # Air Fresh models
