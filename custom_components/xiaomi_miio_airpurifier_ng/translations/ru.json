@@ -74,6 +74,18 @@
       },
       "no_water": {
         "name": "Отсутствие воды"
+      },
+      "ac_power": {
+        "name": "Питание от сети"
+      },
+      "battery_charge": {
+        "name": "Зарядка батареи"
+      },
+      "oscillate": {
+        "name": "Вращение"
+      },
+      "ptc_status": {
+        "name": "Нагреватель активен"
       }
     },
     "sensor": {
@@ -121,6 +133,60 @@
       },
       "mode": {
         "name": "Режим"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "tvoc": {
+        "name": "ЛОС"
+      },
+      "illuminance": {
+        "name": "Освещенность"
+      },
+      "filter_left_time": {
+        "name": "Дней до замены фильтра"
+      },
+      "filter_type": {
+        "name": "Тип фильтра"
+      },
+      "motor2_speed": {
+        "name": "Скорость мотора 2"
+      },
+      "volume": {
+        "name": "Громкость"
+      },
+      "temperature_outside": {
+        "name": "Внешняя температура"
+      },
+      "dust_filter_life_remaining": {
+        "name": "Ресурс пылевого фильтра"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "Дней до замены пылевого фильтра"
+      },
+      "upper_filter_life_remaining": {
+        "name": "Ресурс верхнего фильтра"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "Дней до замены верхнего фильтра"
+      },
+      "favorite_speed": {
+        "name": "Избранная скорость"
+      },
+      "control_speed": {
+        "name": "Скорость управления"
+      },
+      "speed": {
+        "name": "Скорость"
+      },
+      "natural_speed": {
+        "name": "Естественная скорость"
+      },
+      "direct_speed": {
+        "name": "Прямая скорость"
+      },
+      "angle": {
+        "name": "Угол поворота"
       }
     },
     "switch": {

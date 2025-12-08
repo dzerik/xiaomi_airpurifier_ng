@@ -73,6 +73,44 @@ BINARY_SENSOR_DESCRIPTIONS: tuple[XiaomiMiioBinarySensorEntityDescription, ...] 
         value_fn=lambda data: data.get("no_water"),
         exists_fn=lambda data: "no_water" in data,
     ),
+    # Fan - AC Power
+    XiaomiMiioBinarySensorEntityDescription(
+        key="ac_power",
+        translation_key="ac_power",
+        name="AC Power",
+        device_class=BinarySensorDeviceClass.PLUG,
+        icon="mdi:power-plug",
+        value_fn=lambda data: data.get("ac_power"),
+        exists_fn=lambda data: "ac_power" in data,
+    ),
+    # Fan - Battery charging
+    XiaomiMiioBinarySensorEntityDescription(
+        key="battery_charge",
+        translation_key="battery_charge",
+        name="Battery Charging",
+        device_class=BinarySensorDeviceClass.BATTERY_CHARGING,
+        value_fn=lambda data: data.get("battery_charge"),
+        exists_fn=lambda data: "battery_charge" in data,
+    ),
+    # Fan - Oscillation
+    XiaomiMiioBinarySensorEntityDescription(
+        key="oscillate",
+        translation_key="oscillate",
+        name="Oscillation",
+        icon="mdi:rotate-3d-variant",
+        value_fn=lambda data: data.get("oscillate"),
+        exists_fn=lambda data: "oscillate" in data,
+    ),
+    # Air Fresh - PTC status (heater working)
+    XiaomiMiioBinarySensorEntityDescription(
+        key="ptc_status",
+        translation_key="ptc_status",
+        name="Heater Active",
+        device_class=BinarySensorDeviceClass.HEAT,
+        icon="mdi:radiator",
+        value_fn=lambda data: data.get("ptc_status"),
+        exists_fn=lambda data: "ptc_status" in data,
+    ),
 )
 
 

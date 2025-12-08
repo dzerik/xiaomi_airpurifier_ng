@@ -74,6 +74,119 @@
       },
       "no_water": {
         "name": "No Water"
+      },
+      "ac_power": {
+        "name": "AC Power"
+      },
+      "battery_charge": {
+        "name": "Battery Charging"
+      },
+      "oscillate": {
+        "name": "Oscillation"
+      },
+      "ptc_status": {
+        "name": "Heater Active"
+      }
+    },
+    "sensor": {
+      "aqi": {
+        "name": "Air Quality Index"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "average_aqi": {
+        "name": "Average AQI"
+      },
+      "temperature": {
+        "name": "Temperature"
+      },
+      "humidity": {
+        "name": "Humidity"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "tvoc": {
+        "name": "TVOC"
+      },
+      "illuminance": {
+        "name": "Illuminance"
+      },
+      "filter_life_remaining": {
+        "name": "Filter Life"
+      },
+      "filter_hours_used": {
+        "name": "Filter Hours"
+      },
+      "filter_left_time": {
+        "name": "Filter Days Left"
+      },
+      "filter_type": {
+        "name": "Filter Type"
+      },
+      "motor_speed": {
+        "name": "Motor Speed"
+      },
+      "motor2_speed": {
+        "name": "Motor 2 Speed"
+      },
+      "use_time": {
+        "name": "Use Time"
+      },
+      "purify_volume": {
+        "name": "Purify Volume"
+      },
+      "water_level": {
+        "name": "Water Level"
+      },
+      "target_humidity": {
+        "name": "Target Humidity"
+      },
+      "battery": {
+        "name": "Battery"
+      },
+      "mode": {
+        "name": "Mode"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "temperature_outside": {
+        "name": "Outside Temperature"
+      },
+      "dust_filter_life_remaining": {
+        "name": "Dust Filter Life"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "Dust Filter Days Left"
+      },
+      "upper_filter_life_remaining": {
+        "name": "Upper Filter Life"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "Upper Filter Days Left"
+      },
+      "favorite_speed": {
+        "name": "Favorite Speed"
+      },
+      "control_speed": {
+        "name": "Control Speed"
+      },
+      "speed": {
+        "name": "Speed"
+      },
+      "natural_speed": {
+        "name": "Natural Speed"
+      },
+      "direct_speed": {
+        "name": "Direct Speed"
+      },
+      "angle": {
+        "name": "Oscillation Angle"
       }
     }
   }

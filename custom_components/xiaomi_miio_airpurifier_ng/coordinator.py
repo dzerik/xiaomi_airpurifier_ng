@@ -178,6 +178,38 @@ class XiaomiAirPurifierCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["use_time"] = status.use_time
         if hasattr(status, "purify_volume"):
             data["purify_volume"] = status.purify_volume
+        # Additional sensors
+        if hasattr(status, "illuminance"):
+            data["illuminance"] = status.illuminance
+        if hasattr(status, "tvoc"):
+            data["tvoc"] = status.tvoc
+        if hasattr(status, "pm10_density"):
+            data["pm10"] = status.pm10_density
+        if hasattr(status, "motor2_speed"):
+            data["motor2_speed"] = status.motor2_speed
+        # Filter RFID info
+        if hasattr(status, "filter_rfid_tag"):
+            data["filter_rfid_tag"] = status.filter_rfid_tag
+        if hasattr(status, "filter_rfid_product_id"):
+            data["filter_rfid_product_id"] = status.filter_rfid_product_id
+        if hasattr(status, "filter_type"):
+            data["filter_type"] = str(status.filter_type) if status.filter_type else None
+        if hasattr(status, "filter_left_time"):
+            data["filter_left_time"] = status.filter_left_time
+        # Boolean features
+        if hasattr(status, "anion"):
+            data["anion"] = status.anion
+        if hasattr(status, "gestures"):
+            data["gestures"] = status.gestures
+        if hasattr(status, "auto_detect"):
+            data["auto_detect"] = status.auto_detect
+        if hasattr(status, "learn_mode"):
+            data["learn_mode"] = status.learn_mode
+        # Volume
+        if hasattr(status, "volume"):
+            data["volume"] = status.volume
+        if hasattr(status, "buzzer_volume"):
+            data["buzzer_volume"] = status.buzzer_volume
 
         return data
 
@@ -274,6 +306,19 @@ class XiaomiFanCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["ac_power"] = status.ac_power
         if hasattr(status, "delay_off_countdown"):
             data["delay_off_countdown"] = status.delay_off_countdown
+        # Additional fan attributes
+        if hasattr(status, "temperature"):
+            data["temperature"] = status.temperature
+        if hasattr(status, "humidity"):
+            data["humidity"] = status.humidity
+        if hasattr(status, "fan_level"):
+            data["fan_level"] = status.fan_level
+        if hasattr(status, "light"):
+            data["light"] = status.light
+        if hasattr(status, "use_time"):
+            data["use_time"] = status.use_time
+        if hasattr(status, "power_off_time"):
+            data["power_off_time"] = status.power_off_time
 
         return data
 
@@ -319,5 +364,36 @@ class XiaomiAirFreshCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["use_time"] = status.use_time
         if hasattr(status, "ptc"):
             data["ptc"] = status.ptc
+        # T2017 specific attributes
+        if hasattr(status, "pm25"):
+            data["pm25"] = status.pm25
+        if hasattr(status, "temperature_outside"):
+            data["temperature_outside"] = status.temperature_outside
+        if hasattr(status, "favorite_speed"):
+            data["favorite_speed"] = status.favorite_speed
+        if hasattr(status, "control_speed"):
+            data["control_speed"] = status.control_speed
+        # Dust filter (intermediate)
+        if hasattr(status, "dust_filter_life_remaining"):
+            data["dust_filter_life_remaining"] = status.dust_filter_life_remaining
+        if hasattr(status, "dust_filter_life_remaining_days"):
+            data["dust_filter_life_remaining_days"] = status.dust_filter_life_remaining_days
+        # Upper filter (efficient/HEPA)
+        if hasattr(status, "upper_filter_life_remaining"):
+            data["upper_filter_life_remaining"] = status.upper_filter_life_remaining
+        if hasattr(status, "upper_filter_life_remaining_days"):
+            data["upper_filter_life_remaining_days"] = status.upper_filter_life_remaining_days
+        # PTC heater
+        if hasattr(status, "ptc_level"):
+            data["ptc_level"] = str(status.ptc_level) if status.ptc_level else None
+        if hasattr(status, "ptc_status"):
+            data["ptc_status"] = status.ptc_status
+        # Display
+        if hasattr(status, "display"):
+            data["display"] = status.display
+        if hasattr(status, "display_orientation"):
+            data["display_orientation"] = (
+                str(status.display_orientation) if status.display_orientation else None
+            )
 
         return data
