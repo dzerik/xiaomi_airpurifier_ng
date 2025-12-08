@@ -85,11 +85,10 @@ class XiaomiAirFreshFan(XiaomiMiioBaseFan):
     def preset_mode(self) -> str | None:
         """Return the current preset mode."""
         if self.coordinator.data:
+            # Use mode name directly (already extracted in coordinator)
             mode = self.coordinator.data.get("mode")
             if mode:
-                if self._is_t2017:
-                    return AirfreshT2017OperationMode(mode).name
-                return AirfreshOperationMode(mode).name
+                return mode
         return None
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:

@@ -160,18 +160,10 @@ class XiaomiAirHumidifierFan(XiaomiMiioBaseFan):
     def preset_mode(self) -> str | None:
         """Return the current preset mode."""
         if self.coordinator.data:
+            # Use mode name directly (already extracted in coordinator)
             mode = self.coordinator.data.get("mode")
             if mode:
-                # Handle different operation mode enums based on device type
-                if self._is_miot:
-                    return AirhumidifierMiotOperationMode(mode).name
-                if self._is_mjjsq:
-                    return AirhumidifierMjjsqOperationMode(mode).name
-                if self._is_jsqs:
-                    return AirhumidifierJsqsOperationMode(mode).name
-                if self._is_jsq:
-                    return AirhumidifierJsqOperationMode(mode).name
-                return AirhumidifierOperationMode(mode).name
+                return mode
         return None
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:

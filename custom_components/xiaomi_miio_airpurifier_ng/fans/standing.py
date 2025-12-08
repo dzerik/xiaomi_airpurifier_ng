@@ -125,11 +125,10 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
     def preset_mode(self) -> str | None:
         """Return the current preset mode."""
         if self.coordinator.data:
+            # Use mode name directly (already extracted in coordinator)
             mode = self.coordinator.data.get("mode")
             if mode:
-                if self._is_leshow:
-                    return FanLeshowOperationMode(mode).name
-                return str(mode)
+                return mode
         return None
 
     @property
