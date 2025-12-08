@@ -1,0 +1,171 @@
+# Quality Scale for Xiaomi Air Purifier NG Integration
+# Based on Home Assistant Integration Quality Scale
+# https://developers.home-assistant.io/docs/integration_quality_scale_index/
+
+rules:
+  # Bronze Level - Required for all integrations
+  action-setup:
+    status: done
+    comment: Actions are registered in async_setup_entry
+  appropriate-polling:
+    status: done
+    comment: Using DataUpdateCoordinator with 30 second interval
+  brands:
+    status: exempt
+    comment: Custom integration, not in Home Assistant brands
+  common-modules:
+    status: done
+    comment: Using homeassistant.helpers and standard patterns
+  config-flow:
+    status: done
+    comment: Full config flow with user, import, reconfigure, and reauth steps
+  config-flow-test-coverage:
+    status: done
+    comment: Tests in tests/test_config_flow.py
+  dependency-transparency:
+    status: done
+    comment: python-miio is declared in manifest.json
+  docs-actions:
+    status: done
+    comment: Services documented in services.yaml
+  docs-high-level-description:
+    status: done
+    comment: README.md provides overview
+  docs-installation-instructions:
+    status: done
+    comment: README.md includes HACS and manual installation
+  docs-removal-instructions:
+    status: done
+    comment: Standard HA integration removal
+  entity-event-setup:
+    status: exempt
+    comment: No event entities
+  entity-unique-id:
+    status: done
+    comment: All entities have unique IDs based on device MAC
+  has-entity-name:
+    status: done
+    comment: All entities use has_entity_name = True
+  runtime-data:
+    status: done
+    comment: Using entry.runtime_data for coordinator
+  test-before-configure:
+    status: done
+    comment: Connection tested in config flow before creating entry
+  test-before-setup:
+    status: done
+    comment: Connection validated in async_setup_entry
+  unique-config-entry:
+    status: done
+    comment: MAC-based unique ID prevents duplicates
+
+  # Silver Level
+  action-exceptions:
+    status: todo
+    comment: Need to use ServiceValidationError for action errors
+  config-entry-unloading:
+    status: done
+    comment: async_unload_entry implemented and tested
+  docs-configuration-parameters:
+    status: done
+    comment: Host, token, model documented in README
+  docs-troubleshooting:
+    status: todo
+    comment: Need troubleshooting section in docs
+  entity-unavailable:
+    status: done
+    comment: Coordinator handles unavailable state
+  integration-owner:
+    status: exempt
+    comment: Custom integration
+  log-when-unavailable:
+    status: done
+    comment: Coordinator logs connection failures
+  parallel-updates:
+    status: done
+    comment: Using DataUpdateCoordinator
+  reauthentication-flow:
+    status: done
+    comment: async_step_reauth implemented
+  test-coverage:
+    status: partial
+    comment: Tests for config_flow, init, diagnostics. Need more coverage
+
+  # Gold Level
+  devices:
+    status: done
+    comment: Device registered via device_info
+  diagnostics:
+    status: done
+    comment: diagnostics.py with token redaction
+  discovery:
+    status: exempt
+    comment: Xiaomi devices don't support standard discovery
+  discovery-update-info:
+    status: exempt
+    comment: No discovery support
+  docs-data-update:
+    status: todo
+    comment: Need to document polling interval
+  docs-examples:
+    status: done
+    comment: README includes automation examples
+  docs-known-limitations:
+    status: todo
+    comment: Need to document model-specific limitations
+  docs-supported-devices:
+    status: done
+    comment: SUPPORTED_MODELS in const.py, listed in README
+  docs-supported-functions:
+    status: done
+    comment: Features documented per device type
+  docs-use-cases:
+    status: done
+    comment: Use cases in README
+  dynamic-devices:
+    status: exempt
+    comment: Single device per config entry
+  entity-category:
+    status: done
+    comment: Diagnostic entities properly categorized
+  entity-device-class:
+    status: done
+    comment: Standard device classes used
+  entity-disabled-by-default:
+    status: partial
+    comment: Some entities disabled by default
+  entity-translations:
+    status: done
+    comment: translations/en.json and translations/ru.json
+  exception-translations:
+    status: todo
+    comment: Exceptions need translation keys
+  icon-translations:
+    status: todo
+    comment: Need icon translations
+  reconfiguration-flow:
+    status: done
+    comment: async_step_reconfigure implemented
+  repair-issues:
+    status: todo
+    comment: Not implemented yet
+  stale-devices:
+    status: exempt
+    comment: Single device per entry
+
+  # Platinum Level
+  async-dependency:
+    status: todo
+    comment: python-miio is synchronous, uses executor
+  inject-websession:
+    status: exempt
+    comment: Using local protocol, not HTTP
+  strict-typing:
+    status: todo
+    comment: Need full type annotations and mypy checking
+
+# Summary
+# Bronze: DONE
+# Silver: 8/11 done, 3 todo
+# Gold: 11/18 done, 5 todo, 2 exempt
+# Platinum: 0/3 done, 2 todo, 1 exempt

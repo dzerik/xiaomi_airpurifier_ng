@@ -25,6 +25,16 @@
           "token": "Token",
           "model": "Model"
         }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate Xiaomi Air Purifier",
+        "description": "The token for {host} is no longer valid. Please enter a new token.",
+        "data": {
+          "token": "Token"
+        },
+        "data_description": {
+          "token": "The new 32-character token for device authentication."
+        }
       }
     },
     "error": {
@@ -33,7 +43,8 @@
     },
     "abort": {
       "already_configured": "This device is already configured.",
-      "reconfigure_successful": "Configuration updated successfully."
+      "reconfigure_successful": "Configuration updated successfully.",
+      "reauth_successful": "Reauthentication successful."
     }
   }
 }

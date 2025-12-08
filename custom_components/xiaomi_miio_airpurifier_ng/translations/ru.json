@@ -25,6 +25,16 @@
           "token": "Токен",
           "model": "Модель"
         }
+      },
+      "reauth_confirm": {
+        "title": "Повторная авторизация Xiaomi Air Purifier",
+        "description": "Токен для {host} больше недействителен. Пожалуйста, введите новый токен.",
+        "data": {
+          "token": "Токен"
+        },
+        "data_description": {
+          "token": "Новый 32-символьный токен для аутентификации устройства."
+        }
       }
     },
     "error": {
@@ -33,7 +43,8 @@
     },
     "abort": {
       "already_configured": "Это устройство уже настроено.",
-      "reconfigure_successful": "Конфигурация успешно обновлена."
+      "reconfigure_successful": "Конфигурация успешно обновлена.",
+      "reauth_successful": "Повторная авторизация выполнена успешно."
     }
   },
   "entity": {

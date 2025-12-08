@@ -133,6 +133,49 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return await self.async_step_user(import_config)
 
+    async def async_step_reauth(
+        self, entry_data: dict[str, Any]
+    ) -> ConfigFlowResult:
+        """Handle reauthorization flow triggered by auth failure."""
+        self._host = entry_data.get(CONF_HOST)
+        self._model = entry_data.get(CONF_MODEL)
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle reauth confirmation step."""
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            token = user_input[CONF_TOKEN]
+
+            try:
+                await self._async_try_connect(self._host, token, self._model)
+            except DeviceException:
+                errors["base"] = "cannot_connect"
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Unexpected exception")
+                errors["base"] = "unknown"
+            else:
+                return self.async_update_reload_and_abort(
+                    self._get_reauth_entry(),
+                    data_updates={CONF_TOKEN: token},
+                )
+
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_TOKEN): TextSelector(
+                        TextSelectorConfig(type=TextSelectorType.PASSWORD)
+                    ),
+                }
+            ),
+            errors=errors,
+            description_placeholders={"host": self._host},
+        )
+
     async def async_step_reconfigure(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
