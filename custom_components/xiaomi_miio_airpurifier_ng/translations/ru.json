@@ -228,6 +228,12 @@
       },
       "gestures": {
         "name": "Управление жестами"
+      },
+      "clean_mode": {
+        "name": "Режим очистки"
+      },
+      "extra_features": {
+        "name": "Доп. функции"
       }
     },
     "button": {

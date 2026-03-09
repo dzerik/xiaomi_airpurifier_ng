@@ -174,6 +174,28 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         turn_on_fn="set_gestures",
         turn_off_fn="set_gestures",
     ),
+    XiaomiMiioSwitchEntityDescription(
+        key="clean_mode",
+        translation_key="clean_mode",
+        name="Clean Mode",
+        icon="mdi:shimmer",
+        entity_category=EntityCategory.CONFIG,
+        value_fn=lambda data: data.get("clean_mode"),
+        exists_fn=lambda data: "clean_mode" in data,
+        turn_on_fn="set_clean_mode",
+        turn_off_fn="set_clean_mode",
+    ),
+    XiaomiMiioSwitchEntityDescription(
+        key="extra_features",
+        translation_key="extra_features",
+        name="Extra Features",
+        icon="mdi:feature-search",
+        entity_category=EntityCategory.CONFIG,
+        value_fn=lambda data: data.get("extra_features"),
+        exists_fn=lambda data: "extra_features" in data,
+        turn_on_fn="set_extra_features",
+        turn_off_fn="set_extra_features",
+    ),
 )
 
 

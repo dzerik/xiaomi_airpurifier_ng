@@ -228,6 +228,12 @@
       },
       "gestures": {
         "name": "Gesture Control"
+      },
+      "clean_mode": {
+        "name": "Clean Mode"
+      },
+      "extra_features": {
+        "name": "Extra Features"
       }
     },
     "button": {

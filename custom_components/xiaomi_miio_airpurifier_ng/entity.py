@@ -23,6 +23,7 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
     """Base class for Xiaomi Miio entities."""
 
     _attr_has_entity_name = True
+    _device_features: int = 0
 
     def __init__(
         self,
@@ -63,6 +64,11 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
 
         # Fall back to entry_id if no MAC
         if not identifiers:
+            _LOGGER.warning(
+                "MAC address not available for %s, using entry_id as identifier. "
+                "Device identity may not persist across reconfigurations",
+                coordinator.model,
+            )
             identifiers.add((DOMAIN, entry.entry_id))
 
         # Determine model name for display
@@ -156,6 +162,17 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
         if info:
             return info.hardware_version
         return None
+
+    def _check_feature(self, feature_flag: int, feature_name: str) -> bool:
+        """Check if a feature is supported and log warning if not."""
+        if self._device_features & feature_flag == 0:
+            _LOGGER.debug(
+                "Feature %s not supported by %s (feature flag not set)",
+                feature_name,
+                self.coordinator.model,
+            )
+            return False
+        return True
 
     @staticmethod
     def _extract_value_from_attribute(value: Any) -> Any:
