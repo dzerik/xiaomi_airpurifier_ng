@@ -203,7 +203,7 @@ class XiaomiAirPurifierCoordinator(XiaomiMiioDataUpdateCoordinator):
         if hasattr(status, "filter_rfid_product_id"):
             data["filter_rfid_product_id"] = status.filter_rfid_product_id
         if hasattr(status, "filter_type"):
-            data["filter_type"] = str(status.filter_type) if status.filter_type else None
+            data["filter_type"] = str(status.filter_type) if status.filter_type is not None else None
         if hasattr(status, "filter_left_time"):
             data["filter_left_time"] = status.filter_left_time
         # Boolean features
@@ -411,5 +411,50 @@ class XiaomiAirFreshCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["display_orientation"] = (
                 str(status.display_orientation) if status.display_orientation is not None else None
             )
+
+        return data
+
+
+class XiaomiAirDehumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
+    """Coordinator for Xiaomi Air Dehumidifier devices."""
+
+    def _get_status(self) -> dict[str, Any]:
+        """Get air dehumidifier status."""
+        status = self.device.status()
+
+        data: dict[str, Any] = {}
+
+        if hasattr(status, "power"):
+            data["power"] = status.power
+        if hasattr(status, "humidity"):
+            data["humidity"] = status.humidity
+        if hasattr(status, "target_humidity"):
+            data["target_humidity"] = status.target_humidity
+        if hasattr(status, "temperature"):
+            data["temperature"] = status.temperature
+        if hasattr(status, "mode"):
+            if status.mode is not None:
+                data["mode"] = status.mode.value if hasattr(status.mode, "value") else status.mode
+            else:
+                data["mode"] = None
+        if hasattr(status, "fan_speed"):
+            if status.fan_speed is not None:
+                data["fan_speed"] = status.fan_speed.value if hasattr(status.fan_speed, "value") else status.fan_speed
+            else:
+                data["fan_speed"] = None
+        if hasattr(status, "buzzer"):
+            data["buzzer"] = status.buzzer
+        if hasattr(status, "led"):
+            data["led"] = status.led
+        if hasattr(status, "child_lock"):
+            data["child_lock"] = status.child_lock
+        if hasattr(status, "tank_full"):
+            data["tank_full"] = status.tank_full
+        if hasattr(status, "compressor_status"):
+            data["compressor_status"] = status.compressor_status
+        if hasattr(status, "defrost_status"):
+            data["defrost_status"] = status.defrost_status
+        if hasattr(status, "fan_st"):
+            data["fan_st"] = status.fan_st
 
         return data

@@ -86,10 +86,16 @@ class XiaomiMiioBaseFan(XiaomiMiioEntity, FanEntity):
 
     @property
     def is_on(self) -> bool | None:
-        """Return true if the device is on."""
+        """Return true if the device is on.
+
+        python-miio returns power as string "on"/"off" for all models.
+        Using bool(power) would be incorrect since bool("off") == True.
+        """
         if self.coordinator.data:
             power = self.coordinator.data.get("power")
             if power is not None:
+                if isinstance(power, str):
+                    return power == "on"
                 return bool(power)
             is_on = self.coordinator.data.get("is_on")
             if is_on is not None:

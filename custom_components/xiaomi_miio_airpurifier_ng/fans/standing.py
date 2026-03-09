@@ -289,10 +289,16 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
                 False,
             )
 
+        try:
+            move_direction = FanMoveDirection(direction)
+        except ValueError:
+            _LOGGER.error("Invalid move direction: %s", direction)
+            return
+
         await self._try_command(
             "Setting move direction of the miio device failed: %s",
             self.coordinator.device.set_rotate,
-            FanMoveDirection(direction),
+            move_direction,
         )
         await self.coordinator.async_request_refresh()
 

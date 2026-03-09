@@ -86,6 +86,7 @@ from .const import (
     PURIFIER_MIOT,
 )
 from .coordinator import (
+    XiaomiAirDehumidifierCoordinator,
     XiaomiAirFreshCoordinator,
     XiaomiAirHumidifierCoordinator,
     XiaomiAirPurifierCoordinator,
@@ -285,6 +286,10 @@ def _create_coordinator(
         or model.startswith("leshow.fan")
     ):
         return XiaomiFanCoordinator(hass, entry, device)
+
+    # Air Dehumidifier models
+    if model and model.startswith("nwt.derh"):
+        return XiaomiAirDehumidifierCoordinator(hass, entry, device)
 
     # Default coordinator
     return XiaomiMiioDataUpdateCoordinator(hass, entry, device)

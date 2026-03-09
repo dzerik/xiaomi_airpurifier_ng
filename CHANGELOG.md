@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-alpha.10] - 2026-03-09
+
+### Fixed
+- **CRITICAL**: Fix `bool("off") == True` bug — devices always appeared "on" (fans/base.py, climates/dehumidifier.py)
+- Fix `filter_type` falsy check losing value 0 in coordinator
+- Fix `FanMoveDirection` ValueError not caught in standing fan
+- Fix dehumidifier enum conversion errors with falsy checks for mode and fan_speed
+- Fix dehumidifier `supported_features` handling both raw and string mode values
+
+### Added
+- `XiaomiAirDehumidifierCoordinator` — dedicated coordinator for dehumidifier devices
+- Dehumidifier coordinator routing in `_create_coordinator()` for `nwt.derh.*` models
+
 ## [3.0.0-alpha.9] - 2026-03-09
 
 ### Fixed

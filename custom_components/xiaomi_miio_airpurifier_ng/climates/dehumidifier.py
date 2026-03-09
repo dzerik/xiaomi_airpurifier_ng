@@ -87,26 +87,35 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
         features |= ClimateEntityFeature.PRESET_MODE
 
         if self.coordinator.data:
-            mode_value = self.coordinator.data.get("mode")
-            if mode_value is not None:
+            mode_raw = self.coordinator.data.get("mode")
+            if mode_raw is not None:
                 try:
-                    mode = AirdehumidifierOperationMode(mode_value)
+                    # mode can be raw value (from base coordinator) or name string
+                    if isinstance(mode_raw, str):
+                        mode = AirdehumidifierOperationMode[mode_raw]
+                    else:
+                        mode = AirdehumidifierOperationMode(mode_raw)
                     if mode == AirdehumidifierOperationMode.Auto:
                         features |= ClimateEntityFeature.TARGET_HUMIDITY
                     if mode != AirdehumidifierOperationMode.DryCloth:
                         features |= ClimateEntityFeature.FAN_MODE
-                except ValueError:
+                except (ValueError, KeyError):
                     pass
 
         return features
 
     @property
     def hvac_mode(self) -> HVACMode | None:
-        """Return the current HVAC mode."""
+        """Return the current HVAC mode.
+
+        python-miio returns power as string "on"/"off".
+        """
         if self.coordinator.data:
             power = self.coordinator.data.get("power")
-            if power:
-                return HVACMode.DRY
+            if power is not None:
+                is_on = power == "on" if isinstance(power, str) else bool(power)
+                if is_on:
+                    return HVACMode.DRY
         return HVACMode.OFF
 
     @property
@@ -128,8 +137,11 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
         """Return the current preset mode."""
         if self.coordinator.data:
             mode = self.coordinator.data.get("mode")
-            if mode:
-                return AirdehumidifierOperationMode(mode).name
+            if mode is not None:
+                try:
+                    return AirdehumidifierOperationMode(mode).name
+                except ValueError:
+                    _LOGGER.debug("Unknown operation mode value: %s", mode)
         return None
 
     @property
@@ -137,8 +149,11 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
         """Return the current fan mode."""
         if self.coordinator.data:
             fan_speed = self.coordinator.data.get("fan_speed")
-            if fan_speed:
-                return AirdehumidifierFanSpeed(fan_speed).name
+            if fan_speed is not None:
+                try:
+                    return AirdehumidifierFanSpeed(fan_speed).name
+                except ValueError:
+                    _LOGGER.debug("Unknown fan speed value: %s", fan_speed)
         return None
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
