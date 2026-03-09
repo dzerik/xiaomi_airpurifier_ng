@@ -31,12 +31,24 @@ def mock_config_entry() -> MockConfigEntry:
     )
 
 
-def _create_mock_coordinator():
+def _create_mock_coordinator(mock_device_info_data=None):
     """Create a mock coordinator."""
+    from tests.conftest import MockDeviceInfo
+
     mock_coordinator = MagicMock()
     mock_coordinator.data = {"power": "on", "aqi": 42}
     mock_coordinator.last_update_success = True
+    mock_coordinator.model = "zhimi.airpurifier.mc1"
     mock_coordinator.async_config_entry_first_refresh = AsyncMock()
+    mock_coordinator._device_info = MockDeviceInfo(
+        mock_device_info_data
+        or {
+            "model": "zhimi.airpurifier.mc1",
+            "mac": "AA:BB:CC:DD:EE:FF",
+            "firmware": "1.2.3",
+            "hardware": "ESP32",
+        }
+    )
     return mock_coordinator
 
 
@@ -53,6 +65,7 @@ async def test_diagnostics_redacts_token(
     mock_device.status = MagicMock(return_value=mock_status)
 
     mock_coordinator = _create_mock_coordinator()
+    mock_coordinator.config_entry = mock_config_entry
 
     with patch(
         "custom_components.xiaomi_miio_airpurifier_ng._create_device",
@@ -94,6 +107,7 @@ async def test_diagnostics_includes_coordinator_data(
     mock_device.status = MagicMock(return_value=mock_status)
 
     mock_coordinator = _create_mock_coordinator()
+    mock_coordinator.config_entry = mock_config_entry
     mock_coordinator.data = {"power": "on", "aqi": 42, "humidity": 55}
 
     with patch(
