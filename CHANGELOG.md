@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-03-09
+
+### Added
+- **10 новых моделей Air Purifier**: Air Purifier 3C (mb4, mb4a, mb5), Air Purifier Pro H (va1, va2), Air Purifier 4 (vb2), Air Purifier 4 Pro (vb4), Air Purifier 4 Lite (rma1, rmb1), Air Purifier 3H alt (mb3a)
+- **2 новых модели Standing Fan**: Smart Standing Fan 2 Pro (dmaker.fan.p33), Smart Standing Fan Pro EU (dmaker.fan.p15)
+- Поддержка prefix `zhimi.airp.*` в classify_model для новых MIoT моделей очистителей
+
+### Changed
+- Проект переведён в режим поддержки (maintenance mode). Для новых установок рекомендуется [Xiaomi Miot Auto](https://github.com/al-one/hass-xiaomi-miot)
+- README обновлён с рекомендацией альтернативной интеграции
+
 ## [3.0.0] - 2026-03-09
 
 ### Fixed

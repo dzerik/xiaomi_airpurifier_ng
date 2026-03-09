@@ -74,7 +74,9 @@ from .const import (
     MODEL_FAN_P9,
     MODEL_FAN_P10,
     MODEL_FAN_P11,
+    MODEL_FAN_P15,
     MODEL_FAN_P18,
+    MODEL_FAN_P33,
     MODEL_FAN_SA1,
     MODEL_FAN_V2,
     MODEL_FAN_V3,
@@ -239,7 +241,9 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
         MODEL_FAN_P9,
         MODEL_FAN_P10,
         MODEL_FAN_P11,
+        MODEL_FAN_P15,
         MODEL_FAN_P18,
+        MODEL_FAN_P33,
     ):
         return FanMiot(ip=host, token=token, model=model)
     if model == MODEL_FAN_LESHOW_SS4:

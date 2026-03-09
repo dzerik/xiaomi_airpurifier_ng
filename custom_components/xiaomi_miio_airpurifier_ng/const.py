@@ -44,6 +44,16 @@ MODEL_AIRPURIFIER_2H: Final = "zhimi.airpurifier.mc2"
 MODEL_AIRPURIFIER_3: Final = "zhimi.airpurifier.ma4"
 MODEL_AIRPURIFIER_3H: Final = "zhimi.airpurifier.mb3"
 MODEL_AIRPURIFIER_ZA1: Final = "zhimi.airpurifier.za1"
+MODEL_AIRPURIFIER_3H_ALT: Final = "zhimi.airpurifier.mb3a"
+MODEL_AIRPURIFIER_VA1: Final = "zhimi.airpurifier.va1"
+MODEL_AIRPURIFIER_VB2: Final = "zhimi.airpurifier.vb2"
+MODEL_AIRPURIFIER_3C: Final = "zhimi.airpurifier.mb4"
+MODEL_AIRPURIFIER_3C_A: Final = "zhimi.airp.mb4a"
+MODEL_AIRPURIFIER_3C_B: Final = "zhimi.airp.mb5"
+MODEL_AIRPURIFIER_PRO_H: Final = "zhimi.airp.va2"
+MODEL_AIRPURIFIER_4_PRO: Final = "zhimi.airp.vb4"
+MODEL_AIRPURIFIER_RMA1: Final = "zhimi.airpurifier.rma1"
+MODEL_AIRPURIFIER_4_LITE: Final = "zhimi.airp.rmb1"
 MODEL_AIRPURIFIER_AIRDOG_X3: Final = "airdog.airpurifier.x3"
 MODEL_AIRPURIFIER_AIRDOG_X5: Final = "airdog.airpurifier.x5"
 MODEL_AIRPURIFIER_AIRDOG_X7SM: Final = "airdog.airpurifier.x7sm"
@@ -82,6 +92,8 @@ MODEL_FAN_P9: Final = "dmaker.fan.p9"
 MODEL_FAN_P10: Final = "dmaker.fan.p10"
 MODEL_FAN_P11: Final = "dmaker.fan.p11"
 MODEL_FAN_P18: Final = "dmaker.fan.p18"
+MODEL_FAN_P15: Final = "dmaker.fan.p15"
+MODEL_FAN_P33: Final = "dmaker.fan.p33"
 MODEL_FAN_LESHOW_SS4: Final = "leshow.fan.ss4"
 MODEL_FAN_1C: Final = "dmaker.fan.1c"
 
@@ -92,7 +104,17 @@ MODEL_AIRDEHUMIDIFIER_V1: Final = "nwt.derh.wdh318efw1"
 PURIFIER_MIOT: Final = [
     MODEL_AIRPURIFIER_3,
     MODEL_AIRPURIFIER_3H,
+    MODEL_AIRPURIFIER_3H_ALT,
     MODEL_AIRPURIFIER_ZA1,
+    MODEL_AIRPURIFIER_VA1,
+    MODEL_AIRPURIFIER_VB2,
+    MODEL_AIRPURIFIER_3C,
+    MODEL_AIRPURIFIER_3C_A,
+    MODEL_AIRPURIFIER_3C_B,
+    MODEL_AIRPURIFIER_PRO_H,
+    MODEL_AIRPURIFIER_4_PRO,
+    MODEL_AIRPURIFIER_RMA1,
+    MODEL_AIRPURIFIER_4_LITE,
 ]
 HUMIDIFIER_MIOT: Final = [MODEL_AIRHUMIDIFIER_CA4]
 
@@ -115,6 +137,16 @@ SUPPORTED_MODELS_AIRPURIFIER: Final = [
     MODEL_AIRPURIFIER_3,
     MODEL_AIRPURIFIER_3H,
     MODEL_AIRPURIFIER_ZA1,
+    MODEL_AIRPURIFIER_3H_ALT,
+    MODEL_AIRPURIFIER_VA1,
+    MODEL_AIRPURIFIER_VB2,
+    MODEL_AIRPURIFIER_3C,
+    MODEL_AIRPURIFIER_3C_A,
+    MODEL_AIRPURIFIER_3C_B,
+    MODEL_AIRPURIFIER_PRO_H,
+    MODEL_AIRPURIFIER_4_PRO,
+    MODEL_AIRPURIFIER_RMA1,
+    MODEL_AIRPURIFIER_4_LITE,
     MODEL_AIRPURIFIER_AIRDOG_X3,
     MODEL_AIRPURIFIER_AIRDOG_X5,
     MODEL_AIRPURIFIER_AIRDOG_X7SM,
@@ -155,7 +187,9 @@ SUPPORTED_MODELS_FAN: Final = [
     MODEL_FAN_P9,
     MODEL_FAN_P10,
     MODEL_FAN_P11,
+    MODEL_FAN_P15,
     MODEL_FAN_P18,
+    MODEL_FAN_P33,
     MODEL_FAN_LESHOW_SS4,
     MODEL_FAN_1C,
 ]
@@ -899,6 +933,7 @@ def classify_model(model: str | None) -> DeviceCategory:
     if (
         model in PURIFIER_MIOT
         or model.startswith("zhimi.airpurifier")
+        or model.startswith("zhimi.airp.")
         or model.startswith("airdog.airpurifier")
     ):
         return DeviceCategory.PURIFIER

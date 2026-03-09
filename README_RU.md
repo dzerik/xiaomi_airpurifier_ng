@@ -3,13 +3,15 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![HA Version](https://img.shields.io/badge/Home%20Assistant-2024.8.0%2B-blue.svg)](https://www.home-assistant.io/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](CHANGELOG.md)
 
 Кастомная интеграция для Home Assistant для управления устройствами Xiaomi: очистителями воздуха, увлажнителями, вентиляторами, устройствами Air Fresh и осушителями воздуха.
 
 Устройства опрашиваются локально по WiFi через протокол miIO — без облака и интернета.
 
 > Форк [syssi/xiaomi_airpurifier](https://github.com/syssi/xiaomi_airpurifier) с переработанной архитектурой, UI-конфигурацией и поддержкой актуальных версий Home Assistant.
+
+> **Примечание:** Для новых установок рекомендуем рассмотреть [Xiaomi Miot Auto](https://github.com/al-one/hass-xiaomi-miot) — более универсальную интеграцию, которая поддерживает практически все устройства Xiaomi через протокол MIoT, включая Wi-Fi, BLE и ZigBee. Данная интеграция (Xiaomi Air Purifier NG) поддерживается для пользователей, которым важно **полностью локальное** управление без облака и аккаунта Xiaomi, или которым нужна стабильная работа **старых miIO-устройств**. Проект находится в режиме поддержки — исправления багов и PR от сообщества приветствуются, но новые крупные функции не планируются.
 
 ---
 
@@ -35,7 +37,17 @@
 | Air Purifier 2H | zhimi.airpurifier.mc2 |
 | Air Purifier 3 | zhimi.airpurifier.ma4 |
 | Air Purifier 3H | zhimi.airpurifier.mb3 |
+| Air Purifier 3H (alt) | zhimi.airpurifier.mb3a |
 | Air Purifier ZA1 | zhimi.airpurifier.za1 |
+| Air Purifier Pro H | zhimi.airpurifier.va1 |
+| Air Purifier 4 | zhimi.airpurifier.vb2 |
+| Air Purifier 3C | zhimi.airpurifier.mb4 |
+| Air Purifier 3C (rev) | zhimi.airp.mb4a |
+| Air Purifier 3C (rev2) | zhimi.airp.mb5 |
+| Air Purifier Pro H (MIoT) | zhimi.airp.va2 |
+| Air Purifier 4 Pro | zhimi.airp.vb4 |
+| Air Purifier 4 Lite | zhimi.airpurifier.rma1 |
+| Air Purifier 4 Lite (alt) | zhimi.airp.rmb1 |
 | Air Dog X3 | airdog.airpurifier.x3 |
 | Air Dog X5 | airdog.airpurifier.x5 |
 | Air Dog X7SM | airdog.airpurifier.x7sm |
@@ -82,7 +94,9 @@
 | Pedestal Fan P9 | dmaker.fan.p9 |
 | Pedestal Fan P10 | dmaker.fan.p10 |
 | Mijia Pedestal Fan P11 | dmaker.fan.p11 |
+| Smart Standing Fan Pro EU | dmaker.fan.p15 |
 | Pedestal Fan P18 | dmaker.fan.p18 |
+| Smart Standing Fan 2 Pro | dmaker.fan.p33 |
 | Rosou SS4 Ventilator | leshow.fan.ss4 |
 | Pedestal Fan 1C | dmaker.fan.1c |
 

@@ -34,7 +34,9 @@ from ..const import (
     MODEL_FAN_P9,
     MODEL_FAN_P10,
     MODEL_FAN_P11,
+    MODEL_FAN_P15,
     MODEL_FAN_P18,
+    MODEL_FAN_P33,
     SPEED_OFF,
 )
 from .base import XiaomiMiioBaseFan
@@ -63,7 +65,9 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
             MODEL_FAN_P9,
             MODEL_FAN_P10,
             MODEL_FAN_P11,
+            MODEL_FAN_P15,
             MODEL_FAN_P18,
+            MODEL_FAN_P33,
         ]
 
         # Set device features and available attributes based on model
