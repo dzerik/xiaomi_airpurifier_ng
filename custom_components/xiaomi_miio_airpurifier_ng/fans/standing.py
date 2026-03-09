@@ -176,7 +176,11 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
             return
 
         if self._is_leshow:
-            mode_enum = FanLeshowOperationMode[preset_mode.title()]
+            try:
+                mode_enum = FanLeshowOperationMode[preset_mode.title()]
+            except KeyError:
+                _LOGGER.error("Invalid preset mode: %s", preset_mode)
+                return
             await self._try_command(
                 "Setting preset mode of the miio device failed: %s",
                 self.coordinator.device.set_mode,

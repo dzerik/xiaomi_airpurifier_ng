@@ -161,12 +161,16 @@ class XiaomiAirPurifierFan(XiaomiMiioBaseFan):
         """Set the preset mode."""
         _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
 
-        if self._is_miot:
-            mode_enum = AirpurifierMiotOperationMode[preset_mode.title()]
-        elif self._is_airdog:
-            mode_enum = AirDogOperationMode[preset_mode.title()]
-        else:
-            mode_enum = AirpurifierOperationMode[preset_mode.title()]
+        try:
+            if self._is_miot:
+                mode_enum = AirpurifierMiotOperationMode[preset_mode.title()]
+            elif self._is_airdog:
+                mode_enum = AirDogOperationMode[preset_mode.title()]
+            else:
+                mode_enum = AirpurifierOperationMode[preset_mode.title()]
+        except KeyError:
+            _LOGGER.error("Invalid preset mode: %s", preset_mode)
+            return
 
         await self._try_command(
             "Setting preset mode of the miio device failed: %s",

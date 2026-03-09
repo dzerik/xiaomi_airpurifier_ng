@@ -24,6 +24,7 @@ from ..const import (
     FEATURE_FLAGS_AIRFRESH_A1,
     FEATURE_FLAGS_AIRFRESH_T2017,
     FEATURE_FLAGS_AIRFRESH_VA4,
+    FEATURE_RESET_FILTER,
     FEATURE_SET_DISPLAY_ORIENTATION,
     FEATURE_SET_LED_BRIGHTNESS,
     FEATURE_SET_PTC,
@@ -95,10 +96,14 @@ class XiaomiAirFreshFan(XiaomiMiioBaseFan):
         """Set the preset mode."""
         _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
 
-        if self._is_t2017:
-            mode_enum = AirfreshT2017OperationMode[preset_mode.title()]
-        else:
-            mode_enum = AirfreshOperationMode[preset_mode.title()]
+        try:
+            if self._is_t2017:
+                mode_enum = AirfreshT2017OperationMode[preset_mode.title()]
+            else:
+                mode_enum = AirfreshOperationMode[preset_mode.title()]
+        except KeyError:
+            _LOGGER.error("Invalid preset mode: %s", preset_mode)
+            return
 
         await self._try_command(
             "Setting preset mode of the miio device failed: %s",
@@ -150,7 +155,11 @@ class XiaomiAirFreshFan(XiaomiMiioBaseFan):
         if self._device_features & FEATURE_SET_PTC_LEVEL == 0:
             return
 
-        ptc_level = AirfreshT2017PtcLevel[level]
+        try:
+            ptc_level = AirfreshT2017PtcLevel[level]
+        except KeyError:
+            _LOGGER.error("Invalid PTC level: %s", level)
+            return
 
         await self._try_command(
             "Setting the PTC level of the miio device failed: %s",
@@ -164,11 +173,38 @@ class XiaomiAirFreshFan(XiaomiMiioBaseFan):
         if self._device_features & FEATURE_SET_DISPLAY_ORIENTATION == 0:
             return
 
-        display_orientation = AirfreshT2017DisplayOrientation[orientation]
+        try:
+            display_orientation = AirfreshT2017DisplayOrientation[orientation]
+        except KeyError:
+            _LOGGER.error("Invalid display orientation: %s", orientation)
+            return
 
         await self._try_command(
             "Setting the display orientation of the miio device failed: %s",
             self.coordinator.device.set_display_orientation,
             display_orientation,
         )
+        await self.coordinator.async_request_refresh()
+
+    async def async_reset_filter(self) -> None:
+        """Reset the filter lifetime and usage."""
+        if self._device_features & FEATURE_RESET_FILTER == 0:
+            return
+
+        if self._is_t2017 and self.coordinator.model == MODEL_AIRFRESH_T2017:
+            # T2017 has dual filters: upper and dust
+            await self._try_command(
+                "Resetting the upper filter lifetime of the miio device failed: %s",
+                self.coordinator.device.reset_upper_filter,
+            )
+            await self._try_command(
+                "Resetting the dust filter lifetime of the miio device failed: %s",
+                self.coordinator.device.reset_dust_filter,
+            )
+        else:
+            # A1 and other models have a single filter
+            await self._try_command(
+                "Resetting the filter lifetime of the miio device failed: %s",
+                self.coordinator.device.reset_filter,
+            )
         await self.coordinator.async_request_refresh()
