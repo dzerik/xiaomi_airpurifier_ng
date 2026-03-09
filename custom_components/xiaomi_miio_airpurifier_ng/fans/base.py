@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
-from functools import partial
 import logging
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
-from miio import DeviceException
 
 from ..const import (
     ATTR_MODEL,
@@ -34,7 +31,6 @@ from ..const import (
     FEATURE_SET_TARGET_HUMIDITY,
     FEATURE_SET_VOLUME,
     FEATURE_SET_WET_PROTECTION,
-    SUCCESS,
 )
 from ..entity import XiaomiMiioEntity
 
@@ -88,13 +84,6 @@ class XiaomiMiioBaseFan(XiaomiMiioEntity, FanEntity):
                     self._state_attrs[key] = self._extract_value_from_attribute(value)
         return self._state_attrs
 
-    @staticmethod
-    def _extract_value_from_attribute(value: Any) -> Any:
-        """Extract the actual value from an attribute, handling Enums."""
-        if isinstance(value, Enum):
-            return value.value
-        return value
-
     @property
     def is_on(self) -> bool | None:
         """Return true if the device is on."""
@@ -117,20 +106,6 @@ class XiaomiMiioBaseFan(XiaomiMiioEntity, FanEntity):
             if "speed" in self.coordinator.data or "fan_level" in self.coordinator.data:
                 features |= FanEntityFeature.SET_SPEED
         return features
-
-    async def _try_command(
-        self, mask_error: str, func: Any, *args: Any, **kwargs: Any
-    ) -> bool:
-        """Call a miio device command handling error messages."""
-        try:
-            result = await self.hass.async_add_executor_job(
-                partial(func, *args, **kwargs)
-            )
-            _LOGGER.debug("Response received from miio device: %s", result)
-            return result == SUCCESS
-        except DeviceException as exc:
-            _LOGGER.error(mask_error, exc)
-            return False
 
     async def async_turn_on(
         self,

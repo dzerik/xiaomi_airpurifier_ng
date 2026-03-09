@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-from enum import Enum
-from functools import partial
 import logging
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.climate import ClimateEntity, ClimateEntityFeature
 from homeassistant.components.climate.const import HVACMode
 from homeassistant.const import UnitOfTemperature
-from miio import DeviceException
 from miio.airdehumidifier import (
     FanSpeed as AirdehumidifierFanSpeed,
     OperationMode as AirdehumidifierOperationMode,
@@ -24,7 +21,6 @@ from ..const import (
     FEATURE_SET_CHILD_LOCK,
     FEATURE_SET_LED,
     FEATURE_SET_TARGET_HUMIDITY,
-    SUCCESS,
 )
 from ..entity import XiaomiMiioEntity
 
@@ -64,7 +60,11 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
 
         # Set preset and fan modes
         self._attr_preset_modes = [mode.name for mode in AirdehumidifierOperationMode]
-        self._attr_fan_modes = [mode.name for mode in AirdehumidifierFanSpeed]
+        self._attr_fan_modes = [
+            mode.name
+            for mode in AirdehumidifierFanSpeed
+            if mode not in [AirdehumidifierFanSpeed.Sleep, AirdehumidifierFanSpeed.Strong]
+        ]
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
@@ -76,23 +76,29 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
                     self._state_attrs[key] = self._extract_value_from_attribute(value)
         return self._state_attrs
 
-    @staticmethod
-    def _extract_value_from_attribute(value: Any) -> Any:
-        """Extract the actual value from an attribute, handling Enums."""
-        if isinstance(value, Enum):
-            return value.value
-        return value
-
     @property
     def supported_features(self) -> ClimateEntityFeature:
-        """Return supported features."""
-        return (
-            ClimateEntityFeature.TARGET_HUMIDITY
-            | ClimateEntityFeature.PRESET_MODE
-            | ClimateEntityFeature.FAN_MODE
-            | ClimateEntityFeature.TURN_ON
-            | ClimateEntityFeature.TURN_OFF
-        )
+        """Return supported features based on current mode."""
+        features = ClimateEntityFeature.TURN_OFF | ClimateEntityFeature.TURN_ON
+
+        if self.hvac_mode == HVACMode.OFF:
+            return features
+
+        features |= ClimateEntityFeature.PRESET_MODE
+
+        if self.coordinator.data:
+            mode_value = self.coordinator.data.get("mode")
+            if mode_value is not None:
+                try:
+                    mode = AirdehumidifierOperationMode(mode_value)
+                    if mode == AirdehumidifierOperationMode.Auto:
+                        features |= ClimateEntityFeature.TARGET_HUMIDITY
+                    if mode != AirdehumidifierOperationMode.DryCloth:
+                        features |= ClimateEntityFeature.FAN_MODE
+                except ValueError:
+                    pass
+
+        return features
 
     @property
     def hvac_mode(self) -> HVACMode | None:
@@ -135,20 +141,6 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
                 return AirdehumidifierFanSpeed(fan_speed).name
         return None
 
-    async def _try_command(
-        self, mask_error: str, func: Any, *args: Any, **kwargs: Any
-    ) -> bool:
-        """Call a miio device command handling error messages."""
-        try:
-            result = await self.hass.async_add_executor_job(
-                partial(func, *args, **kwargs)
-            )
-            _LOGGER.debug("Response received from miio device: %s", result)
-            return result == SUCCESS
-        except DeviceException as exc:
-            _LOGGER.error(mask_error, exc)
-            return False
-
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new HVAC mode."""
         if hvac_mode == HVACMode.DRY:
@@ -167,6 +159,14 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
         """Set new target humidity."""
         if self._device_features & FEATURE_SET_TARGET_HUMIDITY == 0:
             return
+
+        # Switch to Auto mode if not already (device only accepts humidity in Auto mode)
+        if self.preset_mode != AirdehumidifierOperationMode.Auto.name:
+            await self._try_command(
+                "Setting preset mode of the miio device failed: %s",
+                self.coordinator.device.set_mode,
+                AirdehumidifierOperationMode.Auto,
+            )
 
         # Round to nearest 10
         humidity = round(humidity / 10) * 10
@@ -193,6 +193,10 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new fan mode."""
+        # Fan mode cannot be changed in DryCloth mode
+        if self.preset_mode == AirdehumidifierOperationMode.DryCloth.name:
+            return
+
         _LOGGER.debug("Setting the fan mode to: %s", fan_mode)
         try:
             speed = AirdehumidifierFanSpeed[fan_mode]

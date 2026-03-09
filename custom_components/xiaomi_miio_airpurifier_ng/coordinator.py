@@ -38,6 +38,7 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.device = device
         self.model = config_entry.data.get(CONF_MODEL)
         self._available = True
+        self._device_info = None
 
         # Get scan interval from options or use default
         scan_interval = config_entry.options.get(
@@ -79,6 +80,7 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Get device info to validate connection and detect model
         try:
             info = await self.hass.async_add_executor_job(self.device.info)
+            self._device_info = info
             if not self.model:
                 self.model = info.model
             _LOGGER.debug(
@@ -109,6 +111,16 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     f"Authentication failed for device: {ex}"
                 ) from ex
             raise UpdateFailed(f"Error communicating with device: {ex}") from ex
+
+    def _parse_mode(self, status: Any, data: dict) -> None:
+        """Parse mode from status into data dict."""
+        if hasattr(status, "mode"):
+            if status.mode is not None:
+                data["mode"] = status.mode.name if hasattr(status.mode, "name") else str(status.mode)
+                data["mode_value"] = status.mode.value if hasattr(status.mode, "value") else None
+            else:
+                data["mode"] = None
+                data["mode_value"] = None
 
     def _get_status(self) -> dict[str, Any]:
         """Get the device status (runs in executor).
@@ -152,19 +164,12 @@ class XiaomiAirPurifierCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["humidity"] = status.humidity
         if hasattr(status, "temperature"):
             data["temperature"] = status.temperature
-        if hasattr(status, "mode"):
-            # Store mode name (e.g., "Low") and value for enum lookup
-            if status.mode:
-                data["mode"] = status.mode.name if hasattr(status.mode, "name") else str(status.mode)
-                data["mode_value"] = status.mode.value if hasattr(status.mode, "value") else None
-            else:
-                data["mode"] = None
-                data["mode_value"] = None
+        self._parse_mode(status, data)
         if hasattr(status, "led"):
             data["led"] = status.led
         if hasattr(status, "led_brightness"):
             data["led_brightness"] = (
-                str(status.led_brightness) if status.led_brightness else None
+                str(status.led_brightness) if status.led_brightness is not None else None
             )
         if hasattr(status, "buzzer"):
             data["buzzer"] = status.buzzer
@@ -240,17 +245,10 @@ class XiaomiAirHumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["target_humidity"] = status.target_humidity
         if hasattr(status, "temperature"):
             data["temperature"] = status.temperature
-        if hasattr(status, "mode"):
-            # Store mode name (e.g., "Low") and value for enum lookup
-            if status.mode:
-                data["mode"] = status.mode.name if hasattr(status.mode, "name") else str(status.mode)
-                data["mode_value"] = status.mode.value if hasattr(status.mode, "value") else None
-            else:
-                data["mode"] = None
-                data["mode_value"] = None
+        self._parse_mode(status, data)
         if hasattr(status, "led_brightness"):
             data["led_brightness"] = (
-                str(status.led_brightness) if status.led_brightness else None
+                str(status.led_brightness) if status.led_brightness is not None else None
             )
         if hasattr(status, "buzzer"):
             data["buzzer"] = status.buzzer
@@ -303,19 +301,12 @@ class XiaomiFanCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["oscillate"] = status.oscillate
         if hasattr(status, "angle"):
             data["angle"] = status.angle
-        if hasattr(status, "mode"):
-            # Store mode name (e.g., "Low") and value for enum lookup
-            if status.mode:
-                data["mode"] = status.mode.name if hasattr(status.mode, "name") else str(status.mode)
-                data["mode_value"] = status.mode.value if hasattr(status.mode, "value") else None
-            else:
-                data["mode"] = None
-                data["mode_value"] = None
+        self._parse_mode(status, data)
         if hasattr(status, "led"):
             data["led"] = status.led
         if hasattr(status, "led_brightness"):
             data["led_brightness"] = (
-                str(status.led_brightness) if status.led_brightness else None
+                str(status.led_brightness) if status.led_brightness is not None else None
             )
         if hasattr(status, "buzzer"):
             data["buzzer"] = status.buzzer
@@ -369,19 +360,12 @@ class XiaomiAirFreshCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["humidity"] = status.humidity
         if hasattr(status, "temperature"):
             data["temperature"] = status.temperature
-        if hasattr(status, "mode"):
-            # Store mode name (e.g., "Low") and value for enum lookup
-            if status.mode:
-                data["mode"] = status.mode.name if hasattr(status.mode, "name") else str(status.mode)
-                data["mode_value"] = status.mode.value if hasattr(status.mode, "value") else None
-            else:
-                data["mode"] = None
-                data["mode_value"] = None
+        self._parse_mode(status, data)
         if hasattr(status, "led"):
             data["led"] = status.led
         if hasattr(status, "led_brightness"):
             data["led_brightness"] = (
-                str(status.led_brightness) if status.led_brightness else None
+                str(status.led_brightness) if status.led_brightness is not None else None
             )
         if hasattr(status, "buzzer"):
             data["buzzer"] = status.buzzer
@@ -418,7 +402,7 @@ class XiaomiAirFreshCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["upper_filter_life_remaining_days"] = status.upper_filter_life_remaining_days
         # PTC heater
         if hasattr(status, "ptc_level"):
-            data["ptc_level"] = str(status.ptc_level) if status.ptc_level else None
+            data["ptc_level"] = str(status.ptc_level) if status.ptc_level is not None else None
         if hasattr(status, "ptc_status"):
             data["ptc_status"] = status.ptc_status
         # Display
@@ -426,7 +410,7 @@ class XiaomiAirFreshCoordinator(XiaomiMiioDataUpdateCoordinator):
             data["display"] = status.display
         if hasattr(status, "display_orientation"):
             data["display_orientation"] = (
-                str(status.display_orientation) if status.display_orientation else None
+                str(status.display_orientation) if status.display_orientation is not None else None
             )
 
         return data

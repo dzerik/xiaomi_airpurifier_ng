@@ -4,20 +4,14 @@ from typing import Final
 
 # Integration constants
 DOMAIN: Final = "xiaomi_miio_airpurifier_ng"
-DATA_KEY: Final = f"fan.{DOMAIN}"
 DEFAULT_NAME: Final = "Xiaomi Miio Device"
-DEFAULT_RETRIES: Final = 20
 
 # Configuration constants
 CONF_MODEL: Final = "model"
-CONF_RETRIES: Final = "retries"
 CONF_SCAN_INTERVAL: Final = "scan_interval"
 
 # Default values
 DEFAULT_SCAN_INTERVAL: Final = 30  # seconds
-
-# Platform types
-PLATFORMS: Final = ["fan", "climate"]
 
 # Device model identifiers - Air Purifiers
 MODEL_AIRPURIFIER_V1: Final = "zhimi.airpurifier.v1"
@@ -166,6 +160,7 @@ ATTR_SPEED: Final = "speed"
 # Air Purifier attributes
 ATTR_TEMPERATURE: Final = "temperature"
 ATTR_HUMIDITY: Final = "humidity"
+ATTR_CURRENT_HUMIDITY: Final = "current_humidity"
 ATTR_AIR_QUALITY_INDEX: Final = "aqi"
 ATTR_FILTER_HOURS_USED: Final = "filter_hours_used"
 ATTR_FILTER_LIFE: Final = "filter_life_remaining"
@@ -924,7 +919,7 @@ AVAILABLE_ATTRIBUTES_FAN_1C: Final = {
 # Map attributes to properties - Air Dehumidifier
 AVAILABLE_ATTRIBUTES_AIRDEHUMIDIFIER: Final = {
     ATTR_CURRENT_TEMPERATURE: "temperature",
-    "current_humidity": "humidity",
+    ATTR_CURRENT_HUMIDITY: "humidity",
     ATTR_MODE: "mode",
     ATTR_BUZZER: "buzzer",
     ATTR_CHILD_LOCK: "child_lock",

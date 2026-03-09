@@ -2,15 +2,22 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from enum import Enum
+from functools import partial
+import logging
+from typing import TYPE_CHECKING, Any
+
+from miio import DeviceException
 
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import DOMAIN, SUCCESS
 
 if TYPE_CHECKING:
     from .coordinator import XiaomiMiioDataUpdateCoordinator
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
@@ -49,15 +56,11 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
         # Get device identifiers
         identifiers: set[tuple[str, str]] = set()
 
-        # Use MAC address as primary identifier if available
-        if hasattr(coordinator, "device") and coordinator.device:
-            try:
-                info = coordinator.device.info()
-                if info and info.mac_address:
-                    mac = info.mac_address.replace(":", "").lower()
-                    identifiers.add((DOMAIN, mac))
-            except Exception:  # noqa: BLE001
-                pass
+        # Use MAC address as primary identifier if available (cached from _async_setup)
+        info = coordinator._device_info
+        if info and info.mac_address:
+            mac = info.mac_address.replace(":", "").lower()
+            identifiers.add((DOMAIN, mac))
 
         # Fall back to entry_id if no MAC
         if not identifiers:
@@ -142,26 +145,39 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
         return model_names.get(model, model)
 
     def _get_firmware_version(self) -> str | None:
-        """Get firmware version from device."""
-        try:
-            if hasattr(self.coordinator, "device") and self.coordinator.device:
-                info = self.coordinator.device.info()
-                if info:
-                    return info.firmware_version
-        except Exception:  # noqa: BLE001
-            pass
+        """Get firmware version from cached device info."""
+        info = self.coordinator._device_info
+        if info:
+            return info.firmware_version
         return None
 
     def _get_hardware_version(self) -> str | None:
-        """Get hardware version from device."""
-        try:
-            if hasattr(self.coordinator, "device") and self.coordinator.device:
-                info = self.coordinator.device.info()
-                if info:
-                    return info.hardware_version
-        except Exception:  # noqa: BLE001
-            pass
+        """Get hardware version from cached device info."""
+        info = self.coordinator._device_info
+        if info:
+            return info.hardware_version
         return None
+
+    @staticmethod
+    def _extract_value_from_attribute(value: Any) -> Any:
+        """Extract the actual value from an attribute, handling Enums."""
+        if isinstance(value, Enum):
+            return value.value
+        return value
+
+    async def _try_command(
+        self, mask_error: str, func: Any, *args: Any, **kwargs: Any
+    ) -> bool:
+        """Call a miio device command handling error messages."""
+        try:
+            result = await self.hass.async_add_executor_job(
+                partial(func, *args, **kwargs)
+            )
+            _LOGGER.debug("Response received from miio device: %s", result)
+            return result == SUCCESS
+        except DeviceException as exc:
+            _LOGGER.error(mask_error, exc)
+            return False
 
     @property
     def available(self) -> bool:
