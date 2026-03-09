@@ -14,10 +14,7 @@ from homeassistant.helpers.entity_platform import (
     async_get_current_platform,
 )
 
-from .const import (
-    HUMIDIFIER_MIOT,
-    PURIFIER_MIOT,
-)
+from .const import DeviceCategory, classify_model
 from .coordinator import XiaomiMiioDataUpdateCoordinator
 from .fans import (
     XiaomiAirFreshFan,
@@ -28,6 +25,13 @@ from .fans import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+_FAN_ENTITY_MAP = {
+    DeviceCategory.PURIFIER: XiaomiAirPurifierFan,
+    DeviceCategory.HUMIDIFIER: XiaomiAirHumidifierFan,
+    DeviceCategory.AIR_FRESH: XiaomiAirFreshFan,
+    DeviceCategory.FAN: XiaomiStandingFan,
+}
 
 
 async def async_setup_entry(
@@ -45,23 +49,15 @@ async def async_setup_entry(
     model = coordinator.model
     entities: list[FanEntity] = []
 
-    # Create fan entity based on model type
     if model:
-        if model in PURIFIER_MIOT or model.startswith("zhimi.airpurifier."):
-            entities.append(XiaomiAirPurifierFan(coordinator))
-        elif model in HUMIDIFIER_MIOT or model.startswith("zhimi.humidifier."):
-            entities.append(XiaomiAirHumidifierFan(coordinator))
-        elif model.startswith("deerma.humidifier.") or model.startswith("shuii.humidifier."):
-            entities.append(XiaomiAirHumidifierFan(coordinator))
-        elif model.startswith("zhimi.airfresh.") or model.startswith("dmaker.airfresh."):
-            entities.append(XiaomiAirFreshFan(coordinator))
-        elif model.startswith("zhimi.fan.") or model.startswith("dmaker.fan.") or model.startswith("leshow.fan."):
-            entities.append(XiaomiStandingFan(coordinator))
-        elif model.startswith("airdog.airpurifier."):
-            entities.append(XiaomiAirPurifierFan(coordinator))
-        else:
+        category = classify_model(model)
+        fan_cls = _FAN_ENTITY_MAP.get(category)
+        if fan_cls:
+            entities.append(fan_cls(coordinator))
+        elif category == DeviceCategory.UNKNOWN:
             _LOGGER.warning("Unknown model %s, creating generic fan entity", model)
             entities.append(XiaomiGenericFan(coordinator))
+        # DEHUMIDIFIER category uses climate platform, no fan entity
 
     async_add_entities(entities)
 

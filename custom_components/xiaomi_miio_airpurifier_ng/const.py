@@ -1,6 +1,18 @@
 """Constants for the Xiaomi Air Purifier NG integration."""
 
+from enum import Enum
 from typing import Final
+
+
+class DeviceCategory(Enum):
+    """Device category for model classification."""
+
+    PURIFIER = "purifier"
+    HUMIDIFIER = "humidifier"
+    AIR_FRESH = "air_fresh"
+    FAN = "fan"
+    DEHUMIDIFIER = "dehumidifier"
+    UNKNOWN = "unknown"
 
 # Integration constants
 DOMAIN: Final = "xiaomi_miio_airpurifier_ng"
@@ -932,3 +944,37 @@ AVAILABLE_ATTRIBUTES_AIRDEHUMIDIFIER: Final = {
     ATTR_FAN_ST: "fan_st",
     ATTR_ALARM: "alarm",
 }
+
+
+def classify_model(model: str | None) -> DeviceCategory:
+    """Classify a device model string into a DeviceCategory.
+
+    Single source of truth for model→category mapping, used by
+    _create_coordinator() and fan.py:async_setup_entry().
+    """
+    if not model:
+        return DeviceCategory.UNKNOWN
+    if (
+        model in PURIFIER_MIOT
+        or model.startswith("zhimi.airpurifier")
+        or model.startswith("airdog.airpurifier")
+    ):
+        return DeviceCategory.PURIFIER
+    if (
+        model in HUMIDIFIER_MIOT
+        or model.startswith("zhimi.humidifier")
+        or model.startswith("deerma.humidifier")
+        or model.startswith("shuii.humidifier")
+    ):
+        return DeviceCategory.HUMIDIFIER
+    if model.startswith("zhimi.airfresh") or model.startswith("dmaker.airfresh"):
+        return DeviceCategory.AIR_FRESH
+    if (
+        model.startswith("zhimi.fan")
+        or model.startswith("dmaker.fan")
+        or model.startswith("leshow.fan")
+    ):
+        return DeviceCategory.FAN
+    if model.startswith("nwt.derh"):
+        return DeviceCategory.DEHUMIDIFIER
+    return DeviceCategory.UNKNOWN

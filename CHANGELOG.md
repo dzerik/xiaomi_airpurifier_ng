@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-alpha.12] - 2026-03-09
+
+### Changed
+- **ARCHITECTURE**: Extract `DeviceServiceMixin` from God class `fans/base.py` (573→120 lines, 28 service methods moved to `service_mixin.py`)
+- **ARCHITECTURE**: Unify model routing with `classify_model()` and `DeviceCategory` enum — single source of truth for model→category mapping (replaces 3 duplicated routing blocks)
+- **ARCHITECTURE**: Type `coordinator.data` with TypedDict (`PurifierStatusData`, `HumidifierStatusData`, `FanStatusData`, `AirFreshStatusData`, `DehumidifierStatusData`)
+- Remove 6 duplicated service methods from `climates/dehumidifier.py` (now inherited from mixin)
+
+### Added
+- 163 new unit tests (505 total) for `service_mixin.py` and `classify_model()`
+- Test coverage: 89% → 93% overall, `service_mixin.py` 100%, `const.py` 100%
+
 ## [3.0.0-alpha.11] - 2026-03-09
 
 ### Changed

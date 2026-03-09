@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 import logging
-from typing import Any
+from typing import Any, TypedDict
 
 from miio import Device, DeviceException
 
@@ -20,6 +20,146 @@ from homeassistant.helpers.update_coordinator import (
 from .const import CONF_MODEL, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class PurifierStatusData(TypedDict, total=False):
+    """Typed dict for air purifier coordinator data."""
+
+    power: str
+    aqi: int
+    average_aqi: int
+    humidity: int
+    temperature: float
+    led: bool
+    buzzer: bool
+    child_lock: bool
+    favorite_level: int
+    fan_level: int
+    filter_hours_used: int
+    filter_life_remaining: int
+    motor_speed: int
+    use_time: int
+    purify_volume: int
+    illuminance: int
+    tvoc: int
+    motor2_speed: int
+    filter_rfid_tag: str
+    filter_rfid_product_id: str
+    filter_left_time: int
+    anion: bool
+    gestures: bool
+    auto_detect: bool
+    learn_mode: bool
+    volume: int
+    buzzer_volume: int
+    mode: str | None
+    mode_value: Any
+    led_brightness: str | None
+    filter_type: str | None
+    pm10: int
+
+
+class HumidifierStatusData(TypedDict, total=False):
+    """Typed dict for air humidifier coordinator data."""
+
+    power: str
+    humidity: int
+    target_humidity: int
+    temperature: float
+    buzzer: bool
+    child_lock: bool
+    motor_speed: int
+    depth: int
+    dry: bool
+    use_time: int
+    water_level: int
+    tank_filed: bool
+    water_shortage_fault: bool
+    no_water: bool
+    water_tank_detached: bool
+    led_light: bool
+    overwet_protect: bool
+    mode: str | None
+    mode_value: Any
+    led_brightness: str | None
+
+
+class FanStatusData(TypedDict, total=False):
+    """Typed dict for fan coordinator data."""
+
+    power: str
+    speed: int
+    oscillate: bool
+    angle: int
+    led: bool
+    buzzer: bool
+    child_lock: bool
+    natural_speed: int
+    direct_speed: int
+    battery: int
+    battery_charge: str
+    ac_power: bool
+    delay_off_countdown: int
+    temperature: float
+    humidity: int
+    fan_level: int
+    light: bool
+    use_time: int
+    power_off_time: int
+    mode: str | None
+    mode_value: Any
+    led_brightness: str | None
+
+
+class AirFreshStatusData(TypedDict, total=False):
+    """Typed dict for air fresh coordinator data."""
+
+    power: str
+    aqi: int
+    co2: int
+    humidity: int
+    temperature: float
+    led: bool
+    buzzer: bool
+    child_lock: bool
+    filter_hours_used: int
+    filter_life_remaining: int
+    motor_speed: int
+    use_time: int
+    ptc: bool
+    pm25: int
+    temperature_outside: float
+    favorite_speed: int
+    control_speed: int
+    dust_filter_life_remaining: int
+    dust_filter_life_remaining_days: int
+    upper_filter_life_remaining: int
+    upper_filter_life_remaining_days: int
+    ptc_status: bool
+    display: bool
+    mode: str | None
+    mode_value: Any
+    led_brightness: str | None
+    ptc_level: str | None
+    display_orientation: str | None
+
+
+class DehumidifierStatusData(TypedDict, total=False):
+    """Typed dict for air dehumidifier coordinator data."""
+
+    power: str
+    humidity: int
+    target_humidity: int
+    temperature: float
+    buzzer: bool
+    led: bool
+    child_lock: bool
+    tank_full: bool
+    compressor_status: bool
+    defrost_status: bool
+    fan_st: int
+    mode: Any
+    fan_speed: Any
 
 
 class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -168,10 +308,10 @@ class XiaomiAirPurifierCoordinator(XiaomiMiioDataUpdateCoordinator):
         "learn_mode", "volume", "buzzer_volume",
     ]
 
-    def _get_status(self) -> dict[str, Any]:
+    def _get_status(self) -> PurifierStatusData:
         """Get air purifier status."""
         status = self.device.status()
-        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
+        data: PurifierStatusData = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
         self._parse_mode(status, data)
         self._extract_str_attrs(status, data, "led_brightness", "filter_type")
@@ -193,10 +333,10 @@ class XiaomiAirHumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
         "no_water", "water_tank_detached", "led_light", "overwet_protect",
     ]
 
-    def _get_status(self) -> dict[str, Any]:
+    def _get_status(self) -> HumidifierStatusData:
         """Get air humidifier status."""
         status = self.device.status()
-        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
+        data: HumidifierStatusData = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
         # humidity with fallback to relative_humidity (JSQS models)
         if hasattr(status, "humidity"):
@@ -221,10 +361,10 @@ class XiaomiFanCoordinator(XiaomiMiioDataUpdateCoordinator):
         "use_time", "power_off_time",
     ]
 
-    def _get_status(self) -> dict[str, Any]:
+    def _get_status(self) -> FanStatusData:
         """Get fan status."""
         status = self.device.status()
-        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
+        data: FanStatusData = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
         self._parse_mode(status, data)
         self._extract_str_attrs(status, data, "led_brightness")
@@ -245,10 +385,10 @@ class XiaomiAirFreshCoordinator(XiaomiMiioDataUpdateCoordinator):
         "ptc_status", "display",
     ]
 
-    def _get_status(self) -> dict[str, Any]:
+    def _get_status(self) -> AirFreshStatusData:
         """Get air fresh status."""
         status = self.device.status()
-        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
+        data: AirFreshStatusData = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
         self._parse_mode(status, data)
 
@@ -267,10 +407,10 @@ class XiaomiAirDehumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
         "compressor_status", "defrost_status", "fan_st",
     ]
 
-    def _get_status(self) -> dict[str, Any]:
+    def _get_status(self) -> DehumidifierStatusData:
         """Get air dehumidifier status."""
         status = self.device.status()
-        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
+        data: DehumidifierStatusData = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
         # mode and fan_speed need .value extraction for enum
         if hasattr(status, "mode"):

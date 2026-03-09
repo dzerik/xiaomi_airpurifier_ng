@@ -34,6 +34,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from .const import (
     CONF_MODEL,
     DOMAIN as DOMAIN,
+    DeviceCategory,
     HUMIDIFIER_MIOT,
     MODEL_AIRDEHUMIDIFIER_V1,
     MODEL_AIRFRESH_A1,
@@ -84,6 +85,7 @@ from .const import (
     MODEL_FAN_ZA3,
     MODEL_FAN_ZA4,
     PURIFIER_MIOT,
+    classify_model,
 )
 from .coordinator import (
     XiaomiAirDehumidifierCoordinator,
@@ -249,6 +251,15 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
     return Device(ip=host, token=token, model=model)
 
 
+_COORDINATOR_MAP = {
+    DeviceCategory.PURIFIER: XiaomiAirPurifierCoordinator,
+    DeviceCategory.HUMIDIFIER: XiaomiAirHumidifierCoordinator,
+    DeviceCategory.AIR_FRESH: XiaomiAirFreshCoordinator,
+    DeviceCategory.FAN: XiaomiFanCoordinator,
+    DeviceCategory.DEHUMIDIFIER: XiaomiAirDehumidifierCoordinator,
+}
+
+
 def _create_coordinator(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -256,40 +267,6 @@ def _create_coordinator(
     model: str | None,
 ) -> XiaomiMiioDataUpdateCoordinator:
     """Create the appropriate coordinator based on device type."""
-    # Air Purifier models
-    if model and (
-        model in PURIFIER_MIOT
-        or model.startswith("zhimi.airpurifier")
-        or model.startswith("airdog.airpurifier")
-    ):
-        return XiaomiAirPurifierCoordinator(hass, entry, device)
-
-    # Air Humidifier models
-    if model and (
-        model in HUMIDIFIER_MIOT
-        or model.startswith("zhimi.humidifier")
-        or model.startswith("deerma.humidifier")
-        or model.startswith("shuii.humidifier")
-    ):
-        return XiaomiAirHumidifierCoordinator(hass, entry, device)
-
-    # Air Fresh models
-    if model and (
-        model.startswith("zhimi.airfresh") or model.startswith("dmaker.airfresh")
-    ):
-        return XiaomiAirFreshCoordinator(hass, entry, device)
-
-    # Fan models
-    if model and (
-        model.startswith("zhimi.fan")
-        or model.startswith("dmaker.fan")
-        or model.startswith("leshow.fan")
-    ):
-        return XiaomiFanCoordinator(hass, entry, device)
-
-    # Air Dehumidifier models
-    if model and model.startswith("nwt.derh"):
-        return XiaomiAirDehumidifierCoordinator(hass, entry, device)
-
-    # Default coordinator
-    return XiaomiMiioDataUpdateCoordinator(hass, entry, device)
+    category = classify_model(model)
+    coordinator_cls = _COORDINATOR_MAP.get(category, XiaomiMiioDataUpdateCoordinator)
+    return coordinator_cls(hass, entry, device)

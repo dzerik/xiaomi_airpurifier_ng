@@ -17,12 +17,10 @@ from ..const import (
     ATTR_MODEL,
     AVAILABLE_ATTRIBUTES_AIRDEHUMIDIFIER,
     FEATURE_FLAGS_AIRDEHUMIDIFIER,
-    FEATURE_SET_BUZZER,
-    FEATURE_SET_CHILD_LOCK,
-    FEATURE_SET_LED,
     FEATURE_SET_TARGET_HUMIDITY,
 )
 from ..entity import XiaomiMiioEntity
+from ..service_mixin import DeviceServiceMixin
 
 if TYPE_CHECKING:
     from ..coordinator import XiaomiMiioDataUpdateCoordinator
@@ -30,8 +28,12 @@ if TYPE_CHECKING:
 _LOGGER = logging.getLogger(__name__)
 
 
-class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
-    """Coordinator-based climate entity for Air Dehumidifier."""
+class XiaomiAirDehumidifierClimate(DeviceServiceMixin, XiaomiMiioEntity, ClimateEntity):
+    """Coordinator-based climate entity for Air Dehumidifier.
+
+    Service handler methods (buzzer, led, child_lock) are inherited
+    from DeviceServiceMixin.
+    """
 
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_min_humidity = 40
@@ -230,77 +232,3 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
     async def async_turn_off(self) -> None:
         """Turn the device off."""
         await self.async_set_hvac_mode(HVACMode.OFF)
-
-    # Service methods with feature flag checks
-
-    async def async_set_buzzer_on(self) -> None:
-        """Turn the buzzer on."""
-        if self._device_features & FEATURE_SET_BUZZER == 0:
-            return
-
-        await self._try_command(
-            "Turning the buzzer of the miio device on failed: %s",
-            self.coordinator.device.set_buzzer,
-            True,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_buzzer_off(self) -> None:
-        """Turn the buzzer off."""
-        if self._device_features & FEATURE_SET_BUZZER == 0:
-            return
-
-        await self._try_command(
-            "Turning the buzzer of the miio device off failed: %s",
-            self.coordinator.device.set_buzzer,
-            False,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_led_on(self) -> None:
-        """Turn the led on."""
-        if self._device_features & FEATURE_SET_LED == 0:
-            return
-
-        await self._try_command(
-            "Turning the led of the miio device on failed: %s",
-            self.coordinator.device.set_led,
-            True,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_led_off(self) -> None:
-        """Turn the led off."""
-        if self._device_features & FEATURE_SET_LED == 0:
-            return
-
-        await self._try_command(
-            "Turning the led of the miio device off failed: %s",
-            self.coordinator.device.set_led,
-            False,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_child_lock_on(self) -> None:
-        """Turn the child lock on."""
-        if self._device_features & FEATURE_SET_CHILD_LOCK == 0:
-            return
-
-        await self._try_command(
-            "Turning the child lock of the miio device on failed: %s",
-            self.coordinator.device.set_child_lock,
-            True,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_child_lock_off(self) -> None:
-        """Turn the child lock off."""
-        if self._device_features & FEATURE_SET_CHILD_LOCK == 0:
-            return
-
-        await self._try_command(
-            "Turning the child lock of the miio device off failed: %s",
-            self.coordinator.device.set_child_lock,
-            False,
-        )
-        await self.coordinator.async_request_refresh()
