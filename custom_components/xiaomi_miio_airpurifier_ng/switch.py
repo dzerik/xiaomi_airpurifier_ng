@@ -10,6 +10,7 @@ from typing import Any
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
@@ -36,6 +37,7 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         translation_key="buzzer",
         name="Buzzer",
         icon="mdi:volume-high",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("buzzer"),
         exists_fn=lambda data: "buzzer" in data,
         turn_on_fn="set_buzzer",
@@ -46,6 +48,7 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         translation_key="led",
         name="LED",
         icon="mdi:led-on",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("led"),
         exists_fn=lambda data: "led" in data,
         turn_on_fn="set_led",
@@ -56,6 +59,7 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         translation_key="child_lock",
         name="Child Lock",
         icon="mdi:lock",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("child_lock"),
         exists_fn=lambda data: "child_lock" in data,
         turn_on_fn="set_child_lock",
@@ -66,6 +70,7 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         translation_key="dry",
         name="Dry Mode",
         icon="mdi:water-off",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("dry"),
         exists_fn=lambda data: "dry" in data,
         turn_on_fn="set_dry",
@@ -76,6 +81,7 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         translation_key="learn_mode",
         name="Learn Mode",
         icon="mdi:school",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("learn_mode"),
         exists_fn=lambda data: "learn_mode" in data,
         turn_on_fn="set_learn_mode",
@@ -86,6 +92,7 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         translation_key="auto_detect",
         name="Auto Detect",
         icon="mdi:auto-fix",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("auto_detect"),
         exists_fn=lambda data: "auto_detect" in data,
         turn_on_fn="set_auto_detect",
@@ -96,6 +103,7 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         translation_key="oscillate",
         name="Oscillation",
         icon="mdi:rotate-3d-variant",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("oscillate"),
         exists_fn=lambda data: "oscillate" in data,
         turn_on_fn="set_oscillate",
@@ -106,61 +114,62 @@ SWITCH_DESCRIPTIONS: tuple[XiaomiMiioSwitchEntityDescription, ...] = (
         translation_key="ptc",
         name="PTC Heater",
         icon="mdi:radiator",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("ptc"),
         exists_fn=lambda data: "ptc" in data,
         turn_on_fn="set_ptc",
         turn_off_fn="set_ptc",
     ),
-    # JSQS humidifiers use led_light/set_light instead of led/set_led
     XiaomiMiioSwitchEntityDescription(
         key="led_light",
         translation_key="led_light",
         name="LED Light",
         icon="mdi:led-on",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("led_light"),
         exists_fn=lambda data: "led_light" in data,
         turn_on_fn="set_light",
         turn_off_fn="set_light",
     ),
-    # JSQS humidifiers overwet protection
     XiaomiMiioSwitchEntityDescription(
         key="overwet_protect",
         translation_key="overwet_protect",
         name="Overwet Protection",
         icon="mdi:water-alert",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("overwet_protect"),
         exists_fn=lambda data: "overwet_protect" in data,
         turn_on_fn="set_overwet_protect",
         turn_off_fn="set_overwet_protect",
     ),
-    # Display for Air Fresh T2017
     XiaomiMiioSwitchEntityDescription(
         key="display",
         translation_key="display",
         name="Display",
         icon="mdi:monitor",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("display"),
         exists_fn=lambda data: "display" in data,
         turn_on_fn="set_display",
         turn_off_fn="set_display",
     ),
-    # Anion/ionizer for air purifiers
     XiaomiMiioSwitchEntityDescription(
         key="anion",
         translation_key="anion",
         name="Ionizer",
         icon="mdi:atom",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("anion"),
         exists_fn=lambda data: "anion" in data,
         turn_on_fn="set_anion",
         turn_off_fn="set_anion",
     ),
-    # Gesture control for air purifiers
     XiaomiMiioSwitchEntityDescription(
         key="gestures",
         translation_key="gestures",
         name="Gesture Control",
         icon="mdi:gesture-tap",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda data: data.get("gestures"),
         exists_fn=lambda data: "gestures" in data,
         turn_on_fn="set_gestures",

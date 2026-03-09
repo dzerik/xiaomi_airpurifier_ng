@@ -1,4 +1,18 @@
 {
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "description": "Configure the integration settings.",
+        "data": {
+          "scan_interval": "Update interval"
+        },
+        "data_description": {
+          "scan_interval": "How often to poll the device for updates (in seconds)."
+        }
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -7,14 +21,14 @@
         "data": {
           "host": "Host",
           "token": "Token",
-          "name": "Name",
-          "model": "Model"
+          "name": "Name (optional)",
+          "model": "Model (optional, auto-detected)"
         },
         "data_description": {
           "host": "The IP address or hostname of your Xiaomi device.",
-          "token": "The 32-character token for device authentication.",
-          "name": "A friendly name for the device (optional).",
-          "model": "The device model (optional, auto-detected)."
+          "token": "The 32-character token for device authentication. You can obtain this using various methods described in the documentation.",
+          "name": "A friendly name for the device.",
+          "model": "The device model. Leave empty for auto-detection."
         }
       },
       "reconfigure": {
@@ -25,6 +39,16 @@
           "token": "Token",
           "model": "Model"
         }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate Xiaomi Air Purifier",
+        "description": "The token for {host} is no longer valid. Please enter a new token.",
+        "data": {
+          "token": "Token"
+        },
+        "data_description": {
+          "token": "The new 32-character token for device authentication."
+        }
       }
     },
     "error": {
@@ -33,16 +57,46 @@
     },
     "abort": {
       "already_configured": "This device is already configured.",
-      "reconfigure_successful": "Configuration updated successfully."
+      "reconfigure_successful": "Configuration updated successfully.",
+      "reauth_successful": "Reauthentication successful."
     }
   },
   "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Water Tank"
+      },
+      "water_shortage": {
+        "name": "Water Shortage"
+      },
+      "water_tank_detached": {
+        "name": "Water Tank Detached"
+      },
+      "no_water": {
+        "name": "No Water"
+      },
+      "ac_power": {
+        "name": "AC Power"
+      },
+      "battery_charge": {
+        "name": "Battery Charging"
+      },
+      "oscillate": {
+        "name": "Oscillation"
+      },
+      "ptc_status": {
+        "name": "Heater Active"
+      }
+    },
     "sensor": {
       "aqi": {
         "name": "Air Quality Index"
       },
       "pm25": {
         "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
       },
       "average_aqi": {
         "name": "Average AQI"
@@ -56,14 +110,29 @@
       "co2": {
         "name": "CO2"
       },
+      "tvoc": {
+        "name": "TVOC"
+      },
+      "illuminance": {
+        "name": "Illuminance"
+      },
       "filter_life_remaining": {
         "name": "Filter Life"
       },
       "filter_hours_used": {
-        "name": "Filter Hours Used"
+        "name": "Filter Hours"
+      },
+      "filter_left_time": {
+        "name": "Filter Days Left"
+      },
+      "filter_type": {
+        "name": "Filter Type"
       },
       "motor_speed": {
         "name": "Motor Speed"
+      },
+      "motor2_speed": {
+        "name": "Motor 2 Speed"
       },
       "use_time": {
         "name": "Use Time"
@@ -82,6 +151,42 @@
       },
       "mode": {
         "name": "Mode"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "temperature_outside": {
+        "name": "Outside Temperature"
+      },
+      "dust_filter_life_remaining": {
+        "name": "Dust Filter Life"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "Dust Filter Days Left"
+      },
+      "upper_filter_life_remaining": {
+        "name": "Upper Filter Life"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "Upper Filter Days Left"
+      },
+      "favorite_speed": {
+        "name": "Favorite Speed"
+      },
+      "control_speed": {
+        "name": "Control Speed"
+      },
+      "speed": {
+        "name": "Speed"
+      },
+      "natural_speed": {
+        "name": "Natural Speed"
+      },
+      "direct_speed": {
+        "name": "Direct Speed"
+      },
+      "angle": {
+        "name": "Oscillation Angle"
       }
     },
     "switch": {
@@ -90,6 +195,9 @@
       },
       "led": {
         "name": "LED"
+      },
+      "led_light": {
+        "name": "LED Light"
       },
       "child_lock": {
         "name": "Child Lock"
@@ -108,6 +216,18 @@
       },
       "ptc": {
         "name": "PTC Heater"
+      },
+      "overwet_protect": {
+        "name": "Overwet Protection"
+      },
+      "display": {
+        "name": "Display"
+      },
+      "anion": {
+        "name": "Ionizer"
+      },
+      "gestures": {
+        "name": "Gesture Control"
       }
     },
     "button": {
@@ -162,58 +282,52 @@
           "medium": "Medium",
           "high": "High"
         }
+      },
+      "mode": {
+        "name": "Mode",
+        "state": {
+          "Low": "Low",
+          "Medium": "Medium",
+          "High": "High",
+          "Humidity": "Auto",
+          "Auto": "Auto",
+          "Silent": "Silent",
+          "Strong": "Strong",
+          "Favorite": "Favorite",
+          "WetAndProtect": "Wet & Protect"
+        }
       }
     }
   },
   "services": {
     "fan_set_buzzer_on": {
       "name": "Set buzzer on",
-      "description": "Turn the buzzer on.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the buzzer on."
     },
     "fan_set_buzzer_off": {
       "name": "Set buzzer off",
-      "description": "Turn the buzzer off.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the buzzer off."
+    },
+    "fan_set_led_on": {
+      "name": "Set LED on",
+      "description": "Turn the LED on."
+    },
+    "fan_set_led_off": {
+      "name": "Set LED off",
+      "description": "Turn the LED off."
     },
     "fan_set_child_lock_on": {
       "name": "Set child lock on",
-      "description": "Turn the child lock on.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the child lock on."
     },
     "fan_set_child_lock_off": {
       "name": "Set child lock off",
-      "description": "Turn the child lock off.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the child lock off."
     },
     "fan_set_favorite_level": {
       "name": "Set favorite level",
       "description": "Set the favorite level.",
       "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        },
         "level": {
           "name": "Level",
           "description": "Level, between 0 and 16."
@@ -224,10 +338,6 @@
       "name": "Set fan level",
       "description": "Set the fan level.",
       "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        },
         "level": {
           "name": "Level",
           "description": "Level, between 1 and 3."
@@ -238,10 +348,6 @@
       "name": "Set LED brightness",
       "description": "Set the LED brightness.",
       "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        },
         "brightness": {
           "name": "Brightness",
           "description": "Brightness (0 = Bright, 1 = Dim, 2 = Off)"
@@ -250,52 +356,24 @@
     },
     "fan_set_auto_detect_on": {
       "name": "Set auto detect on",
-      "description": "Turn the auto detect on.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the auto detect on."
     },
     "fan_set_auto_detect_off": {
       "name": "Set auto detect off",
-      "description": "Turn the auto detect off.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the auto detect off."
     },
     "fan_set_learn_mode_on": {
       "name": "Set learn mode on",
-      "description": "Turn the learn mode on.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the learn mode on."
     },
     "fan_set_learn_mode_off": {
       "name": "Set learn mode off",
-      "description": "Turn the learn mode off.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the learn mode off."
     },
     "fan_set_volume": {
       "name": "Set volume",
       "description": "Set the sound volume.",
       "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        },
         "volume": {
           "name": "Volume",
           "description": "Volume, between 0 and 100."
@@ -304,25 +382,15 @@
     },
     "fan_reset_filter": {
       "name": "Reset filter",
-      "description": "Reset the filter lifetime and usage.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Reset the filter lifetime and usage."
     },
     "fan_set_extra_features": {
       "name": "Set extra features",
-      "description": "Manipulates a storage register which advertises extra features.",
+      "description": "Set extra features value.",
       "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        },
         "features": {
           "name": "Features",
-          "description": "Integer, known values are 0 (default) and 1 (turbo mode)."
+          "description": "Integer value (0 = default, 1 = turbo mode)."
         }
       }
     },
@@ -330,45 +398,147 @@
       "name": "Set target humidity",
       "description": "Set the target humidity.",
       "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        },
         "humidity": {
           "name": "Humidity",
-          "description": "Target humidity. Allowed values are 30, 40, 50, 60, 70 and 80."
+          "description": "Target humidity percentage."
         }
       }
     },
     "fan_set_dry_on": {
       "name": "Set dry on",
-      "description": "Turn the dry mode on.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the dry mode on."
     },
     "fan_set_dry_off": {
       "name": "Set dry off",
-      "description": "Turn the dry mode off.",
-      "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
-        }
-      }
+      "description": "Turn the dry mode off."
     },
     "fan_set_filters_cleaned": {
       "name": "Set filters cleaned",
-      "description": "Inform the device that filters are cleaned.",
+      "description": "Inform the device that filters are cleaned."
+    },
+    "fan_set_motor_speed": {
+      "name": "Set motor speed",
+      "description": "Set the motor speed RPM.",
       "fields": {
-        "entity_id": {
-          "name": "Entity ID",
-          "description": "Name of the xiaomi miio airpurifier entity."
+        "motor_speed": {
+          "name": "Motor speed",
+          "description": "Motor speed in RPM (200-2000)."
         }
       }
+    },
+    "fan_set_clean_mode_on": {
+      "name": "Set clean mode on",
+      "description": "Turn the clean mode on."
+    },
+    "fan_set_clean_mode_off": {
+      "name": "Set clean mode off",
+      "description": "Turn the clean mode off."
+    },
+    "fan_set_wet_protection_on": {
+      "name": "Set wet protection on",
+      "description": "Turn the wet protection on."
+    },
+    "fan_set_wet_protection_off": {
+      "name": "Set wet protection off",
+      "description": "Turn the wet protection off."
+    },
+    "fan_set_favorite_speed": {
+      "name": "Set favorite speed",
+      "description": "Set the favorite speed.",
+      "fields": {
+        "speed": {
+          "name": "Speed",
+          "description": "Speed value (60-300)."
+        }
+      }
+    },
+    "fan_set_display_on": {
+      "name": "Set display on",
+      "description": "Turn the display on."
+    },
+    "fan_set_display_off": {
+      "name": "Set display off",
+      "description": "Turn the display off."
+    },
+    "fan_set_ptc_on": {
+      "name": "Set PTC on",
+      "description": "Turn the PTC heater on."
+    },
+    "fan_set_ptc_off": {
+      "name": "Set PTC off",
+      "description": "Turn the PTC heater off."
+    },
+    "fan_set_ptc_level": {
+      "name": "Set PTC level",
+      "description": "Set the PTC heater level.",
+      "fields": {
+        "level": {
+          "name": "Level",
+          "description": "PTC level."
+        }
+      }
+    },
+    "fan_set_display_orientation": {
+      "name": "Set display orientation",
+      "description": "Set the display orientation.",
+      "fields": {
+        "display_orientation": {
+          "name": "Orientation",
+          "description": "Display orientation."
+        }
+      }
+    },
+    "fan_set_delay_off": {
+      "name": "Set delay off",
+      "description": "Set the delay off timer.",
+      "fields": {
+        "delay_off_countdown": {
+          "name": "Delay",
+          "description": "Delay in minutes (0 to disable)."
+        }
+      }
+    },
+    "fan_set_oscillation_angle": {
+      "name": "Set oscillation angle",
+      "description": "Set the oscillation angle.",
+      "fields": {
+        "angle": {
+          "name": "Angle",
+          "description": "Oscillation angle in degrees."
+        }
+      }
+    },
+    "fan_set_natural_mode_on": {
+      "name": "Set natural mode on",
+      "description": "Turn the natural mode on."
+    },
+    "fan_set_natural_mode_off": {
+      "name": "Set natural mode off",
+      "description": "Turn the natural mode off."
+    },
+    "xiaomi_miio_set_buzzer_on": {
+      "name": "Set buzzer on",
+      "description": "Turn the buzzer on."
+    },
+    "xiaomi_miio_set_buzzer_off": {
+      "name": "Set buzzer off",
+      "description": "Turn the buzzer off."
+    },
+    "xiaomi_miio_set_led_on": {
+      "name": "Set LED on",
+      "description": "Turn the LED on."
+    },
+    "xiaomi_miio_set_led_off": {
+      "name": "Set LED off",
+      "description": "Turn the LED off."
+    },
+    "xiaomi_miio_set_child_lock_on": {
+      "name": "Set child lock on",
+      "description": "Turn the child lock on."
+    },
+    "xiaomi_miio_set_child_lock_off": {
+      "name": "Set child lock off",
+      "description": "Turn the child lock off."
     }
   },
   "issues": {

@@ -230,6 +230,34 @@
         "name": "Gesture Control"
       }
     },
+    "button": {
+      "reset_filter": {
+        "name": "Reset Filter"
+      },
+      "filters_cleaned": {
+        "name": "Mark Filters Cleaned"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "Favorite Level"
+      },
+      "fan_level": {
+        "name": "Fan Level"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "target_humidity": {
+        "name": "Target Humidity"
+      },
+      "angle": {
+        "name": "Oscillation Angle"
+      },
+      "delay_off_countdown": {
+        "name": "Delay Off"
+      }
+    },
     "select": {
       "led_brightness": {
         "name": "LED Brightness",
