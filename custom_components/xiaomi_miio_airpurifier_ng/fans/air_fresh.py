@@ -6,16 +6,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from miio.integrations.airpurifier.dmaker.airfresh_t2017 import (
-    DisplayOrientation as AirfreshT2017DisplayOrientation,
-)
-from miio.integrations.airpurifier.dmaker.airfresh_t2017 import (
     OperationMode as AirfreshT2017OperationMode,
-)
-from miio.integrations.airpurifier.dmaker.airfresh_t2017 import (
-    PtcLevel as AirfreshT2017PtcLevel,
-)
-from miio.integrations.airpurifier.zhimi.airfresh import (
-    LedBrightness as AirfreshLedBrightness,
 )
 from miio.integrations.airpurifier.zhimi.airfresh import (
     OperationMode as AirfreshOperationMode,
@@ -30,11 +21,6 @@ from ..const import (
     FEATURE_FLAGS_AIRFRESH_A1,
     FEATURE_FLAGS_AIRFRESH_T2017,
     FEATURE_FLAGS_AIRFRESH_VA4,
-    FEATURE_RESET_FILTER,
-    FEATURE_SET_DISPLAY_ORIENTATION,
-    FEATURE_SET_LED_BRIGHTNESS,
-    FEATURE_SET_PTC,
-    FEATURE_SET_PTC_LEVEL,
     MODEL_AIRFRESH_A1,
     MODEL_AIRFRESH_T2017,
     MODEL_AIRFRESH_VA4,
@@ -118,99 +104,3 @@ class XiaomiAirFreshFan(XiaomiMiioBaseFan):
         )
         await self.coordinator.async_request_refresh()
 
-    async def async_set_led_brightness(self, brightness: int = 2) -> None:
-        """Set the led brightness."""
-        if self._device_features & FEATURE_SET_LED_BRIGHTNESS == 0:
-            return
-
-        brightness_enum = AirfreshLedBrightness(brightness)
-
-        await self._try_command(
-            "Setting the led brightness of the miio device failed: %s",
-            self.coordinator.device.set_led_brightness,
-            brightness_enum,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_ptc_on(self) -> None:
-        """Turn the PTC heater on."""
-        if self._device_features & FEATURE_SET_PTC == 0:
-            return
-
-        await self._try_command(
-            "Turning the PTC of the miio device on failed: %s",
-            self.coordinator.device.set_ptc,
-            True,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_ptc_off(self) -> None:
-        """Turn the PTC heater off."""
-        if self._device_features & FEATURE_SET_PTC == 0:
-            return
-
-        await self._try_command(
-            "Turning the PTC of the miio device off failed: %s",
-            self.coordinator.device.set_ptc,
-            False,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_ptc_level(self, level: str) -> None:
-        """Set the PTC level (T2017 only)."""
-        if self._device_features & FEATURE_SET_PTC_LEVEL == 0:
-            return
-
-        try:
-            ptc_level = AirfreshT2017PtcLevel[level]
-        except KeyError:
-            _LOGGER.error("Invalid PTC level: %s", level)
-            return
-
-        await self._try_command(
-            "Setting the PTC level of the miio device failed: %s",
-            self.coordinator.device.set_ptc_level,
-            ptc_level,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_display_orientation(self, orientation: str) -> None:
-        """Set the display orientation (T2017 only)."""
-        if self._device_features & FEATURE_SET_DISPLAY_ORIENTATION == 0:
-            return
-
-        try:
-            display_orientation = AirfreshT2017DisplayOrientation[orientation]
-        except KeyError:
-            _LOGGER.error("Invalid display orientation: %s", orientation)
-            return
-
-        await self._try_command(
-            "Setting the display orientation of the miio device failed: %s",
-            self.coordinator.device.set_display_orientation,
-            display_orientation,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_reset_filter(self) -> None:
-        """Reset the filter lifetime and usage."""
-        if self._device_features & FEATURE_RESET_FILTER == 0:
-            return
-
-        if self._is_t2017 and self.coordinator.model == MODEL_AIRFRESH_T2017:
-            # T2017 has dual filters: upper and dust
-            await self._try_command(
-                "Resetting the upper filter lifetime of the miio device failed: %s",
-                self.coordinator.device.reset_upper_filter,
-            )
-            await self._try_command(
-                "Resetting the dust filter lifetime of the miio device failed: %s",
-                self.coordinator.device.reset_dust_filter,
-            )
-        else:
-            # A1 and other models have a single filter
-            await self._try_command(
-                "Resetting the filter lifetime of the miio device failed: %s",
-                self.coordinator.device.reset_filter,
-            )
-        await self.coordinator.async_request_refresh()

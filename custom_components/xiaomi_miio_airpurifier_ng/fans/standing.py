@@ -7,13 +7,7 @@ from typing import TYPE_CHECKING
 
 from homeassistant.components.fan import FanEntityFeature
 from miio.fan_common import (
-    LedBrightness as FanLedBrightness,
-)
-from miio.fan_common import (
     MoveDirection as FanMoveDirection,
-)
-from miio.fan_common import (
-    OperationMode as FanOperationMode,
 )
 from miio.integrations.fan.leshow.fan_leshow import (
     OperationMode as FanLeshowOperationMode,
@@ -33,9 +27,6 @@ from ..const import (
     FEATURE_FLAGS_FAN_1C,
     FEATURE_FLAGS_FAN_LESHOW_SS4,
     FEATURE_FLAGS_FAN_P5,
-    FEATURE_SET_LED_BRIGHTNESS,
-    FEATURE_SET_NATURAL_MODE,
-    FEATURE_SET_OSCILLATION_ANGLE,
     MODEL_FAN_1C,
     MODEL_FAN_LESHOW_SS4,
     MODEL_FAN_P5,
@@ -317,89 +308,3 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
         )
         await self.coordinator.async_request_refresh()
 
-    async def async_set_oscillation_angle(self, angle: int) -> None:
-        """Set oscillation angle."""
-        if self._device_features & FEATURE_SET_OSCILLATION_ANGLE == 0:
-            return
-
-        await self._try_command(
-            "Setting angle of the miio device failed: %s",
-            self.coordinator.device.set_angle,
-            angle,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_delay_off(self, delay_off_countdown: int) -> None:
-        """Set scheduled off timer in minutes."""
-        # P5-style fans use minutes directly, others use seconds
-        if self._is_p5_style or self._is_leshow:
-            delay = delay_off_countdown
-        else:
-            delay = delay_off_countdown * 60
-
-        await self._try_command(
-            "Setting delay off miio device failed: %s",
-            self.coordinator.device.delay_off,
-            delay,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_led_brightness(self, brightness: int = 2) -> None:
-        """Set the led brightness."""
-        if self._device_features & FEATURE_SET_LED_BRIGHTNESS == 0:
-            return
-
-        brightness_enum = FanLedBrightness(brightness)
-
-        await self._try_command(
-            "Setting the led brightness of the miio device failed: %s",
-            self.coordinator.device.set_led_brightness,
-            brightness_enum,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_natural_mode_on(self) -> None:
-        """Turn the natural mode on."""
-        if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
-            return
-
-        
-        if self._is_p5_style:
-            await self._try_command(
-                "Turning on natural mode of the miio device failed: %s",
-                self.coordinator.device.set_mode,
-                FanOperationMode.Nature,
-            )
-        else:
-            # For standard fans, re-set the speed in natural mode
-            percentage = self.percentage or 50
-            await self._try_command(
-                "Setting fan speed in natural mode failed: %s",
-                self.coordinator.device.set_natural_speed,
-                percentage,
-            )
-
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_natural_mode_off(self) -> None:
-        """Turn the natural mode off."""
-        if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
-            return
-
-        
-        if self._is_p5_style:
-            await self._try_command(
-                "Turning off natural mode of the miio device failed: %s",
-                self.coordinator.device.set_mode,
-                FanOperationMode.Normal,
-            )
-        else:
-            # For standard fans, re-set the speed in direct mode
-            percentage = self.percentage or 50
-            await self._try_command(
-                "Setting fan speed in direct mode failed: %s",
-                self.coordinator.device.set_direct_speed,
-                percentage,
-            )
-
-        await self.coordinator.async_request_refresh()

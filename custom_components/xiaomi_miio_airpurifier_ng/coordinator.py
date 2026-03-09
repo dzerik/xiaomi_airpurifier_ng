@@ -189,7 +189,6 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             name=f"{DOMAIN}_{config_entry.data[CONF_HOST]}",
             config_entry=config_entry,
             update_interval=timedelta(seconds=scan_interval),
-            always_update=True,
         )
 
         # Listen for option updates

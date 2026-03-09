@@ -264,32 +264,3 @@ class TestSetPercentage:
         assert level >= 1
 
 
-class TestSetLedBrightness:
-    """Tests for overridden async_set_led_brightness."""
-
-    @pytest.mark.asyncio
-    async def test_set_led_brightness_miot(self):
-        """MIOT uses AirpurifierMiotLedBrightness enum."""
-        coord = _make_coordinator(model=MODEL_AIRPURIFIER_3)
-        fan = XiaomiAirPurifierFan(coord)
-        fan.hass = coord.hass
-        await fan.async_set_led_brightness(2)
-        coord.device.set_led_brightness.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_set_led_brightness_legacy(self):
-        """Legacy uses AirpurifierLedBrightness enum."""
-        coord = _make_coordinator(model="zhimi.airpurifier.v2")
-        fan = XiaomiAirPurifierFan(coord)
-        fan.hass = coord.hass
-        await fan.async_set_led_brightness(0)
-        coord.device.set_led_brightness.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_set_led_brightness_no_feature(self):
-        """AirDog has no LED brightness feature."""
-        coord = _make_coordinator(model=MODEL_AIRPURIFIER_AIRDOG_X3)
-        fan = XiaomiAirPurifierFan(coord)
-        fan.hass = coord.hass
-        await fan.async_set_led_brightness(0)
-        coord.device.set_led_brightness.assert_not_called()

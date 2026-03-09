@@ -9,13 +9,7 @@ from miio.integrations.airpurifier.airdog.airpurifier_airdog import (
     OperationMode as AirDogOperationMode,
 )
 from miio.integrations.airpurifier.zhimi.airpurifier import (
-    LedBrightness as AirpurifierLedBrightness,
-)
-from miio.integrations.airpurifier.zhimi.airpurifier import (
     OperationMode as AirpurifierOperationMode,
-)
-from miio.integrations.airpurifier.zhimi.airpurifier_miot import (
-    LedBrightness as AirpurifierMiotLedBrightness,
 )
 from miio.integrations.airpurifier.zhimi.airpurifier_miot import (
     OperationMode as AirpurifierMiotOperationMode,
@@ -208,21 +202,3 @@ class XiaomiAirPurifierFan(XiaomiMiioBaseFan):
             )
         await self.coordinator.async_request_refresh()
 
-    async def async_set_led_brightness(self, brightness: int = 2) -> None:
-        """Set the led brightness with proper enum type."""
-        from ..const import FEATURE_SET_LED_BRIGHTNESS
-
-        if self._device_features & FEATURE_SET_LED_BRIGHTNESS == 0:
-            return
-
-        if self._is_miot:
-            brightness_enum = AirpurifierMiotLedBrightness(brightness)
-        else:
-            brightness_enum = AirpurifierLedBrightness(brightness)
-
-        await self._try_command(
-            "Setting the led brightness of the miio device failed: %s",
-            self.coordinator.device.set_led_brightness,
-            brightness_enum,
-        )
-        await self.coordinator.async_request_refresh()

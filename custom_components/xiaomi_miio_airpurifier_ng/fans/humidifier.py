@@ -12,19 +12,10 @@ from miio.integrations.humidifier.deerma.airhumidifier_mjjsq import (
     OperationMode as AirhumidifierMjjsqOperationMode,
 )
 from miio.integrations.humidifier.shuii.airhumidifier_jsq import (
-    LedBrightness as AirhumidifierJsqLedBrightness,
-)
-from miio.integrations.humidifier.shuii.airhumidifier_jsq import (
     OperationMode as AirhumidifierJsqOperationMode,
 )
 from miio.integrations.humidifier.zhimi.airhumidifier import (
-    LedBrightness as AirhumidifierLedBrightness,
-)
-from miio.integrations.humidifier.zhimi.airhumidifier import (
     OperationMode as AirhumidifierOperationMode,
-)
-from miio.integrations.humidifier.zhimi.airhumidifier_miot import (
-    LedBrightness as AirhumidifierMiotLedBrightness,
 )
 from miio.integrations.humidifier.zhimi.airhumidifier_miot import (
     OperationMode as AirhumidifierMiotOperationMode,
@@ -47,9 +38,6 @@ from ..const import (
     FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5,
     FEATURE_FLAGS_AIRHUMIDIFIER_JSQS,
     FEATURE_FLAGS_AIRHUMIDIFIER_MJJSQ,
-    FEATURE_SET_LED,
-    FEATURE_SET_LED_BRIGHTNESS,
-    FEATURE_SET_MOTOR_SPEED,
     FEATURE_SET_WET_PROTECTION,
     HUMIDIFIER_MIOT,
     MODEL_AIRHUMIDIFIER_CA1,
@@ -202,113 +190,3 @@ class XiaomiAirHumidifierFan(XiaomiMiioBaseFan):
         )
         await self.coordinator.async_request_refresh()
 
-    async def async_set_led_on(self) -> None:
-        """Turn the led on."""
-        if self._device_features & FEATURE_SET_LED == 0:
-            return
-
-        # JSQS models use set_light instead of set_led
-        if self._is_jsqs:
-            await self._try_command(
-                "Turning the led of the miio device on failed: %s",
-                self.coordinator.device.set_light,
-                True,
-            )
-        else:
-            await self._try_command(
-                "Turning the led of the miio device on failed: %s",
-                self.coordinator.device.set_led,
-                True,
-            )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_led_off(self) -> None:
-        """Turn the led off."""
-        if self._device_features & FEATURE_SET_LED == 0:
-            return
-
-        # JSQS models use set_light instead of set_led
-        if self._is_jsqs:
-            await self._try_command(
-                "Turning the led of the miio device off failed: %s",
-                self.coordinator.device.set_light,
-                False,
-            )
-        else:
-            await self._try_command(
-                "Turning the led of the miio device off failed: %s",
-                self.coordinator.device.set_led,
-                False,
-            )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_led_brightness(self, brightness: int = 2) -> None:
-        """Set the led brightness with proper enum type."""
-        if self._device_features & FEATURE_SET_LED_BRIGHTNESS == 0:
-            return
-
-        if self._is_miot:
-            brightness_enum = AirhumidifierMiotLedBrightness(brightness)
-        elif self._is_jsq:
-            brightness_enum = AirhumidifierJsqLedBrightness(brightness)
-        else:
-            brightness_enum = AirhumidifierLedBrightness(brightness)
-
-        await self._try_command(
-            "Setting the led brightness of the miio device failed: %s",
-            self.coordinator.device.set_led_brightness,
-            brightness_enum,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_motor_speed(self, motor_speed: int = 400) -> None:
-        """Set the target motor speed (MIOT models only)."""
-        if self._device_features & FEATURE_SET_MOTOR_SPEED == 0:
-            return
-
-        await self._try_command(
-            "Setting the target motor speed of the miio device failed: %s",
-            self.coordinator.device.set_speed,
-            motor_speed,
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_wet_protection_on(self) -> None:
-        """Turn the wet protection on."""
-        if self._device_features & FEATURE_SET_WET_PROTECTION == 0:
-            return
-
-        # JSQS models use set_overwet_protect instead of set_wet_protection
-        if self._is_jsqs:
-            await self._try_command(
-                "Turning the wet protection of the miio device on failed: %s",
-                self.coordinator.device.set_overwet_protect,
-                True,
-            )
-        else:
-            await self._try_command(
-                "Turning the wet protection of the miio device on failed: %s",
-                self.coordinator.device.set_wet_protection,
-                True,
-            )
-        await self.coordinator.async_request_refresh()
-
-    async def async_set_wet_protection_off(self) -> None:
-        """Turn the wet protection off."""
-        if self._device_features & FEATURE_SET_WET_PROTECTION == 0:
-            return
-
-        # JSQS models use set_overwet_protect instead of set_wet_protection
-        if self._is_jsqs:
-            await self._try_command(
-                "Turning the wet protection of the miio device off failed: %s",
-                self.coordinator.device.set_overwet_protect,
-                False,
-            )
-        else:
-            await self._try_command(
-                "Turning the wet protection of the miio device off failed: %s",
-                self.coordinator.device.set_wet_protection,
-                False,
-            )
-        await self.coordinator.async_request_refresh()
