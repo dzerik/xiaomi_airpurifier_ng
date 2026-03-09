@@ -60,6 +60,12 @@ if TYPE_CHECKING:
 
 _LOGGER = logging.getLogger(__name__)
 
+# Speed conversion constants
+MIOT_SPEED_LEVELS = 3  # fan_level 1-3
+MIOT_PERCENT_PER_LEVEL = 100 / MIOT_SPEED_LEVELS  # ~33.33%
+LEGACY_SPEED_LEVELS = 16  # favorite_level 0-16
+LEGACY_PERCENT_PER_LEVEL = 100 / LEGACY_SPEED_LEVELS  # 6.25%
+
 
 class XiaomiAirPurifierFan(XiaomiMiioBaseFan):
     """Coordinator-based fan entity for Air Purifiers."""
@@ -142,19 +148,19 @@ class XiaomiAirPurifierFan(XiaomiMiioBaseFan):
             # For MIOT devices, use fan_level
             fan_level = self.coordinator.data.get("fan_level")
             if fan_level is not None:
-                return int(fan_level * 33.33)  # 1-3 levels
+                return int(fan_level * MIOT_PERCENT_PER_LEVEL)
             # For legacy devices, use favorite_level
             fav_level = self.coordinator.data.get("favorite_level")
             if fav_level is not None:
-                return int(fav_level * 6.25)  # 0-16 levels
+                return int(fav_level * LEGACY_PERCENT_PER_LEVEL)
         return None
 
     @property
     def speed_count(self) -> int:
         """Return the number of speeds the fan supports."""
         if self._is_miot:
-            return 3  # fan_level 1-3
-        return 16  # favorite_level 0-16
+            return MIOT_SPEED_LEVELS
+        return LEGACY_SPEED_LEVELS
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set the preset mode."""
@@ -182,7 +188,7 @@ class XiaomiAirPurifierFan(XiaomiMiioBaseFan):
         """Set the speed percentage."""
         if self._is_miot:
             # Convert percentage to fan_level (1-3)
-            level = max(1, min(3, int(percentage / 33.33) + 1))
+            level = max(1, min(MIOT_SPEED_LEVELS, int(percentage / MIOT_PERCENT_PER_LEVEL) + 1))
             await self._try_command(
                 "Setting the fan level of the miio device failed: %s",
                 self.coordinator.device.set_fan_level,
@@ -190,7 +196,7 @@ class XiaomiAirPurifierFan(XiaomiMiioBaseFan):
             )
         else:
             # Convert percentage to favorite_level (0-16)
-            level = int(percentage / 6.25)
+            level = int(percentage / LEGACY_PERCENT_PER_LEVEL)
             await self._try_command(
                 "Setting the favorite level of the miio device failed: %s",
                 self.coordinator.device.set_favorite_level,

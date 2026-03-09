@@ -92,19 +92,13 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise UpdateFailed(f"Failed to connect to device: {ex}") from ex
 
     async def _async_update_data(self) -> dict[str, Any]:
-        """Fetch data from the device.
-
-        This method is called periodically to refresh the device state.
-        """
+        """Fetch data from the device."""
         try:
-            # Get status from the device
-            # Note: This runs in executor because python-miio is synchronous
             status = await self.hass.async_add_executor_job(self._get_status)
             self._available = True
             return status
         except DeviceException as ex:
             self._available = False
-            # Check if it's an authentication error
             if "Unable to discover" in str(ex) or "token" in str(ex).lower():
                 raise ConfigEntryAuthFailed(
                     f"Authentication failed for device: {ex}"
@@ -121,17 +115,35 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 data["mode"] = None
                 data["mode_value"] = None
 
-    def _get_status(self) -> dict[str, Any]:
-        """Get the device status (runs in executor).
+    @staticmethod
+    def _extract_attrs(status: Any, attr_names: list[str]) -> dict[str, Any]:
+        """Extract attributes from status object by name.
 
-        This method should be overridden by device-specific coordinators
-        to return the appropriate status data.
+        Reduces cyclomatic complexity by replacing repeated hasattr/getattr blocks.
         """
-        # Default implementation - returns raw status
-        # Device-specific coordinators should override this
+        data: dict[str, Any] = {}
+        for attr in attr_names:
+            if hasattr(status, attr):
+                data[attr] = getattr(status, attr)
+        return data
+
+    @staticmethod
+    def _extract_str_attrs(status: Any, data: dict, *attr_names: str) -> None:
+        """Extract attributes as strings into data dict.
+
+        If attribute exists and is not None, stores str(value).
+        If attribute exists and is None, stores None.
+        If attribute doesn't exist, skips it.
+        """
+        for attr in attr_names:
+            if hasattr(status, attr):
+                val = getattr(status, attr)
+                data[attr] = str(val) if val is not None else None
+
+    def _get_status(self) -> dict[str, Any]:
+        """Get the device status (runs in executor)."""
         try:
             status = self.device.status()
-            # Convert status object to dictionary for easier access
             if hasattr(status, "__dict__"):
                 return {
                     k: v for k, v in vars(status).items() if not k.startswith("_")
@@ -145,81 +157,28 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 class XiaomiAirPurifierCoordinator(XiaomiMiioDataUpdateCoordinator):
     """Coordinator for Xiaomi Air Purifier devices."""
 
+    # Simple attributes extracted directly from status
+    _SIMPLE_ATTRS = [
+        "power", "aqi", "average_aqi", "humidity", "temperature",
+        "led", "buzzer", "child_lock", "favorite_level", "fan_level",
+        "filter_hours_used", "filter_life_remaining", "motor_speed",
+        "use_time", "purify_volume", "illuminance", "tvoc",
+        "motor2_speed", "filter_rfid_tag", "filter_rfid_product_id",
+        "filter_left_time", "anion", "gestures", "auto_detect",
+        "learn_mode", "volume", "buzzer_volume",
+    ]
+
     def _get_status(self) -> dict[str, Any]:
         """Get air purifier status."""
         status = self.device.status()
+        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
-        # Extract common attributes
-        data: dict[str, Any] = {}
-
-        # Map status attributes to data dictionary
-        if hasattr(status, "power"):
-            data["power"] = status.power
-        if hasattr(status, "aqi"):
-            data["aqi"] = status.aqi
-        if hasattr(status, "average_aqi"):
-            data["average_aqi"] = status.average_aqi
-        if hasattr(status, "humidity"):
-            data["humidity"] = status.humidity
-        if hasattr(status, "temperature"):
-            data["temperature"] = status.temperature
         self._parse_mode(status, data)
-        if hasattr(status, "led"):
-            data["led"] = status.led
-        if hasattr(status, "led_brightness"):
-            data["led_brightness"] = (
-                str(status.led_brightness) if status.led_brightness is not None else None
-            )
-        if hasattr(status, "buzzer"):
-            data["buzzer"] = status.buzzer
-        if hasattr(status, "child_lock"):
-            data["child_lock"] = status.child_lock
-        if hasattr(status, "favorite_level"):
-            data["favorite_level"] = status.favorite_level
-        if hasattr(status, "fan_level"):
-            data["fan_level"] = status.fan_level
-        if hasattr(status, "filter_hours_used"):
-            data["filter_hours_used"] = status.filter_hours_used
-        if hasattr(status, "filter_life_remaining"):
-            data["filter_life_remaining"] = status.filter_life_remaining
-        if hasattr(status, "motor_speed"):
-            data["motor_speed"] = status.motor_speed
-        if hasattr(status, "use_time"):
-            data["use_time"] = status.use_time
-        if hasattr(status, "purify_volume"):
-            data["purify_volume"] = status.purify_volume
-        # Additional sensors
-        if hasattr(status, "illuminance"):
-            data["illuminance"] = status.illuminance
-        if hasattr(status, "tvoc"):
-            data["tvoc"] = status.tvoc
+        self._extract_str_attrs(status, data, "led_brightness", "filter_type")
+
+        # Renamed attribute
         if hasattr(status, "pm10_density"):
             data["pm10"] = status.pm10_density
-        if hasattr(status, "motor2_speed"):
-            data["motor2_speed"] = status.motor2_speed
-        # Filter RFID info
-        if hasattr(status, "filter_rfid_tag"):
-            data["filter_rfid_tag"] = status.filter_rfid_tag
-        if hasattr(status, "filter_rfid_product_id"):
-            data["filter_rfid_product_id"] = status.filter_rfid_product_id
-        if hasattr(status, "filter_type"):
-            data["filter_type"] = str(status.filter_type) if status.filter_type is not None else None
-        if hasattr(status, "filter_left_time"):
-            data["filter_left_time"] = status.filter_left_time
-        # Boolean features
-        if hasattr(status, "anion"):
-            data["anion"] = status.anion
-        if hasattr(status, "gestures"):
-            data["gestures"] = status.gestures
-        if hasattr(status, "auto_detect"):
-            data["auto_detect"] = status.auto_detect
-        if hasattr(status, "learn_mode"):
-            data["learn_mode"] = status.learn_mode
-        # Volume
-        if hasattr(status, "volume"):
-            data["volume"] = status.volume
-        if hasattr(status, "buzzer_volume"):
-            data["buzzer_volume"] = status.buzzer_volume
 
         return data
 
@@ -227,58 +186,26 @@ class XiaomiAirPurifierCoordinator(XiaomiMiioDataUpdateCoordinator):
 class XiaomiAirHumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
     """Coordinator for Xiaomi Air Humidifier devices."""
 
+    _SIMPLE_ATTRS = [
+        "power", "target_humidity", "temperature",
+        "buzzer", "child_lock", "motor_speed", "depth", "dry",
+        "use_time", "water_level", "tank_filed", "water_shortage_fault",
+        "no_water", "water_tank_detached", "led_light", "overwet_protect",
+    ]
+
     def _get_status(self) -> dict[str, Any]:
         """Get air humidifier status."""
         status = self.device.status()
+        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
-        data: dict[str, Any] = {}
-
-        if hasattr(status, "power"):
-            data["power"] = status.power
+        # humidity with fallback to relative_humidity (JSQS models)
         if hasattr(status, "humidity"):
             data["humidity"] = status.humidity
-        # JSQS models use relative_humidity instead of humidity
         elif hasattr(status, "relative_humidity"):
             data["humidity"] = status.relative_humidity
-        if hasattr(status, "target_humidity"):
-            data["target_humidity"] = status.target_humidity
-        if hasattr(status, "temperature"):
-            data["temperature"] = status.temperature
+
         self._parse_mode(status, data)
-        if hasattr(status, "led_brightness"):
-            data["led_brightness"] = (
-                str(status.led_brightness) if status.led_brightness is not None else None
-            )
-        if hasattr(status, "buzzer"):
-            data["buzzer"] = status.buzzer
-        if hasattr(status, "child_lock"):
-            data["child_lock"] = status.child_lock
-        if hasattr(status, "motor_speed"):
-            data["motor_speed"] = status.motor_speed
-        if hasattr(status, "depth"):
-            data["depth"] = status.depth
-        if hasattr(status, "dry"):
-            data["dry"] = status.dry
-        if hasattr(status, "use_time"):
-            data["use_time"] = status.use_time
-        if hasattr(status, "water_level"):
-            data["water_level"] = status.water_level
-        # Water tank status (Jsqs models)
-        if hasattr(status, "tank_filed"):
-            data["tank_filed"] = status.tank_filed
-        if hasattr(status, "water_shortage_fault"):
-            data["water_shortage_fault"] = status.water_shortage_fault
-        # Water tank status (Mjjsq models)
-        if hasattr(status, "no_water"):
-            data["no_water"] = status.no_water
-        if hasattr(status, "water_tank_detached"):
-            data["water_tank_detached"] = status.water_tank_detached
-        # LED light for jsqs models (uses led_light, not led)
-        if hasattr(status, "led_light"):
-            data["led_light"] = status.led_light
-        # Overwet protect for jsqs models
-        if hasattr(status, "overwet_protect"):
-            data["overwet_protect"] = status.overwet_protect
+        self._extract_str_attrs(status, data, "led_brightness")
 
         return data
 
@@ -286,56 +213,21 @@ class XiaomiAirHumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
 class XiaomiFanCoordinator(XiaomiMiioDataUpdateCoordinator):
     """Coordinator for Xiaomi Fan devices."""
 
+    _SIMPLE_ATTRS = [
+        "power", "speed", "oscillate", "angle",
+        "led", "buzzer", "child_lock", "natural_speed", "direct_speed",
+        "battery", "battery_charge", "ac_power", "delay_off_countdown",
+        "temperature", "humidity", "fan_level", "light",
+        "use_time", "power_off_time",
+    ]
+
     def _get_status(self) -> dict[str, Any]:
         """Get fan status."""
         status = self.device.status()
+        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
-        data: dict[str, Any] = {}
-
-        if hasattr(status, "power"):
-            data["power"] = status.power
-        if hasattr(status, "speed"):
-            data["speed"] = status.speed
-        if hasattr(status, "oscillate"):
-            data["oscillate"] = status.oscillate
-        if hasattr(status, "angle"):
-            data["angle"] = status.angle
         self._parse_mode(status, data)
-        if hasattr(status, "led"):
-            data["led"] = status.led
-        if hasattr(status, "led_brightness"):
-            data["led_brightness"] = (
-                str(status.led_brightness) if status.led_brightness is not None else None
-            )
-        if hasattr(status, "buzzer"):
-            data["buzzer"] = status.buzzer
-        if hasattr(status, "child_lock"):
-            data["child_lock"] = status.child_lock
-        if hasattr(status, "natural_speed"):
-            data["natural_speed"] = status.natural_speed
-        if hasattr(status, "direct_speed"):
-            data["direct_speed"] = status.direct_speed
-        if hasattr(status, "battery"):
-            data["battery"] = status.battery
-        if hasattr(status, "battery_charge"):
-            data["battery_charge"] = status.battery_charge
-        if hasattr(status, "ac_power"):
-            data["ac_power"] = status.ac_power
-        if hasattr(status, "delay_off_countdown"):
-            data["delay_off_countdown"] = status.delay_off_countdown
-        # Additional fan attributes
-        if hasattr(status, "temperature"):
-            data["temperature"] = status.temperature
-        if hasattr(status, "humidity"):
-            data["humidity"] = status.humidity
-        if hasattr(status, "fan_level"):
-            data["fan_level"] = status.fan_level
-        if hasattr(status, "light"):
-            data["light"] = status.light
-        if hasattr(status, "use_time"):
-            data["use_time"] = status.use_time
-        if hasattr(status, "power_off_time"):
-            data["power_off_time"] = status.power_off_time
+        self._extract_str_attrs(status, data, "led_brightness")
 
         return data
 
@@ -343,74 +235,25 @@ class XiaomiFanCoordinator(XiaomiMiioDataUpdateCoordinator):
 class XiaomiAirFreshCoordinator(XiaomiMiioDataUpdateCoordinator):
     """Coordinator for Xiaomi Air Fresh devices."""
 
+    _SIMPLE_ATTRS = [
+        "power", "aqi", "co2", "humidity", "temperature",
+        "led", "buzzer", "child_lock", "filter_hours_used",
+        "filter_life_remaining", "motor_speed", "use_time", "ptc",
+        "pm25", "temperature_outside", "favorite_speed", "control_speed",
+        "dust_filter_life_remaining", "dust_filter_life_remaining_days",
+        "upper_filter_life_remaining", "upper_filter_life_remaining_days",
+        "ptc_status", "display",
+    ]
+
     def _get_status(self) -> dict[str, Any]:
         """Get air fresh status."""
         status = self.device.status()
+        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
-        data: dict[str, Any] = {}
-
-        if hasattr(status, "power"):
-            data["power"] = status.power
-        if hasattr(status, "aqi"):
-            data["aqi"] = status.aqi
-        if hasattr(status, "co2"):
-            data["co2"] = status.co2
-        if hasattr(status, "humidity"):
-            data["humidity"] = status.humidity
-        if hasattr(status, "temperature"):
-            data["temperature"] = status.temperature
         self._parse_mode(status, data)
-        if hasattr(status, "led"):
-            data["led"] = status.led
-        if hasattr(status, "led_brightness"):
-            data["led_brightness"] = (
-                str(status.led_brightness) if status.led_brightness is not None else None
-            )
-        if hasattr(status, "buzzer"):
-            data["buzzer"] = status.buzzer
-        if hasattr(status, "child_lock"):
-            data["child_lock"] = status.child_lock
-        if hasattr(status, "filter_hours_used"):
-            data["filter_hours_used"] = status.filter_hours_used
-        if hasattr(status, "filter_life_remaining"):
-            data["filter_life_remaining"] = status.filter_life_remaining
-        if hasattr(status, "motor_speed"):
-            data["motor_speed"] = status.motor_speed
-        if hasattr(status, "use_time"):
-            data["use_time"] = status.use_time
-        if hasattr(status, "ptc"):
-            data["ptc"] = status.ptc
-        # T2017 specific attributes
-        if hasattr(status, "pm25"):
-            data["pm25"] = status.pm25
-        if hasattr(status, "temperature_outside"):
-            data["temperature_outside"] = status.temperature_outside
-        if hasattr(status, "favorite_speed"):
-            data["favorite_speed"] = status.favorite_speed
-        if hasattr(status, "control_speed"):
-            data["control_speed"] = status.control_speed
-        # Dust filter (intermediate)
-        if hasattr(status, "dust_filter_life_remaining"):
-            data["dust_filter_life_remaining"] = status.dust_filter_life_remaining
-        if hasattr(status, "dust_filter_life_remaining_days"):
-            data["dust_filter_life_remaining_days"] = status.dust_filter_life_remaining_days
-        # Upper filter (efficient/HEPA)
-        if hasattr(status, "upper_filter_life_remaining"):
-            data["upper_filter_life_remaining"] = status.upper_filter_life_remaining
-        if hasattr(status, "upper_filter_life_remaining_days"):
-            data["upper_filter_life_remaining_days"] = status.upper_filter_life_remaining_days
-        # PTC heater
-        if hasattr(status, "ptc_level"):
-            data["ptc_level"] = str(status.ptc_level) if status.ptc_level is not None else None
-        if hasattr(status, "ptc_status"):
-            data["ptc_status"] = status.ptc_status
-        # Display
-        if hasattr(status, "display"):
-            data["display"] = status.display
-        if hasattr(status, "display_orientation"):
-            data["display_orientation"] = (
-                str(status.display_orientation) if status.display_orientation is not None else None
-            )
+
+        # String-converted attributes
+        self._extract_str_attrs(status, data, "led_brightness", "ptc_level", "display_orientation")
 
         return data
 
@@ -418,20 +261,18 @@ class XiaomiAirFreshCoordinator(XiaomiMiioDataUpdateCoordinator):
 class XiaomiAirDehumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
     """Coordinator for Xiaomi Air Dehumidifier devices."""
 
+    _SIMPLE_ATTRS = [
+        "power", "humidity", "target_humidity", "temperature",
+        "buzzer", "led", "child_lock", "tank_full",
+        "compressor_status", "defrost_status", "fan_st",
+    ]
+
     def _get_status(self) -> dict[str, Any]:
         """Get air dehumidifier status."""
         status = self.device.status()
+        data = self._extract_attrs(status, self._SIMPLE_ATTRS)
 
-        data: dict[str, Any] = {}
-
-        if hasattr(status, "power"):
-            data["power"] = status.power
-        if hasattr(status, "humidity"):
-            data["humidity"] = status.humidity
-        if hasattr(status, "target_humidity"):
-            data["target_humidity"] = status.target_humidity
-        if hasattr(status, "temperature"):
-            data["temperature"] = status.temperature
+        # mode and fan_speed need .value extraction for enum
         if hasattr(status, "mode"):
             if status.mode is not None:
                 data["mode"] = status.mode.value if hasattr(status.mode, "value") else status.mode
@@ -442,19 +283,5 @@ class XiaomiAirDehumidifierCoordinator(XiaomiMiioDataUpdateCoordinator):
                 data["fan_speed"] = status.fan_speed.value if hasattr(status.fan_speed, "value") else status.fan_speed
             else:
                 data["fan_speed"] = None
-        if hasattr(status, "buzzer"):
-            data["buzzer"] = status.buzzer
-        if hasattr(status, "led"):
-            data["led"] = status.led
-        if hasattr(status, "child_lock"):
-            data["child_lock"] = status.child_lock
-        if hasattr(status, "tank_full"):
-            data["tank_full"] = status.tank_full
-        if hasattr(status, "compressor_status"):
-            data["compressor_status"] = status.compressor_status
-        if hasattr(status, "defrost_status"):
-            data["defrost_status"] = status.defrost_status
-        if hasattr(status, "fan_st"):
-            data["fan_st"] = status.fan_st
 
         return data

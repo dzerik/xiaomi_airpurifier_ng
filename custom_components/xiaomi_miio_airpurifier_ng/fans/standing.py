@@ -60,17 +60,16 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
         """Initialize the standing fan entity."""
         model = coordinator.model
 
-        # Determine device type
-        self._is_p5_style = model in [
+        # Determine device type (P8 uses 1C protocol, not P5-style)
+        self._is_1c = model in [MODEL_FAN_1C, MODEL_FAN_P8]
+        self._is_leshow = model == MODEL_FAN_LESHOW_SS4
+        self._is_p5_style = not self._is_1c and model in [
             MODEL_FAN_P5,
-            MODEL_FAN_P8,
             MODEL_FAN_P9,
             MODEL_FAN_P10,
             MODEL_FAN_P11,
             MODEL_FAN_P18,
         ]
-        self._is_leshow = model == MODEL_FAN_LESHOW_SS4
-        self._is_1c = model in [MODEL_FAN_1C, MODEL_FAN_P8]
 
         # Set device features and available attributes based on model
         if self._is_leshow:

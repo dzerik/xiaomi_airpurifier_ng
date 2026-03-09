@@ -33,7 +33,6 @@ _LOGGER = logging.getLogger(__name__)
 class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
     """Coordinator-based climate entity for Air Dehumidifier."""
 
-    _attr_has_entity_name = True
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_min_humidity = 40
     _attr_max_humidity = 60

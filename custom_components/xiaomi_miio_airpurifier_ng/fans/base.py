@@ -50,7 +50,6 @@ class XiaomiMiioBaseFan(XiaomiMiioEntity, FanEntity):
     - Service methods with feature flag checks
     """
 
-    _attr_has_entity_name = True
     _enable_turn_on_off_backwards_compatibility = False
 
     # Subclasses should override these
