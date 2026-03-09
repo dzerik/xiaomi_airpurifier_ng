@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-alpha.20] - 2026-03-09
+
+### Changed
+- **entity.py**: Вынесены общие методы в базовый класс `XiaomiMiioEntity`:
+  - `is_on` property — единая логика проверки power/is_on
+  - `extra_state_attributes` property — единая логика с _available_attributes/_state_attrs
+  - `_async_device_on()` / `_async_device_off()` — общие helpers для on/off с optimistic state update
+- **fans/base.py**: Удалены дублированные `is_on`, `extra_state_attributes`, `async_turn_on`, `async_turn_off` (наследуются из entity.py)
+- **humidifier.py**: Удалены дублированные `is_on`, `extra_state_attributes`, `async_turn_on`, `async_turn_off`
+- **climates/dehumidifier.py**: Удалены дублированные `extra_state_attributes`, `async_set_hvac_mode` упрощён через `_async_device_on`/`_async_device_off`
+- Дублирование Python кода снижено: 8 клонов → 3, 1.9% → 0.94%
+
 ## [3.0.0-alpha.19] - 2026-03-09
 
 ### Fixed

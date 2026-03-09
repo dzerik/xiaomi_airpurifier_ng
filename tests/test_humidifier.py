@@ -376,9 +376,10 @@ class TestExtraStateAttributes:
         assert "humidity" in attrs
         assert "temperature" in attrs
 
-    def test_extra_attrs_empty_when_no_data(self):
-        """Returns empty dict when no data."""
+    def test_extra_attrs_none_values_when_no_data(self):
+        """Returns attrs with None values when no data."""
         coord = _make_coordinator(data=None)
         coord.data = None
         entity = XiaomiAirHumidifier(coord)
-        assert entity.extra_state_attributes == {}
+        attrs = entity.extra_state_attributes
+        assert all(v is None for v in attrs.values())

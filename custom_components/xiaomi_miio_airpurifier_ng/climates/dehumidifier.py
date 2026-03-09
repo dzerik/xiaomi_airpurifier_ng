@@ -63,16 +63,6 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
         ]
 
     @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return the extra state attributes of the device."""
-        if self.coordinator.data:
-            for key, attr_name in self._available_attributes.items():
-                value = self.coordinator.data.get(attr_name)
-                if value is not None:
-                    self._state_attrs[key] = self._extract_value_from_attribute(value)
-        return self._state_attrs
-
-    @property
     def supported_features(self) -> ClimateEntityFeature:
         """Return supported features based on current mode."""
         features = ClimateEntityFeature.TURN_OFF | ClimateEntityFeature.TURN_ON
@@ -150,24 +140,10 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new HVAC mode."""
-        result = False
         if hvac_mode == HVACMode.DRY:
-            result = await self._try_command(
-                "Turning the miio device on failed: %s",
-                self.coordinator.device.on,
-            )
-            if result and self.coordinator.data is not None:
-                self.coordinator.data["power"] = "on"
-                self.async_write_ha_state()
+            await self._async_device_on()
         elif hvac_mode == HVACMode.OFF:
-            result = await self._try_command(
-                "Turning the miio device off failed: %s",
-                self.coordinator.device.off,
-            )
-            if result and self.coordinator.data is not None:
-                self.coordinator.data["power"] = "off"
-                self.async_write_ha_state()
-        await self.coordinator.async_request_refresh()
+            await self._async_device_off()
 
     async def async_set_humidity(self, humidity: int) -> None:
         """Set new target humidity."""

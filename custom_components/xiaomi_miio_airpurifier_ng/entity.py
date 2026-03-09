@@ -24,6 +24,8 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
 
     _attr_has_entity_name = True
     _device_features: int = 0
+    _available_attributes: dict[str, str] = {}
+    _state_attrs: dict[str, Any] = {}
 
     def __init__(
         self,
@@ -190,6 +192,56 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
         except DeviceException as exc:
             _LOGGER.error(mask_error, exc)
             return False
+
+    @property
+    def is_on(self) -> bool | None:
+        """Return true if the device is on.
+
+        python-miio returns power as string "on"/"off" for all models.
+        Using bool(power) would be incorrect since bool("off") == True.
+        """
+        if self.coordinator.data:
+            power = self.coordinator.data.get("power")
+            if power is not None:
+                if isinstance(power, str):
+                    return power == "on"
+                return bool(power)
+            is_on = self.coordinator.data.get("is_on")
+            if is_on is not None:
+                return bool(is_on)
+        return None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return the extra state attributes of the device."""
+        if self.coordinator.data and self._available_attributes:
+            for key, attr_name in self._available_attributes.items():
+                value = self.coordinator.data.get(attr_name)
+                if value is not None:
+                    self._state_attrs[key] = self._extract_value_from_attribute(value)
+        return self._state_attrs
+
+    async def _async_device_on(self) -> None:
+        """Turn the device on with optimistic state update."""
+        result = await self._try_command(
+            "Turning the miio device on failed: %s",
+            self.coordinator.device.on,
+        )
+        if result and self.coordinator.data is not None:
+            self.coordinator.data["power"] = "on"
+            self.async_write_ha_state()
+        await self.coordinator.async_request_refresh()
+
+    async def _async_device_off(self) -> None:
+        """Turn the device off with optimistic state update."""
+        result = await self._try_command(
+            "Turning the miio device off failed: %s",
+            self.coordinator.device.off,
+        )
+        if result and self.coordinator.data is not None:
+            self.coordinator.data["power"] = "off"
+            self.async_write_ha_state()
+        await self.coordinator.async_request_refresh()
 
     @property
     def available(self) -> bool:

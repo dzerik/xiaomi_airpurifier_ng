@@ -26,7 +26,6 @@ class XiaomiMiioBaseFan(XiaomiMiioEntity, FanEntity):
 
     # Subclasses should override these
     _device_features: int = FEATURE_SET_CHILD_LOCK
-    _available_attributes: dict[str, str] = {}
 
     def __init__(
         self,
@@ -38,38 +37,7 @@ class XiaomiMiioBaseFan(XiaomiMiioEntity, FanEntity):
 
         # Initialize state attributes with model
         self._state_attrs: dict[str, Any] = {ATTR_MODEL: coordinator.model}
-
-        # Initialize available attribute values to None
         self._state_attrs.update({attribute: None for attribute in self._available_attributes})
-
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return the extra state attributes of the device."""
-        # Update state attributes from coordinator data
-        if self.coordinator.data:
-            for key, attr_name in self._available_attributes.items():
-                value = self.coordinator.data.get(attr_name)
-                if value is not None:
-                    self._state_attrs[key] = self._extract_value_from_attribute(value)
-        return self._state_attrs
-
-    @property
-    def is_on(self) -> bool | None:
-        """Return true if the device is on.
-
-        python-miio returns power as string "on"/"off" for all models.
-        Using bool(power) would be incorrect since bool("off") == True.
-        """
-        if self.coordinator.data:
-            power = self.coordinator.data.get("power")
-            if power is not None:
-                if isinstance(power, str):
-                    return power == "on"
-                return bool(power)
-            is_on = self.coordinator.data.get("is_on")
-            if is_on is not None:
-                return bool(is_on)
-        return None
 
     @property
     def supported_features(self) -> FanEntityFeature:
@@ -90,28 +58,13 @@ class XiaomiMiioBaseFan(XiaomiMiioEntity, FanEntity):
     ) -> None:
         """Turn the device on."""
         if preset_mode:
-            # If operation mode was set the device must not be turned on.
             await self.async_set_preset_mode(preset_mode)
         else:
-            result = await self._try_command(
-                "Turning the miio device on failed: %s",
-                self.coordinator.device.on,
-            )
-            if result and self.coordinator.data is not None:
-                self.coordinator.data["power"] = "on"
-                self.async_write_ha_state()
-        await self.coordinator.async_request_refresh()
+            await self._async_device_on()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the device off."""
-        result = await self._try_command(
-            "Turning the miio device off failed: %s",
-            self.coordinator.device.off,
-        )
-        if result and self.coordinator.data is not None:
-            self.coordinator.data["power"] = "off"
-            self.async_write_ha_state()
-        await self.coordinator.async_request_refresh()
+        await self._async_device_off()
 
 
 class XiaomiGenericFan(XiaomiMiioBaseFan):

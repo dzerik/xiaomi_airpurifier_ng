@@ -192,20 +192,7 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
             ]
 
         super().__init__(coordinator)
-
-    @property
-    def is_on(self) -> bool | None:
-        """Return true if the device is on."""
-        if self.coordinator.data:
-            power = self.coordinator.data.get("power")
-            if power is not None:
-                if isinstance(power, str):
-                    return power == "on"
-                return bool(power)
-            is_on = self.coordinator.data.get("is_on")
-            if is_on is not None:
-                return bool(is_on)
-        return None
+        self._state_attrs = {attribute: None for attribute in self._available_attributes}
 
     @property
     def target_humidity(self) -> int | None:
@@ -230,37 +217,13 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
                 return mode
         return None
 
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return the extra state attributes."""
-        attrs: dict[str, Any] = {}
-        if self.coordinator.data:
-            for attr in self._available_attributes:
-                if attr in self.coordinator.data:
-                    attrs[attr] = self.coordinator.data[attr]
-        return attrs
-
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the device on."""
-        result = await self._try_command(
-            "Turning the miio device on failed: %s",
-            self.coordinator.device.on,
-        )
-        if result and self.coordinator.data is not None:
-            self.coordinator.data["power"] = "on"
-            self.async_write_ha_state()
-        await self.coordinator.async_request_refresh()
+        await self._async_device_on()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the device off."""
-        result = await self._try_command(
-            "Turning the miio device off failed: %s",
-            self.coordinator.device.off,
-        )
-        if result and self.coordinator.data is not None:
-            self.coordinator.data["power"] = "off"
-            self.async_write_ha_state()
-        await self.coordinator.async_request_refresh()
+        await self._async_device_off()
 
     async def async_set_humidity(self, humidity: int) -> None:
         """Set the target humidity."""
