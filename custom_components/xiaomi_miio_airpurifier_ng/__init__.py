@@ -23,7 +23,6 @@ from miio import (
     Fan1C,
     FanLeshow,
     FanMiot,
-    FanP5,
 )
 
 from homeassistant.config_entries import ConfigEntry
@@ -33,7 +32,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import (
     CONF_MODEL,
-    DOMAIN,
+    DOMAIN as DOMAIN,
     HUMIDIFIER_MIOT,
     MODEL_AIRDEHUMIDIFIER_V1,
     MODEL_AIRFRESH_A1,
@@ -41,7 +40,6 @@ from .const import (
     MODEL_AIRFRESH_VA2,
     MODEL_AIRFRESH_VA4,
     MODEL_AIRHUMIDIFIER_CA1,
-    MODEL_AIRHUMIDIFIER_CA4,
     MODEL_AIRHUMIDIFIER_CB1,
     MODEL_AIRHUMIDIFIER_CB2,
     MODEL_AIRHUMIDIFIER_JSQ,
@@ -55,8 +53,6 @@ from .const import (
     MODEL_AIRHUMIDIFIER_V1,
     MODEL_AIRPURIFIER_2H,
     MODEL_AIRPURIFIER_2S,
-    MODEL_AIRPURIFIER_3,
-    MODEL_AIRPURIFIER_3H,
     MODEL_AIRPURIFIER_AIRDOG_X3,
     MODEL_AIRPURIFIER_AIRDOG_X5,
     MODEL_AIRPURIFIER_AIRDOG_X7SM,
@@ -72,7 +68,6 @@ from .const import (
     MODEL_AIRPURIFIER_V2,
     MODEL_AIRPURIFIER_V3,
     MODEL_AIRPURIFIER_V5,
-    MODEL_AIRPURIFIER_ZA1,
     MODEL_FAN_1C,
     MODEL_FAN_LESHOW_SS4,
     MODEL_FAN_P10,

@@ -18,7 +18,6 @@ from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
 from .coordinator import XiaomiMiioDataUpdateCoordinator
 from .entity import XiaomiMiioEntity
 

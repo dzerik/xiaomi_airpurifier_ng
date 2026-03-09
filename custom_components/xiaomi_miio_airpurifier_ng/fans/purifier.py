@@ -18,7 +18,6 @@ from miio.integrations.airpurifier.airdog.airpurifier_airdog import (
 )
 
 from ..const import (
-    ATTR_MODE,
     AVAILABLE_ATTRIBUTES_AIRPURIFIER,
     AVAILABLE_ATTRIBUTES_AIRPURIFIER_2H,
     AVAILABLE_ATTRIBUTES_AIRPURIFIER_2S,
