@@ -5,10 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.0-rc.2] - 2026-03-09
+## [3.0.0] - 2026-03-09
 
 ### Fixed
 - **coordinator**: «Unable to discover» (устройство недоступно по сети) больше не вызывает reauth flow — теперь корректно обрабатывается как временная недоступность (UpdateFailed). Reauth запрашивается только при реальных ошибках токена.
+
+### Changed
+- Полная переработка архитектуры интеграции (DataUpdateCoordinator, Config Flow, entity platforms)
+- Увлажнители переведены на стандартную платформу `humidifier`
+- Удалены 37 кастомных сервисов — управление через стандартные entity-платформы (switch, number, select, button)
+- Покрытие тестами: 470 тестов, 94% coverage
+- README на английском и русском языках
+
+### Breaking Changes
+- Entity ID увлажнителей: `fan.xiaomi_*` → `humidifier.xiaomi_*`
+- Entity ID бинарных сенсоров: `binary_sensor.*_water_tank` → `binary_sensor.*_water_level_low`
+- Все кастомные сервисы `xiaomi_miio_airpurifier_ng.fan_set_*` удалены
 
 ## [3.0.0-rc.1] - 2026-03-09
 
