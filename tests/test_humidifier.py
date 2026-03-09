@@ -5,7 +5,6 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from homeassistant.components.humidifier import HumidifierDeviceClass, HumidifierEntityFeature
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import (

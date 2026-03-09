@@ -10,7 +10,6 @@ from miio import DeviceException
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import DOMAIN, SUCCESS
 from custom_components.xiaomi_miio_airpurifier_ng.entity import XiaomiMiioEntity
-
 from tests.conftest import MockDeviceInfo
 
 

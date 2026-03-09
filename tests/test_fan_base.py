@@ -9,7 +9,6 @@ from homeassistant.components.fan import FanEntityFeature
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import (
     ATTR_MODEL,
-    FEATURE_SET_CHILD_LOCK,
 )
 from custom_components.xiaomi_miio_airpurifier_ng.fans.base import (
     XiaomiGenericFan,

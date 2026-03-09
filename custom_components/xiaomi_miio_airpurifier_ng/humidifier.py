@@ -13,15 +13,14 @@ from homeassistant.components.humidifier import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
-from miio.integrations.humidifier.shuii.airhumidifier_jsq import (
-    OperationMode as AirhumidifierJsqOperationMode,
-)
 from miio.integrations.humidifier.deerma.airhumidifier_jsqs import (
     OperationMode as AirhumidifierJsqsOperationMode,
 )
 from miio.integrations.humidifier.deerma.airhumidifier_mjjsq import (
     OperationMode as AirhumidifierMjjsqOperationMode,
+)
+from miio.integrations.humidifier.shuii.airhumidifier_jsq import (
+    OperationMode as AirhumidifierJsqOperationMode,
 )
 from miio.integrations.humidifier.zhimi.airhumidifier import (
     OperationMode as AirhumidifierOperationMode,
@@ -39,7 +38,6 @@ from .const import (
     AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ5,
     AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQS,
     AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_MJJSQ,
-    DeviceCategory,
     FEATURE_FLAGS_AIRHUMIDIFIER,
     FEATURE_FLAGS_AIRHUMIDIFIER_CA4,
     FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB,
@@ -62,6 +60,7 @@ from .const import (
     MODEL_AIRHUMIDIFIER_JSQ5,
     MODEL_AIRHUMIDIFIER_JSQS,
     MODEL_AIRHUMIDIFIER_MJJSQ,
+    DeviceCategory,
     classify_model,
 )
 from .entity import XiaomiMiioEntity

@@ -10,6 +10,10 @@ from homeassistant.const import CONF_HOST, CONF_TOKEN
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.xiaomi_miio_airpurifier_ng import (
+    _create_coordinator,
+    _create_device,
+)
 from custom_components.xiaomi_miio_airpurifier_ng.const import (
     CONF_MODEL,
     DOMAIN,
@@ -36,11 +40,6 @@ from custom_components.xiaomi_miio_airpurifier_ng.const import (
     MODEL_FAN_P5,
     MODEL_FAN_P9,
     MODEL_FAN_V2,
-    DeviceCategory,
-)
-from custom_components.xiaomi_miio_airpurifier_ng import (
-    _create_device,
-    _create_coordinator,
 )
 
 
