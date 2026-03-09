@@ -13,7 +13,6 @@ from .const import DeviceCategory, classify_model
 from .coordinator import XiaomiMiioDataUpdateCoordinator
 from .fans import (
     XiaomiAirFreshFan,
-    XiaomiAirHumidifierFan,
     XiaomiAirPurifierFan,
     XiaomiGenericFan,
     XiaomiStandingFan,
@@ -23,9 +22,9 @@ _LOGGER = logging.getLogger(__name__)
 
 _FAN_ENTITY_MAP = {
     DeviceCategory.PURIFIER: XiaomiAirPurifierFan,
-    DeviceCategory.HUMIDIFIER: XiaomiAirHumidifierFan,
     DeviceCategory.AIR_FRESH: XiaomiAirFreshFan,
     DeviceCategory.FAN: XiaomiStandingFan,
+    # HUMIDIFIER uses humidifier platform, not fan
 }
 
 
