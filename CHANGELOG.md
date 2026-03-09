@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-alpha.11] - 2026-03-09
+
+### Changed
+- Refactor coordinator.py: extract _extract_attrs/_extract_str_attrs helpers, eliminating all E-grade complexity blocks
+- Replace magic numbers 33.33/6.25 with named constants MIOT_PERCENT_PER_LEVEL/LEGACY_PERCENT_PER_LEVEL
+- Fix P8 flag confusion: P8 now exclusively _is_1c (not simultaneously _is_p5_style)
+- Remove duplicated _attr_has_entity_name in fans/base.py and climates/dehumidifier.py
+
+### Added
+- 313 new unit tests (342 total), covering fans/*, climates/*, switch, select, number
+- Test coverage: 58% → 89% overall
+
 ## [3.0.0-alpha.10] - 2026-03-09
 
 ### Fixed
