@@ -63,11 +63,11 @@
   },
   "entity": {
     "binary_sensor": {
-      "water_tank": {
-        "name": "Depósito de agua"
+      "water_level_low": {
+        "name": "Nivel de agua bajo"
       },
-      "water_shortage": {
-        "name": "Escasez de agua"
+      "water_tank_removed": {
+        "name": "Depósito retirado"
       },
       "water_tank_detached": {
         "name": "Depósito de agua desconectado"

@@ -63,11 +63,11 @@
   },
   "entity": {
     "binary_sensor": {
-      "water_tank": {
-        "name": "Nádrž na vodu"
+      "water_level_low": {
+        "name": "Nízká hladina vody"
       },
-      "water_shortage": {
-        "name": "Nedostatek vody"
+      "water_tank_removed": {
+        "name": "Nádrž odstraněna"
       },
       "water_tank_detached": {
         "name": "Nádrž na vodu odpojena"

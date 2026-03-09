@@ -63,11 +63,11 @@
   },
   "entity": {
     "binary_sensor": {
-      "water_tank": {
-        "name": "Бак для воды"
+      "water_level_low": {
+        "name": "Мало воды"
       },
-      "water_shortage": {
-        "name": "Нехватка воды"
+      "water_tank_removed": {
+        "name": "Бак снят"
       },
       "water_tank_detached": {
         "name": "Бак снят"

@@ -156,6 +156,21 @@ async def async_unload_entry(hass: HomeAssistant, entry: XiaomiMiioConfigEntry) 
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
+_JSQS_MAPPING = {
+    "power": {"siid": 2, "piid": 1},
+    "fault": {"siid": 2, "piid": 2},
+    "mode": {"siid": 2, "piid": 5},
+    "target_humidity": {"siid": 2, "piid": 6},
+    "relative_humidity": {"siid": 3, "piid": 1},
+    "temperature": {"siid": 3, "piid": 7},
+    "buzzer": {"siid": 5, "piid": 1},
+    "led_light": {"siid": 6, "piid": 1},
+    "water_shortage_fault": {"siid": 7, "piid": 1},
+    "tank_filed": {"siid": 7, "piid": 2},
+    "overwet_protect": {"siid": 7, "piid": 3},
+}
+
+
 def _create_device(host: str, token: str, model: str | None) -> Device:
     """Create the appropriate device instance based on model."""
     # Air Purifier models
@@ -209,7 +224,9 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
         MODEL_AIRHUMIDIFIER_JSQ5,
         MODEL_AIRHUMIDIFIER_JSQS,
     ):
-        return AirHumidifierJsqs(ip=host, token=token, model=model)
+        return AirHumidifierJsqs(
+            ip=host, token=token, model=model, mapping=_JSQS_MAPPING
+        )
     if model == MODEL_AIRHUMIDIFIER_JSQ001:
         return AirHumidifierJsq(ip=host, token=token, model=model)
 

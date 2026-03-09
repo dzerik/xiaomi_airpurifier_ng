@@ -28,25 +28,25 @@ class XiaomiMiioBinarySensorEntityDescription(BinarySensorEntityDescription):
 
 
 BINARY_SENSOR_DESCRIPTIONS: tuple[XiaomiMiioBinarySensorEntityDescription, ...] = (
-    # Water tank installed (Jsqs models - jsqs, jsq2w, jsq5)
-    # tank_filed=True means tank is installed
+    # Water level low (Jsqs models - jsqs, jsq2w, jsq5)
+    # tank_filed=True means water is LOW (problem), False means OK
     XiaomiMiioBinarySensorEntityDescription(
-        key="water_tank",
-        translation_key="water_tank",
-        name="Water Tank",
-        device_class=BinarySensorDeviceClass.CONNECTIVITY,
-        icon="mdi:cup-water",
+        key="water_level_low",
+        translation_key="water_level_low",
+        name="Water Level Low",
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        icon="mdi:water-alert",
         value_fn=lambda data: data.get("tank_filed"),
         exists_fn=lambda data: "tank_filed" in data,
     ),
-    # Water shortage (Jsqs models)
-    # water_shortage_fault=True means no water
+    # Water tank removed (Jsqs models)
+    # water_shortage_fault=True means tank is REMOVED (problem), False means installed
     XiaomiMiioBinarySensorEntityDescription(
-        key="water_shortage",
-        translation_key="water_shortage",
-        name="Water Shortage",
+        key="water_tank_removed",
+        translation_key="water_tank_removed",
+        name="Water Tank Removed",
         device_class=BinarySensorDeviceClass.PROBLEM,
-        icon="mdi:water-off",
+        icon="mdi:cup-off",
         value_fn=lambda data: data.get("water_shortage_fault"),
         exists_fn=lambda data: "water_shortage_fault" in data,
     ),

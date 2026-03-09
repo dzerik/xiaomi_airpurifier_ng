@@ -63,11 +63,11 @@
   },
   "entity": {
     "binary_sensor": {
-      "water_tank": {
-        "name": "水箱"
+      "water_level_low": {
+        "name": "水位低"
       },
-      "water_shortage": {
-        "name": "缺水"
+      "water_tank_removed": {
+        "name": "水箱已取出"
       },
       "water_tank_detached": {
         "name": "水箱已拆卸"

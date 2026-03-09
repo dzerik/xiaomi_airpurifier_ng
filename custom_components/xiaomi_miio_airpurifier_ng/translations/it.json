@@ -63,11 +63,11 @@
   },
   "entity": {
     "binary_sensor": {
-      "water_tank": {
-        "name": "Serbatoio acqua"
+      "water_level_low": {
+        "name": "Livello acqua basso"
       },
-      "water_shortage": {
-        "name": "Mancanza d'acqua"
+      "water_tank_removed": {
+        "name": "Serbatoio rimosso"
       },
       "water_tank_detached": {
         "name": "Serbatoio acqua rimosso"

@@ -63,11 +63,11 @@
   },
   "entity": {
     "binary_sensor": {
-      "water_tank": {
-        "name": "Watertank"
+      "water_level_low": {
+        "name": "Laag waterniveau"
       },
-      "water_shortage": {
-        "name": "Watertekort"
+      "water_tank_removed": {
+        "name": "Watertank verwijderd"
       },
       "water_tank_detached": {
         "name": "Watertank losgekoppeld"

@@ -63,11 +63,11 @@
   },
   "entity": {
     "binary_sensor": {
-      "water_tank": {
-        "name": "Su Tankı"
+      "water_level_low": {
+        "name": "Düşük Su Seviyesi"
       },
-      "water_shortage": {
-        "name": "Su Eksikliği"
+      "water_tank_removed": {
+        "name": "Su Tankı Çıkarıldı"
       },
       "water_tank_detached": {
         "name": "Su Tankı Çıkarılmış"

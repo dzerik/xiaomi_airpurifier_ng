@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-alpha.19] - 2026-03-09
+
+### Fixed
+- **binary_sensor**: Исправлена инвертированная семантика датчиков воды для jsq2w/jsqs:
+  - `water_tank` (CONNECTIVITY) → `water_level_low` (PROBLEM) — `tank_filed=True` означает мало воды
+  - `water_shortage` → `water_tank_removed` (PROBLEM) — `water_shortage_fault=True` означает бак снят
+- **jsq2w mapping**: Добавлен explicit MIOT mapping для `AirHumidifierJsqs`, подавляет warning "Unable to find mapping for deerma.humidifier.jsq2w"
+
+### Changed
+- Обновлены все 14 файлов переводов с новыми именами binary sensor
+
+### Breaking Changes
+- **Entity ID бинарных сенсоров изменился**: `binary_sensor.*_water_tank` → `binary_sensor.*_water_level_low`, `binary_sensor.*_water_shortage` → `binary_sensor.*_water_tank_removed`
+
 ## [3.0.0-alpha.18] - 2026-03-09
 
 ### Added

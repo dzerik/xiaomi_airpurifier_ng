@@ -63,17 +63,17 @@
   },
   "entity": {
     "binary_sensor": {
-      "water_tank": {
-        "name": "Zbiornik wody"
+      "water_level_low": {
+        "name": "Niski poziom wody"
       },
-      "water_shortage": {
-        "name": "Brak wody"
+      "water_tank_removed": {
+        "name": "Zbiornik usunięty"
       },
       "water_tank_detached": {
         "name": "Zbiornik wody odłączony"
       },
       "no_water": {
-        "name": "Brak wody"
+        "name": "Zbiornik usunięty"
       },
       "ac_power": {
         "name": "Zasilanie sieciowe"
