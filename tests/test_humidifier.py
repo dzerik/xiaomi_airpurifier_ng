@@ -229,7 +229,7 @@ class TestProperties:
         """Returns mode from coordinator data."""
         coord = _make_coordinator(data={"mode": "Auto"})
         entity = XiaomiAirHumidifier(coord)
-        assert entity.mode == "Auto"
+        assert entity.mode == "auto"
 
     def test_mode_none_when_no_data(self):
         """Returns None when no data."""

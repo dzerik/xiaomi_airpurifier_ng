@@ -286,15 +286,15 @@
       "mode": {
         "name": "Modo",
         "state": {
-          "Low": "Baixo",
-          "Medium": "Médio",
-          "High": "Alto",
-          "Humidity": "Automático",
-          "Auto": "Automático",
-          "Silent": "Silencioso",
-          "Strong": "Forte",
-          "Favorite": "Favorito",
-          "WetAndProtect": "Umidificar e proteger"
+          "low": "Baixo",
+          "medium": "Médio",
+          "high": "Alto",
+          "humidity": "Automático",
+          "auto": "Automático",
+          "silent": "Silencioso",
+          "strong": "Forte",
+          "favorite": "Favorito",
+          "wetandprotect": "Umidificar e proteger"
         }
       }
     }

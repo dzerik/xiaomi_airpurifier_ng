@@ -129,19 +129,21 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA_AND_CB
             self._attr_available_modes = [
-                mode.name
+                mode.name.lower()
                 for mode in AirhumidifierOperationMode
                 if mode is not AirhumidifierOperationMode.Strong
             ]
         elif model == MODEL_AIRHUMIDIFIER_CA4:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_CA4
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA4
-            self._attr_available_modes = [mode.name for mode in AirhumidifierMiotOperationMode]
+            self._attr_available_modes = [
+                mode.name.lower() for mode in AirhumidifierMiotOperationMode
+            ]
         elif model == MODEL_AIRHUMIDIFIER_JSQ1:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQ1
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ1
             self._attr_available_modes = [
-                mode.name
+                mode.name.lower()
                 for mode in AirhumidifierMjjsqOperationMode
                 if self._device_features & FEATURE_SET_WET_PROTECTION != 0
                 or mode != AirhumidifierMjjsqOperationMode.WetAndProtect
@@ -150,7 +152,7 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_MJJSQ
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_MJJSQ
             self._attr_available_modes = [
-                mode.name
+                mode.name.lower()
                 for mode in AirhumidifierMjjsqOperationMode
                 if self._device_features & FEATURE_SET_WET_PROTECTION != 0
                 or mode != AirhumidifierMjjsqOperationMode.WetAndProtect
@@ -158,24 +160,32 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
         elif model in [MODEL_AIRHUMIDIFIER_JSQ3, MODEL_AIRHUMIDIFIER_JSQ5]:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ5
-            self._attr_available_modes = [mode.name for mode in AirhumidifierJsqsOperationMode]
+            self._attr_available_modes = [
+                mode.name.lower() for mode in AirhumidifierJsqsOperationMode
+            ]
         elif model in [MODEL_AIRHUMIDIFIER_JSQ2W, MODEL_AIRHUMIDIFIER_JSQS]:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQS
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQS
-            self._attr_available_modes = [mode.name for mode in AirhumidifierJsqsOperationMode]
+            self._attr_available_modes = [
+                mode.name.lower() for mode in AirhumidifierJsqsOperationMode
+            ]
         elif model == MODEL_AIRHUMIDIFIER_JSQ001:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQ
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ
-            self._attr_available_modes = [mode.name for mode in AirhumidifierJsqOperationMode]
+            self._attr_available_modes = [
+                mode.name.lower() for mode in AirhumidifierJsqOperationMode
+            ]
         elif self._is_miot:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_CA4
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA4
-            self._attr_available_modes = [mode.name for mode in AirhumidifierMiotOperationMode]
+            self._attr_available_modes = [
+                mode.name.lower() for mode in AirhumidifierMiotOperationMode
+            ]
         else:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER
             self._attr_available_modes = [
-                mode.name
+                mode.name.lower()
                 for mode in AirhumidifierOperationMode
                 if mode is not AirhumidifierOperationMode.Auto
             ]
@@ -203,7 +213,7 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
         if self.coordinator.data:
             mode = self.coordinator.data.get("mode")
             if mode:
-                return mode
+                return mode.lower()
         return None
 
     async def async_turn_on(self, **kwargs: Any) -> None:

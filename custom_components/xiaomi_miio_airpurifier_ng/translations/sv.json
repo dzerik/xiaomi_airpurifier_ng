@@ -286,15 +286,15 @@
       "mode": {
         "name": "Läge",
         "state": {
-          "Low": "Låg",
-          "Medium": "Medium",
-          "High": "Hög",
-          "Humidity": "Auto",
-          "Auto": "Auto",
-          "Silent": "Tyst",
-          "Strong": "Stark",
-          "Favorite": "Favorit",
-          "WetAndProtect": "Fukt och skydd"
+          "low": "Låg",
+          "medium": "Medium",
+          "high": "Hög",
+          "humidity": "Auto",
+          "auto": "Auto",
+          "silent": "Tyst",
+          "strong": "Stark",
+          "favorite": "Favorit",
+          "wetandprotect": "Fukt och skydd"
         }
       }
     }

@@ -286,15 +286,15 @@
       "mode": {
         "name": "Tryb",
         "state": {
-          "Low": "Niski",
-          "Medium": "Średni",
-          "High": "Wysoki",
-          "Humidity": "Automatyczny",
-          "Auto": "Automatyczny",
-          "Silent": "Cichy",
-          "Strong": "Mocny",
-          "Favorite": "Ulubiony",
-          "WetAndProtect": "Nawilżanie i ochrona"
+          "low": "Niski",
+          "medium": "Średni",
+          "high": "Wysoki",
+          "humidity": "Automatyczny",
+          "auto": "Automatyczny",
+          "silent": "Cichy",
+          "strong": "Mocny",
+          "favorite": "Ulubiony",
+          "wetandprotect": "Nawilżanie i ochrona"
         }
       }
     }

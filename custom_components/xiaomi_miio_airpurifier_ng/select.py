@@ -304,14 +304,15 @@ class XiaomiMiioModeSelect(XiaomiMiioEntity, SelectEntity):
     def _get_mode_options(self) -> list[str]:
         """Get available mode options for this device."""
         if self._mode_enum:
-            return [mode.name for mode in self._mode_enum]
+            return [mode.name.lower() for mode in self._mode_enum]
         return []
 
     @property
     def current_option(self) -> str | None:
         """Return the current mode."""
         if self.coordinator.data:
-            return self.coordinator.data.get("mode")
+            mode = self.coordinator.data.get("mode")
+            return mode.lower() if mode else None
         return None
 
     async def async_select_option(self, option: str) -> None:
@@ -321,12 +322,12 @@ class XiaomiMiioModeSelect(XiaomiMiioEntity, SelectEntity):
             return
 
         try:
-            # Convert option string to enum
-            mode_enum = self._mode_enum[option]
+            # Convert lowercase option back to enum (case-insensitive lookup)
+            mode_enum = next(m for m in self._mode_enum if m.name.lower() == option.lower())
             await self.hass.async_add_executor_job(self.coordinator.device.set_mode, mode_enum)
             await self.coordinator.async_request_refresh()
             _LOGGER.debug("Successfully set mode to %s", option)
-        except KeyError:
+        except StopIteration:
             _LOGGER.error("Invalid mode option: %s", option)
         except Exception as ex:  # noqa: BLE001
             _LOGGER.error("Failed to set mode to %s: %s", option, ex)

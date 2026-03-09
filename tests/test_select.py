@@ -250,7 +250,7 @@ class TestXiaomiMiioModeSelect:
         """Returns current mode from data."""
         coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_JSQS, data={"mode": "Auto"})
         select = XiaomiMiioModeSelect(coord)
-        assert select.current_option == "Auto"
+        assert select.current_option == "auto"
 
     def test_current_option_none(self):
         """Returns None when no data."""

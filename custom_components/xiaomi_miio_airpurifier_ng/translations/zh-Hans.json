@@ -286,15 +286,15 @@
       "mode": {
         "name": "模式",
         "state": {
-          "Low": "低速",
-          "Medium": "中速",
-          "High": "高速",
-          "Humidity": "自动",
-          "Auto": "自动",
-          "Silent": "静音",
-          "Strong": "强力",
-          "Favorite": "喜爱",
-          "WetAndProtect": "加湿保护"
+          "low": "低速",
+          "medium": "中速",
+          "high": "高速",
+          "humidity": "自动",
+          "auto": "自动",
+          "silent": "静音",
+          "strong": "强力",
+          "favorite": "喜爱",
+          "wetandprotect": "加湿保护"
         }
       }
     }

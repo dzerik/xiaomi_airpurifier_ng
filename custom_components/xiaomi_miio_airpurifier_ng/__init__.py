@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
 
+import homeassistant.helpers.config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
@@ -97,9 +97,6 @@ from .coordinator import (
     XiaomiMiioDataUpdateCoordinator,
 )
 
-if TYPE_CHECKING:
-    from homeassistant.helpers.typing import ConfigType
-
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[Platform] = [
@@ -116,10 +113,7 @@ PLATFORMS: list[Platform] = [
 
 type XiaomiMiioConfigEntry = ConfigEntry[XiaomiMiioDataUpdateCoordinator]
 
-
-async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
-    """Set up the Xiaomi Miio component."""
-    return True
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: XiaomiMiioConfigEntry) -> bool:

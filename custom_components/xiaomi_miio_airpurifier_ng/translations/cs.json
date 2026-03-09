@@ -286,15 +286,15 @@
       "mode": {
         "name": "Režim",
         "state": {
-          "Low": "Nízký",
-          "Medium": "Střední",
-          "High": "Vysoký",
-          "Humidity": "Auto",
-          "Auto": "Auto",
-          "Silent": "Tichý",
-          "Strong": "Silný",
-          "Favorite": "Oblíbený",
-          "WetAndProtect": "Vlhčení a ochrana"
+          "low": "Nízký",
+          "medium": "Střední",
+          "high": "Vysoký",
+          "humidity": "Auto",
+          "auto": "Auto",
+          "silent": "Tichý",
+          "strong": "Silný",
+          "favorite": "Oblíbený",
+          "wetandprotect": "Vlhčení a ochrana"
         }
       }
     }

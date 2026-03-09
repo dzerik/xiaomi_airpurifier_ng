@@ -286,15 +286,15 @@
       "mode": {
         "name": "Mod",
         "state": {
-          "Low": "Düşük",
-          "Medium": "Orta",
-          "High": "Yüksek",
-          "Humidity": "Otomatik",
-          "Auto": "Otomatik",
-          "Silent": "Sessiz",
-          "Strong": "Güçlü",
-          "Favorite": "Favori",
-          "WetAndProtect": "Nemlendirme ve Koruma"
+          "low": "Düşük",
+          "medium": "Orta",
+          "high": "Yüksek",
+          "humidity": "Otomatik",
+          "auto": "Otomatik",
+          "silent": "Sessiz",
+          "strong": "Güçlü",
+          "favorite": "Favori",
+          "wetandprotect": "Nemlendirme ve Koruma"
         }
       }
     }

@@ -292,15 +292,15 @@
       "mode": {
         "name": "Режим",
         "state": {
-          "Low": "Низкий",
-          "Medium": "Средний",
-          "High": "Высокий",
-          "Humidity": "Авто",
-          "Auto": "Авто",
-          "Silent": "Тихий",
-          "Strong": "Сильный",
-          "Favorite": "Избранный",
-          "WetAndProtect": "Влажность и защита"
+          "low": "Низкий",
+          "medium": "Средний",
+          "high": "Высокий",
+          "humidity": "Авто",
+          "auto": "Авто",
+          "silent": "Тихий",
+          "strong": "Сильный",
+          "favorite": "Избранный",
+          "wetandprotect": "Влажность и защита"
         }
       }
     }
