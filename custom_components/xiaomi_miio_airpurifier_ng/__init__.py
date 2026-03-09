@@ -23,6 +23,7 @@ from miio import (
     Fan1C,
     FanLeshow,
     FanMiot,
+    FanP5,
 )
 
 from homeassistant.config_entries import ConfigEntry
@@ -216,8 +217,9 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
     # Fan models
     if model in (MODEL_FAN_1C, MODEL_FAN_P8):
         return Fan1C(ip=host, token=token, model=model)
+    if model == MODEL_FAN_P5:
+        return FanP5(ip=host, token=token, model=model)
     if model in (
-        MODEL_FAN_P5,
         MODEL_FAN_P9,
         MODEL_FAN_P10,
         MODEL_FAN_P11,
