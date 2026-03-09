@@ -152,9 +152,8 @@ class TestPresetMode:
     """Tests for preset_mode property."""
 
     def test_preset_mode_valid(self):
-        """Returns mode name for valid enum value."""
-        mode = AirdehumidifierOperationMode.Auto
-        coord = _make_coordinator(data={"mode": mode.value})
+        """Returns mode name string from coordinator data."""
+        coord = _make_coordinator(data={"mode": "Auto"})
         entity = XiaomiAirDehumidifierClimate(coord)
         assert entity.preset_mode == "Auto"
 
@@ -164,20 +163,20 @@ class TestPresetMode:
         entity = XiaomiAirDehumidifierClimate(coord)
         assert entity.preset_mode is None
 
-    def test_preset_mode_invalid_value(self):
-        """Returns None for invalid mode value."""
-        coord = _make_coordinator(data={"mode": 999})
-        entity = XiaomiAirDehumidifierClimate(coord)
-        assert entity.preset_mode is None
+    def test_preset_mode_all_modes(self):
+        """All operation modes are returned as-is from coordinator."""
+        for mode in AirdehumidifierOperationMode:
+            coord = _make_coordinator(data={"mode": mode.name})
+            entity = XiaomiAirDehumidifierClimate(coord)
+            assert entity.preset_mode == mode.name
 
 
 class TestFanMode:
     """Tests for fan_mode property."""
 
     def test_fan_mode_valid(self):
-        """Returns fan speed name for valid value."""
-        speed = AirdehumidifierFanSpeed.Low
-        coord = _make_coordinator(data={"fan_speed": speed.value})
+        """Returns fan speed name string from coordinator data."""
+        coord = _make_coordinator(data={"fan_speed": "Low"})
         entity = XiaomiAirDehumidifierClimate(coord)
         assert entity.fan_mode == "Low"
 
@@ -187,11 +186,12 @@ class TestFanMode:
         entity = XiaomiAirDehumidifierClimate(coord)
         assert entity.fan_mode is None
 
-    def test_fan_mode_invalid_value(self):
-        """Returns None for invalid fan speed value."""
-        coord = _make_coordinator(data={"fan_speed": 999})
-        entity = XiaomiAirDehumidifierClimate(coord)
-        assert entity.fan_mode is None
+    def test_fan_mode_all_speeds(self):
+        """All fan speeds are returned as-is from coordinator."""
+        for speed in AirdehumidifierFanSpeed:
+            coord = _make_coordinator(data={"fan_speed": speed.name})
+            entity = XiaomiAirDehumidifierClimate(coord)
+            assert entity.fan_mode == speed.name
 
 
 class TestSupportedFeatures:
@@ -254,8 +254,7 @@ class TestSetHumidity:
     @pytest.mark.asyncio
     async def test_set_humidity_rounds_to_10(self):
         """Humidity rounded to nearest 10."""
-        mode = AirdehumidifierOperationMode.Auto
-        coord = _make_coordinator(data={"power": "on", "mode": mode.value})
+        coord = _make_coordinator(data={"power": "on", "mode": "Auto"})
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
         await entity.async_set_humidity(47)
@@ -264,8 +263,7 @@ class TestSetHumidity:
     @pytest.mark.asyncio
     async def test_set_humidity_43_rounds_to_40(self):
         """43 rounds to 40."""
-        mode = AirdehumidifierOperationMode.Auto
-        coord = _make_coordinator(data={"power": "on", "mode": mode.value})
+        coord = _make_coordinator(data={"power": "on", "mode": "Auto"})
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
         await entity.async_set_humidity(43)
@@ -274,8 +272,9 @@ class TestSetHumidity:
     @pytest.mark.asyncio
     async def test_set_humidity_switches_to_auto(self):
         """Switches to Auto mode if not in Auto."""
-        mode = AirdehumidifierOperationMode.DryCloth
-        coord = _make_coordinator(data={"power": "on", "mode": mode.value})
+        coord = _make_coordinator(data={"power": "on", "mode": "DryCloth"})
+        # set_mode must return SUCCESS (['ok']) for _try_command to proceed
+        coord.device.set_mode.return_value = ["ok"]
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
         await entity.async_set_humidity(50)
@@ -313,7 +312,7 @@ class TestSetFanMode:
     async def test_set_fan_mode_valid(self):
         """Valid fan mode calls set_fan_speed."""
         coord = _make_coordinator(
-            data={"power": "on", "mode": AirdehumidifierOperationMode.Auto.value}
+            data={"power": "on", "mode": "Auto"}
         )
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
@@ -324,7 +323,7 @@ class TestSetFanMode:
     async def test_set_fan_mode_drycloth_noop(self):
         """Fan mode cannot be changed in DryCloth mode."""
         coord = _make_coordinator(
-            data={"power": "on", "mode": AirdehumidifierOperationMode.DryCloth.value}
+            data={"power": "on", "mode": "DryCloth"}
         )
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
@@ -335,7 +334,7 @@ class TestSetFanMode:
     async def test_set_fan_mode_invalid(self):
         """Invalid fan mode does not call device."""
         coord = _make_coordinator(
-            data={"power": "on", "mode": AirdehumidifierOperationMode.Auto.value}
+            data={"power": "on", "mode": "Auto"}
         )
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass

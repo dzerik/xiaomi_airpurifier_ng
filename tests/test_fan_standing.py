@@ -263,20 +263,18 @@ class TestSetPresetMode:
     @pytest.mark.asyncio
     async def test_set_preset_mode_standard_natural(self):
         """Standard fan in natural mode uses set_natural_speed."""
-        coord = _make_coordinator(model="zhimi.fan.v2")
+        coord = _make_coordinator(model="zhimi.fan.v2", data={"natural_speed": 50})
         fan = XiaomiStandingFan(coord)
         fan.hass = coord.hass
-        fan._natural_mode = True
         await fan.async_set_preset_mode("Level 2")
         coord.device.set_natural_speed.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_set_preset_mode_standard_direct(self):
         """Standard fan in direct mode uses set_direct_speed."""
-        coord = _make_coordinator(model="zhimi.fan.v2")
+        coord = _make_coordinator(model="zhimi.fan.v2", data={"natural_speed": 0})
         fan = XiaomiStandingFan(coord)
         fan.hass = coord.hass
-        fan._natural_mode = False
         await fan.async_set_preset_mode("Level 2")
         coord.device.set_direct_speed.assert_called_once()
 
@@ -327,20 +325,18 @@ class TestSetPercentage:
     @pytest.mark.asyncio
     async def test_set_percentage_standard_direct(self):
         """Standard fan in direct mode calls set_direct_speed."""
-        coord = _make_coordinator(model="zhimi.fan.v2")
+        coord = _make_coordinator(model="zhimi.fan.v2", data={"natural_speed": 0})
         fan = XiaomiStandingFan(coord)
         fan.hass = coord.hass
-        fan._natural_mode = False
         await fan.async_set_percentage(75)
         coord.device.set_direct_speed.assert_called_once_with(75)
 
     @pytest.mark.asyncio
     async def test_set_percentage_standard_natural(self):
         """Standard fan in natural mode calls set_natural_speed."""
-        coord = _make_coordinator(model="zhimi.fan.v2")
+        coord = _make_coordinator(model="zhimi.fan.v2", data={"natural_speed": 50})
         fan = XiaomiStandingFan(coord)
         fan.hass = coord.hass
-        fan._natural_mode = True
         await fan.async_set_percentage(75)
         coord.device.set_natural_speed.assert_called_once_with(75)
 
@@ -411,21 +407,19 @@ class TestNaturalMode:
     @pytest.mark.asyncio
     async def test_natural_mode_on_p5(self):
         """P5-style uses set_mode(Nature)."""
-        coord = _make_coordinator(model=MODEL_FAN_P5)
+        coord = _make_coordinator(model=MODEL_FAN_P5, data={"mode": "Normal"})
         fan = XiaomiStandingFan(coord)
         fan.hass = coord.hass
         await fan.async_set_natural_mode_on()
-        assert fan._natural_mode is True
         coord.device.set_mode.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_natural_mode_off_p5(self):
         """P5-style uses set_mode(Normal)."""
-        coord = _make_coordinator(model=MODEL_FAN_P5)
+        coord = _make_coordinator(model=MODEL_FAN_P5, data={"mode": "Nature"})
         fan = XiaomiStandingFan(coord)
         fan.hass = coord.hass
         await fan.async_set_natural_mode_off()
-        assert fan._natural_mode is False
         coord.device.set_mode.assert_called_once()
 
     @pytest.mark.asyncio
@@ -435,7 +429,6 @@ class TestNaturalMode:
         fan = XiaomiStandingFan(coord)
         fan.hass = coord.hass
         await fan.async_set_natural_mode_on()
-        assert fan._natural_mode is True
         coord.device.set_natural_speed.assert_called_once()
 
     @pytest.mark.asyncio
@@ -445,7 +438,6 @@ class TestNaturalMode:
         fan = XiaomiStandingFan(coord)
         fan.hass = coord.hass
         await fan.async_set_natural_mode_off()
-        assert fan._natural_mode is False
         coord.device.set_direct_speed.assert_called_once()
 
 
