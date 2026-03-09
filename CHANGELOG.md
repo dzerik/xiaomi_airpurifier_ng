@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0-rc.1] - 2026-03-09
+
+### Changed
+- **Покрытие тестами**: 91% → 94% (316 → 469 тестов)
+  - `entity.py`: 86% → 100%
+  - `button.py`: 70% → 100%
+  - `__init__.py`: 71% → 99%
+  - `binary_sensor.py`: 77% → 98%
+- README.md полностью переписан: поддерживаемые устройства, установка HACS, настройка, платформы, breaking changes
+
+### Added
+- Тесты для `_create_device()` (25 тестов, все ветки моделей)
+- Тесты для `_create_coordinator()` (7 тестов, все категории)
+- Тесты для `XiaomiMiioEntity` (is_on, extra_state_attributes, _async_device_on/off, device_info)
+- Тесты для `button.py` (async_press, async_setup_entry)
+- Тесты для `binary_sensor.py` (discovery, is_on)
+
 ## [3.0.0-alpha.20] - 2026-03-09
 
 ### Changed
