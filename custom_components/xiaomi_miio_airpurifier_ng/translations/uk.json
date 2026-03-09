@@ -1,0 +1,308 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "Параметри",
+        "description": "Налаштуйте параметри інтеграції.",
+        "data": {
+          "scan_interval": "Інтервал оновлення"
+        },
+        "data_description": {
+          "scan_interval": "Як часто опитувати пристрій для оновлення даних (у секундах)."
+        }
+      }
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Налаштування Xiaomi Air Purifier",
+        "description": "Введіть дані підключення для вашого пристрою Xiaomi.",
+        "data": {
+          "host": "Хост",
+          "token": "Token",
+          "name": "Назва (необов'язково)",
+          "model": "Модель (необов'язково, визначається автоматично)"
+        },
+        "data_description": {
+          "host": "IP-адреса або ім'я хоста вашого пристрою Xiaomi.",
+          "token": "32-символьний token для автентифікації пристрою. Його можна отримати різними способами, описаними в документації.",
+          "name": "Зрозуміла назва пристрою.",
+          "model": "Модель пристрою. Залиште порожнім для автоматичного визначення."
+        }
+      },
+      "reconfigure": {
+        "title": "Переналаштування Xiaomi Air Purifier",
+        "description": "Оновіть дані підключення для вашого пристрою Xiaomi.",
+        "data": {
+          "host": "Хост",
+          "token": "Token",
+          "model": "Модель"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Повторна автентифікація Xiaomi Air Purifier",
+        "description": "Token для {host} більше не дійсний. Будь ласка, введіть новий token.",
+        "data": {
+          "token": "Token"
+        },
+        "data_description": {
+          "token": "Новий 32-символьний token для автентифікації пристрою."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Не вдалося підключитися до пристрою. Перевірте хост і token.",
+      "unknown": "Сталася неочікувана помилка."
+    },
+    "abort": {
+      "already_configured": "Цей пристрій вже налаштовано.",
+      "reconfigure_successful": "Конфігурацію успішно оновлено.",
+      "reauth_successful": "Повторна автентифікація пройшла успішно."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Бак для води"
+      },
+      "water_shortage": {
+        "name": "Нестача води"
+      },
+      "water_tank_detached": {
+        "name": "Бак для води від'єднано"
+      },
+      "no_water": {
+        "name": "Немає води"
+      },
+      "ac_power": {
+        "name": "Живлення від мережі"
+      },
+      "battery_charge": {
+        "name": "Заряджання батареї"
+      },
+      "oscillate": {
+        "name": "Коливання"
+      },
+      "ptc_status": {
+        "name": "Нагрівач активний"
+      }
+    },
+    "sensor": {
+      "aqi": {
+        "name": "Індекс якості повітря"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "average_aqi": {
+        "name": "Середній AQI"
+      },
+      "temperature": {
+        "name": "Температура"
+      },
+      "humidity": {
+        "name": "Вологість"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "tvoc": {
+        "name": "TVOC"
+      },
+      "illuminance": {
+        "name": "Освітленість"
+      },
+      "filter_life_remaining": {
+        "name": "Ресурс фільтра"
+      },
+      "filter_hours_used": {
+        "name": "Години роботи фільтра"
+      },
+      "filter_left_time": {
+        "name": "Залишок днів фільтра"
+      },
+      "filter_type": {
+        "name": "Тип фільтра"
+      },
+      "motor_speed": {
+        "name": "Швидкість мотора"
+      },
+      "motor2_speed": {
+        "name": "Швидкість мотора 2"
+      },
+      "use_time": {
+        "name": "Час використання"
+      },
+      "purify_volume": {
+        "name": "Об'єм очищення"
+      },
+      "water_level": {
+        "name": "Рівень води"
+      },
+      "target_humidity": {
+        "name": "Цільова вологість"
+      },
+      "battery": {
+        "name": "Батарея"
+      },
+      "mode": {
+        "name": "Режим"
+      },
+      "volume": {
+        "name": "Гучність"
+      },
+      "temperature_outside": {
+        "name": "Зовнішня температура"
+      },
+      "dust_filter_life_remaining": {
+        "name": "Ресурс пилового фільтра"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "Залишок днів пилового фільтра"
+      },
+      "upper_filter_life_remaining": {
+        "name": "Ресурс верхнього фільтра"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "Залишок днів верхнього фільтра"
+      },
+      "favorite_speed": {
+        "name": "Улюблена швидкість"
+      },
+      "control_speed": {
+        "name": "Швидкість керування"
+      },
+      "speed": {
+        "name": "Швидкість"
+      },
+      "natural_speed": {
+        "name": "Природна швидкість"
+      },
+      "direct_speed": {
+        "name": "Пряма швидкість"
+      },
+      "angle": {
+        "name": "Кут коливання"
+      }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "Зумер"
+      },
+      "led": {
+        "name": "LED"
+      },
+      "led_light": {
+        "name": "Світло LED"
+      },
+      "child_lock": {
+        "name": "Захист від дітей"
+      },
+      "dry": {
+        "name": "Режим сушіння"
+      },
+      "learn_mode": {
+        "name": "Режим навчання"
+      },
+      "auto_detect": {
+        "name": "Автоматичне виявлення"
+      },
+      "oscillate": {
+        "name": "Коливання"
+      },
+      "ptc": {
+        "name": "Нагрівач PTC"
+      },
+      "overwet_protect": {
+        "name": "Захист від перезволоження"
+      },
+      "display": {
+        "name": "Дисплей"
+      },
+      "anion": {
+        "name": "Іонізатор"
+      },
+      "gestures": {
+        "name": "Керування жестами"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "Скинути фільтр"
+      },
+      "filters_cleaned": {
+        "name": "Позначити фільтри як очищені"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "Улюблений рівень"
+      },
+      "fan_level": {
+        "name": "Рівень вентилятора"
+      },
+      "volume": {
+        "name": "Гучність"
+      },
+      "target_humidity": {
+        "name": "Цільова вологість"
+      },
+      "angle": {
+        "name": "Кут коливання"
+      },
+      "delay_off_countdown": {
+        "name": "Відкладене вимкнення"
+      }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "Яскравість LED",
+        "state": {
+          "bright": "Яскраво",
+          "dim": "Тьмяно",
+          "off": "Вимкнено"
+        }
+      },
+      "display_orientation": {
+        "name": "Орієнтація дисплея",
+        "state": {
+          "forward": "Вперед",
+          "left": "Ліворуч",
+          "right": "Праворуч"
+        }
+      },
+      "ptc_level": {
+        "name": "Рівень PTC",
+        "state": {
+          "low": "Низький",
+          "medium": "Середній",
+          "high": "Високий"
+        }
+      },
+      "mode": {
+        "name": "Режим",
+        "state": {
+          "Low": "Низький",
+          "Medium": "Середній",
+          "High": "Високий",
+          "Humidity": "Авто",
+          "Auto": "Авто",
+          "Silent": "Тихий",
+          "Strong": "Потужний",
+          "Favorite": "Улюблений",
+          "WetAndProtect": "Зволоження і захист"
+        }
+      }
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "Конфігурація YAML застаріла",
+      "description": "Конфігурація YAML для {integration} ({platform}) застаріла і буде видалена в майбутній версії. Будь ласка, використовуйте інтерфейс для налаштування цієї інтеграції: Налаштування > Пристрої та служби > Додати інтеграцію."
+    }
+  }
+}

@@ -1,0 +1,308 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "选项",
+        "description": "配置集成设置。",
+        "data": {
+          "scan_interval": "更新间隔"
+        },
+        "data_description": {
+          "scan_interval": "轮询设备更新的频率（以秒为单位）。"
+        }
+      }
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "配置小米空气净化器",
+        "description": "输入小米设备的连接信息。",
+        "data": {
+          "host": "主机地址",
+          "token": "Token",
+          "name": "名称（可选）",
+          "model": "型号（可选，自动检测）"
+        },
+        "data_description": {
+          "host": "小米设备的 IP 地址或主机名。",
+          "token": "用于设备认证的 32 位字符 token。您可以通过文档中描述的多种方法获取。",
+          "name": "设备的友好名称。",
+          "model": "设备型号。留空以自动检测。"
+        }
+      },
+      "reconfigure": {
+        "title": "重新配置小米空气净化器",
+        "description": "更新小米设备的连接信息。",
+        "data": {
+          "host": "主机地址",
+          "token": "Token",
+          "model": "型号"
+        }
+      },
+      "reauth_confirm": {
+        "title": "重新认证小米空气净化器",
+        "description": "{host} 的 token 已失效。请输入新的 token。",
+        "data": {
+          "token": "Token"
+        },
+        "data_description": {
+          "token": "用于设备认证的新 32 位字符 token。"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "无法连接到设备。请检查主机地址和 token。",
+      "unknown": "发生了意外错误。"
+    },
+    "abort": {
+      "already_configured": "该设备已配置。",
+      "reconfigure_successful": "配置已成功更新。",
+      "reauth_successful": "重新认证成功。"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "水箱"
+      },
+      "water_shortage": {
+        "name": "缺水"
+      },
+      "water_tank_detached": {
+        "name": "水箱已拆卸"
+      },
+      "no_water": {
+        "name": "无水"
+      },
+      "ac_power": {
+        "name": "交流电源"
+      },
+      "battery_charge": {
+        "name": "电池充电中"
+      },
+      "oscillate": {
+        "name": "摇摆"
+      },
+      "ptc_status": {
+        "name": "加热器运行中"
+      }
+    },
+    "sensor": {
+      "aqi": {
+        "name": "空气质量指数"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "average_aqi": {
+        "name": "平均 AQI"
+      },
+      "temperature": {
+        "name": "温度"
+      },
+      "humidity": {
+        "name": "湿度"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "tvoc": {
+        "name": "TVOC"
+      },
+      "illuminance": {
+        "name": "照度"
+      },
+      "filter_life_remaining": {
+        "name": "滤芯寿命"
+      },
+      "filter_hours_used": {
+        "name": "滤芯使用时长"
+      },
+      "filter_left_time": {
+        "name": "滤芯剩余天数"
+      },
+      "filter_type": {
+        "name": "滤芯类型"
+      },
+      "motor_speed": {
+        "name": "电机转速"
+      },
+      "motor2_speed": {
+        "name": "电机 2 转速"
+      },
+      "use_time": {
+        "name": "使用时间"
+      },
+      "purify_volume": {
+        "name": "净化量"
+      },
+      "water_level": {
+        "name": "水位"
+      },
+      "target_humidity": {
+        "name": "目标湿度"
+      },
+      "battery": {
+        "name": "电池"
+      },
+      "mode": {
+        "name": "模式"
+      },
+      "volume": {
+        "name": "音量"
+      },
+      "temperature_outside": {
+        "name": "室外温度"
+      },
+      "dust_filter_life_remaining": {
+        "name": "灰尘滤芯寿命"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "灰尘滤芯剩余天数"
+      },
+      "upper_filter_life_remaining": {
+        "name": "上层滤芯寿命"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "上层滤芯剩余天数"
+      },
+      "favorite_speed": {
+        "name": "喜爱转速"
+      },
+      "control_speed": {
+        "name": "控制转速"
+      },
+      "speed": {
+        "name": "转速"
+      },
+      "natural_speed": {
+        "name": "自然风速"
+      },
+      "direct_speed": {
+        "name": "直吹风速"
+      },
+      "angle": {
+        "name": "摇摆角度"
+      }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "蜂鸣器"
+      },
+      "led": {
+        "name": "LED"
+      },
+      "led_light": {
+        "name": "LED 灯"
+      },
+      "child_lock": {
+        "name": "儿童锁"
+      },
+      "dry": {
+        "name": "干燥模式"
+      },
+      "learn_mode": {
+        "name": "学习模式"
+      },
+      "auto_detect": {
+        "name": "自动检测"
+      },
+      "oscillate": {
+        "name": "摇摆"
+      },
+      "ptc": {
+        "name": "PTC 加热器"
+      },
+      "overwet_protect": {
+        "name": "过湿保护"
+      },
+      "display": {
+        "name": "显示屏"
+      },
+      "anion": {
+        "name": "负离子"
+      },
+      "gestures": {
+        "name": "手势控制"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "重置滤芯"
+      },
+      "filters_cleaned": {
+        "name": "标记滤芯已清洁"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "喜爱档位"
+      },
+      "fan_level": {
+        "name": "风扇档位"
+      },
+      "volume": {
+        "name": "音量"
+      },
+      "target_humidity": {
+        "name": "目标湿度"
+      },
+      "angle": {
+        "name": "摇摆角度"
+      },
+      "delay_off_countdown": {
+        "name": "延时关机"
+      }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "LED 亮度",
+        "state": {
+          "bright": "明亮",
+          "dim": "暗淡",
+          "off": "关闭"
+        }
+      },
+      "display_orientation": {
+        "name": "显示方向",
+        "state": {
+          "forward": "正前方",
+          "left": "左侧",
+          "right": "右侧"
+        }
+      },
+      "ptc_level": {
+        "name": "PTC 档位",
+        "state": {
+          "low": "低",
+          "medium": "中",
+          "high": "高"
+        }
+      },
+      "mode": {
+        "name": "模式",
+        "state": {
+          "Low": "低速",
+          "Medium": "中速",
+          "High": "高速",
+          "Humidity": "自动",
+          "Auto": "自动",
+          "Silent": "静音",
+          "Strong": "强力",
+          "Favorite": "喜爱",
+          "WetAndProtect": "加湿保护"
+        }
+      }
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "YAML 配置已弃用",
+      "description": "{integration}（{platform}）的 YAML 配置已弃用，将在未来版本中移除。请通过界面配置此集成：设置 > 设备与服务 > 添加集成。"
+    }
+  }
+}

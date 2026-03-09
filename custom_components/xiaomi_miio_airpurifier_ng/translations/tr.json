@@ -1,0 +1,308 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "Seçenekler",
+        "description": "Entegrasyon ayarlarını yapılandırın.",
+        "data": {
+          "scan_interval": "Güncelleme aralığı"
+        },
+        "data_description": {
+          "scan_interval": "Cihazın ne sıklıkla güncellemeler için sorgulanacağı (saniye cinsinden)."
+        }
+      }
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Xiaomi Air Purifier Yapılandırması",
+        "description": "Xiaomi cihazınız için bağlantı bilgilerini girin.",
+        "data": {
+          "host": "Ana bilgisayar",
+          "token": "Token",
+          "name": "Ad (isteğe bağlı)",
+          "model": "Model (isteğe bağlı, otomatik algılama)"
+        },
+        "data_description": {
+          "host": "Xiaomi cihazınızın IP adresi veya ana bilgisayar adı.",
+          "token": "Cihaz kimlik doğrulaması için 32 karakterlik token. Bunu dokümantasyonda açıklanan çeşitli yöntemlerle elde edebilirsiniz.",
+          "name": "Cihaz için kolay anlaşılır bir ad.",
+          "model": "Cihaz modeli. Otomatik algılama için boş bırakın."
+        }
+      },
+      "reconfigure": {
+        "title": "Xiaomi Air Purifier Yeniden Yapılandırması",
+        "description": "Xiaomi cihazınız için bağlantı bilgilerini güncelleyin.",
+        "data": {
+          "host": "Ana bilgisayar",
+          "token": "Token",
+          "model": "Model"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Xiaomi Air Purifier Yeniden Kimlik Doğrulama",
+        "description": "{host} için token artık geçerli değil. Lütfen yeni bir token girin.",
+        "data": {
+          "token": "Token"
+        },
+        "data_description": {
+          "token": "Cihaz kimlik doğrulaması için yeni 32 karakterlik token."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cihaza bağlanılamadı. Lütfen ana bilgisayar adresini ve token'ı kontrol edin.",
+      "unknown": "Beklenmeyen bir hata oluştu."
+    },
+    "abort": {
+      "already_configured": "Bu cihaz zaten yapılandırılmış.",
+      "reconfigure_successful": "Yapılandırma başarıyla güncellendi.",
+      "reauth_successful": "Yeniden kimlik doğrulama başarılı."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Su Tankı"
+      },
+      "water_shortage": {
+        "name": "Su Eksikliği"
+      },
+      "water_tank_detached": {
+        "name": "Su Tankı Çıkarılmış"
+      },
+      "no_water": {
+        "name": "Su Yok"
+      },
+      "ac_power": {
+        "name": "Şebeke Gücü"
+      },
+      "battery_charge": {
+        "name": "Pil Şarj Oluyor"
+      },
+      "oscillate": {
+        "name": "Salınım"
+      },
+      "ptc_status": {
+        "name": "Isıtıcı Aktif"
+      }
+    },
+    "sensor": {
+      "aqi": {
+        "name": "Hava Kalitesi İndeksi"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "average_aqi": {
+        "name": "Ortalama AQI"
+      },
+      "temperature": {
+        "name": "Sıcaklık"
+      },
+      "humidity": {
+        "name": "Nem"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "tvoc": {
+        "name": "TVOC"
+      },
+      "illuminance": {
+        "name": "Aydınlık"
+      },
+      "filter_life_remaining": {
+        "name": "Filtre Ömrü"
+      },
+      "filter_hours_used": {
+        "name": "Filtre Saatleri"
+      },
+      "filter_left_time": {
+        "name": "Kalan Filtre Günleri"
+      },
+      "filter_type": {
+        "name": "Filtre Türü"
+      },
+      "motor_speed": {
+        "name": "Motor Hızı"
+      },
+      "motor2_speed": {
+        "name": "Motor 2 Hızı"
+      },
+      "use_time": {
+        "name": "Kullanım Süresi"
+      },
+      "purify_volume": {
+        "name": "Arıtma Hacmi"
+      },
+      "water_level": {
+        "name": "Su Seviyesi"
+      },
+      "target_humidity": {
+        "name": "Hedef Nem"
+      },
+      "battery": {
+        "name": "Pil"
+      },
+      "mode": {
+        "name": "Mod"
+      },
+      "volume": {
+        "name": "Ses Düzeyi"
+      },
+      "temperature_outside": {
+        "name": "Dış Sıcaklık"
+      },
+      "dust_filter_life_remaining": {
+        "name": "Toz Filtresi Ömrü"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "Kalan Toz Filtresi Günleri"
+      },
+      "upper_filter_life_remaining": {
+        "name": "Üst Filtre Ömrü"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "Kalan Üst Filtre Günleri"
+      },
+      "favorite_speed": {
+        "name": "Favori Hız"
+      },
+      "control_speed": {
+        "name": "Kontrol Hızı"
+      },
+      "speed": {
+        "name": "Hız"
+      },
+      "natural_speed": {
+        "name": "Doğal Hız"
+      },
+      "direct_speed": {
+        "name": "Doğrudan Hız"
+      },
+      "angle": {
+        "name": "Salınım Açısı"
+      }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "Zil"
+      },
+      "led": {
+        "name": "LED"
+      },
+      "led_light": {
+        "name": "LED Işığı"
+      },
+      "child_lock": {
+        "name": "Çocuk Kilidi"
+      },
+      "dry": {
+        "name": "Kurutma Modu"
+      },
+      "learn_mode": {
+        "name": "Öğrenme Modu"
+      },
+      "auto_detect": {
+        "name": "Otomatik Algılama"
+      },
+      "oscillate": {
+        "name": "Salınım"
+      },
+      "ptc": {
+        "name": "PTC Isıtıcı"
+      },
+      "overwet_protect": {
+        "name": "Aşırı Nem Koruması"
+      },
+      "display": {
+        "name": "Ekran"
+      },
+      "anion": {
+        "name": "İyonlaştırıcı"
+      },
+      "gestures": {
+        "name": "Hareket Kontrolü"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "Filtreyi Sıfırla"
+      },
+      "filters_cleaned": {
+        "name": "Filtreleri Temizlendi Olarak İşaretle"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "Favori Seviye"
+      },
+      "fan_level": {
+        "name": "Fan Seviyesi"
+      },
+      "volume": {
+        "name": "Ses Düzeyi"
+      },
+      "target_humidity": {
+        "name": "Hedef Nem"
+      },
+      "angle": {
+        "name": "Salınım Açısı"
+      },
+      "delay_off_countdown": {
+        "name": "Gecikmeli Kapatma"
+      }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "LED Parlaklığı",
+        "state": {
+          "bright": "Parlak",
+          "dim": "Loş",
+          "off": "Kapalı"
+        }
+      },
+      "display_orientation": {
+        "name": "Ekran Yönü",
+        "state": {
+          "forward": "İleri",
+          "left": "Sol",
+          "right": "Sağ"
+        }
+      },
+      "ptc_level": {
+        "name": "PTC Seviyesi",
+        "state": {
+          "low": "Düşük",
+          "medium": "Orta",
+          "high": "Yüksek"
+        }
+      },
+      "mode": {
+        "name": "Mod",
+        "state": {
+          "Low": "Düşük",
+          "Medium": "Orta",
+          "High": "Yüksek",
+          "Humidity": "Otomatik",
+          "Auto": "Otomatik",
+          "Silent": "Sessiz",
+          "Strong": "Güçlü",
+          "Favorite": "Favori",
+          "WetAndProtect": "Nemlendirme ve Koruma"
+        }
+      }
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "YAML Yapılandırması Kullanımdan Kaldırıldı",
+      "description": "{integration} ({platform}) için YAML yapılandırması kullanımdan kaldırılmıştır ve gelecek bir sürümde kaldırılacaktır. Lütfen bu entegrasyonu yapılandırmak için Ayarlar > Cihazlar ve Hizmetler > Entegrasyon Ekle yolunu kullanarak arayüzden yapılandırın."
+    }
+  }
+}

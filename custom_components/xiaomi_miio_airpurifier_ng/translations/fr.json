@@ -1,0 +1,308 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "description": "Configurer les paramètres de l'intégration.",
+        "data": {
+          "scan_interval": "Intervalle de mise à jour"
+        },
+        "data_description": {
+          "scan_interval": "Fréquence d'interrogation de l'appareil pour les mises à jour (en secondes)."
+        }
+      }
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurer Xiaomi Air Purifier",
+        "description": "Entrez les informations de connexion de votre appareil Xiaomi.",
+        "data": {
+          "host": "Hôte",
+          "token": "Token",
+          "name": "Nom (optionnel)",
+          "model": "Modèle (optionnel, détection automatique)"
+        },
+        "data_description": {
+          "host": "L'adresse IP ou le nom d'hôte de votre appareil Xiaomi.",
+          "token": "Le token de 32 caractères pour l'authentification de l'appareil. Vous pouvez l'obtenir en utilisant les différentes méthodes décrites dans la documentation.",
+          "name": "Un nom convivial pour l'appareil.",
+          "model": "Le modèle de l'appareil. Laissez vide pour la détection automatique."
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigurer Xiaomi Air Purifier",
+        "description": "Mettre à jour les informations de connexion de votre appareil Xiaomi.",
+        "data": {
+          "host": "Hôte",
+          "token": "Token",
+          "model": "Modèle"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Réauthentifier Xiaomi Air Purifier",
+        "description": "Le token pour {host} n'est plus valide. Veuillez entrer un nouveau token.",
+        "data": {
+          "token": "Token"
+        },
+        "data_description": {
+          "token": "Le nouveau token de 32 caractères pour l'authentification de l'appareil."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à l'appareil. Veuillez vérifier l'hôte et le token.",
+      "unknown": "Une erreur inattendue s'est produite."
+    },
+    "abort": {
+      "already_configured": "Cet appareil est déjà configuré.",
+      "reconfigure_successful": "Configuration mise à jour avec succès.",
+      "reauth_successful": "Réauthentification réussie."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Réservoir d'eau"
+      },
+      "water_shortage": {
+        "name": "Manque d'eau"
+      },
+      "water_tank_detached": {
+        "name": "Réservoir d'eau détaché"
+      },
+      "no_water": {
+        "name": "Pas d'eau"
+      },
+      "ac_power": {
+        "name": "Alimentation secteur"
+      },
+      "battery_charge": {
+        "name": "Batterie en charge"
+      },
+      "oscillate": {
+        "name": "Oscillation"
+      },
+      "ptc_status": {
+        "name": "Chauffage actif"
+      }
+    },
+    "sensor": {
+      "aqi": {
+        "name": "Indice de qualité de l'air"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "average_aqi": {
+        "name": "AQI moyen"
+      },
+      "temperature": {
+        "name": "Température"
+      },
+      "humidity": {
+        "name": "Humidité"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "tvoc": {
+        "name": "TVOC"
+      },
+      "illuminance": {
+        "name": "Éclairement"
+      },
+      "filter_life_remaining": {
+        "name": "Durée de vie du filtre"
+      },
+      "filter_hours_used": {
+        "name": "Heures du filtre"
+      },
+      "filter_left_time": {
+        "name": "Jours restants du filtre"
+      },
+      "filter_type": {
+        "name": "Type de filtre"
+      },
+      "motor_speed": {
+        "name": "Vitesse du moteur"
+      },
+      "motor2_speed": {
+        "name": "Vitesse du moteur 2"
+      },
+      "use_time": {
+        "name": "Durée d'utilisation"
+      },
+      "purify_volume": {
+        "name": "Volume purifié"
+      },
+      "water_level": {
+        "name": "Niveau d'eau"
+      },
+      "target_humidity": {
+        "name": "Humidité cible"
+      },
+      "battery": {
+        "name": "Batterie"
+      },
+      "mode": {
+        "name": "Mode"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "temperature_outside": {
+        "name": "Température extérieure"
+      },
+      "dust_filter_life_remaining": {
+        "name": "Durée de vie du filtre à poussière"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "Jours restants du filtre à poussière"
+      },
+      "upper_filter_life_remaining": {
+        "name": "Durée de vie du filtre supérieur"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "Jours restants du filtre supérieur"
+      },
+      "favorite_speed": {
+        "name": "Vitesse favorite"
+      },
+      "control_speed": {
+        "name": "Vitesse de contrôle"
+      },
+      "speed": {
+        "name": "Vitesse"
+      },
+      "natural_speed": {
+        "name": "Vitesse naturelle"
+      },
+      "direct_speed": {
+        "name": "Vitesse directe"
+      },
+      "angle": {
+        "name": "Angle d'oscillation"
+      }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "Buzzer"
+      },
+      "led": {
+        "name": "LED"
+      },
+      "led_light": {
+        "name": "Lumière LED"
+      },
+      "child_lock": {
+        "name": "Sécurité enfant"
+      },
+      "dry": {
+        "name": "Mode séchage"
+      },
+      "learn_mode": {
+        "name": "Mode apprentissage"
+      },
+      "auto_detect": {
+        "name": "Détection automatique"
+      },
+      "oscillate": {
+        "name": "Oscillation"
+      },
+      "ptc": {
+        "name": "Chauffage PTC"
+      },
+      "overwet_protect": {
+        "name": "Protection contre l'humidité excessive"
+      },
+      "display": {
+        "name": "Écran"
+      },
+      "anion": {
+        "name": "Ioniseur"
+      },
+      "gestures": {
+        "name": "Contrôle gestuel"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "Réinitialiser le filtre"
+      },
+      "filters_cleaned": {
+        "name": "Marquer les filtres comme nettoyés"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "Niveau favori"
+      },
+      "fan_level": {
+        "name": "Niveau du ventilateur"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "target_humidity": {
+        "name": "Humidité cible"
+      },
+      "angle": {
+        "name": "Angle d'oscillation"
+      },
+      "delay_off_countdown": {
+        "name": "Arrêt différé"
+      }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "Luminosité LED",
+        "state": {
+          "bright": "Lumineux",
+          "dim": "Tamisé",
+          "off": "Éteint"
+        }
+      },
+      "display_orientation": {
+        "name": "Orientation de l'écran",
+        "state": {
+          "forward": "Avant",
+          "left": "Gauche",
+          "right": "Droite"
+        }
+      },
+      "ptc_level": {
+        "name": "Niveau PTC",
+        "state": {
+          "low": "Bas",
+          "medium": "Moyen",
+          "high": "Élevé"
+        }
+      },
+      "mode": {
+        "name": "Mode",
+        "state": {
+          "Low": "Bas",
+          "Medium": "Moyen",
+          "High": "Élevé",
+          "Humidity": "Automatique",
+          "Auto": "Automatique",
+          "Silent": "Silencieux",
+          "Strong": "Puissant",
+          "Favorite": "Favori",
+          "WetAndProtect": "Humide & Protection"
+        }
+      }
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "Configuration YAML obsolète",
+      "description": "La configuration YAML pour {integration} ({platform}) est obsolète et sera supprimée dans une future version. Veuillez utiliser l'interface utilisateur pour configurer cette intégration en allant dans Paramètres > Appareils & Services > Ajouter une intégration."
+    }
+  }
+}

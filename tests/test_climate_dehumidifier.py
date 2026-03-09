@@ -364,64 +364,6 @@ class TestTurnOnOff:
         coord.device.off.assert_called_once()
 
 
-class TestServiceMethods:
-    """Tests for service methods (buzzer, LED, child lock)."""
-
-    @pytest.mark.asyncio
-    async def test_set_buzzer_on(self):
-        """Buzzer on called."""
-        coord = _make_coordinator()
-        entity = XiaomiAirDehumidifierClimate(coord)
-        entity.hass = coord.hass
-        await entity.async_set_buzzer_on()
-        coord.device.set_buzzer.assert_called_once_with(True)
-
-    @pytest.mark.asyncio
-    async def test_set_buzzer_off(self):
-        """Buzzer off called."""
-        coord = _make_coordinator()
-        entity = XiaomiAirDehumidifierClimate(coord)
-        entity.hass = coord.hass
-        await entity.async_set_buzzer_off()
-        coord.device.set_buzzer.assert_called_once_with(False)
-
-    @pytest.mark.asyncio
-    async def test_set_led_on(self):
-        """LED on called."""
-        coord = _make_coordinator()
-        entity = XiaomiAirDehumidifierClimate(coord)
-        entity.hass = coord.hass
-        await entity.async_set_led_on()
-        coord.device.set_led.assert_called_once_with(True)
-
-    @pytest.mark.asyncio
-    async def test_set_led_off(self):
-        """LED off called."""
-        coord = _make_coordinator()
-        entity = XiaomiAirDehumidifierClimate(coord)
-        entity.hass = coord.hass
-        await entity.async_set_led_off()
-        coord.device.set_led.assert_called_once_with(False)
-
-    @pytest.mark.asyncio
-    async def test_set_child_lock_on(self):
-        """Child lock on called."""
-        coord = _make_coordinator()
-        entity = XiaomiAirDehumidifierClimate(coord)
-        entity.hass = coord.hass
-        await entity.async_set_child_lock_on()
-        coord.device.set_child_lock.assert_called_once_with(True)
-
-    @pytest.mark.asyncio
-    async def test_set_child_lock_off(self):
-        """Child lock off called."""
-        coord = _make_coordinator()
-        entity = XiaomiAirDehumidifierClimate(coord)
-        entity.hass = coord.hass
-        await entity.async_set_child_lock_off()
-        coord.device.set_child_lock.assert_called_once_with(False)
-
-
 class TestExtraStateAttributes:
     """Tests for extra_state_attributes."""
 

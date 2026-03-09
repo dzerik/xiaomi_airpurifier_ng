@@ -1,0 +1,308 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "Možnosti",
+        "description": "Nakonfigurujte nastavení integrace.",
+        "data": {
+          "scan_interval": "Interval aktualizace"
+        },
+        "data_description": {
+          "scan_interval": "Jak často se má dotazovat zařízení na aktualizace (v sekundách)."
+        }
+      }
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Konfigurace Xiaomi Air Purifier",
+        "description": "Zadejte údaje pro připojení k vašemu zařízení Xiaomi.",
+        "data": {
+          "host": "Hostitel",
+          "token": "Token",
+          "name": "Název (volitelný)",
+          "model": "Model (volitelný, automatická detekce)"
+        },
+        "data_description": {
+          "host": "IP adresa nebo název hostitele vašeho zařízení Xiaomi.",
+          "token": "32znakový token pro ověření zařízení. Můžete jej získat různými způsoby popsanými v dokumentaci.",
+          "name": "Přátelský název zařízení.",
+          "model": "Model zařízení. Ponechte prázdné pro automatickou detekci."
+        }
+      },
+      "reconfigure": {
+        "title": "Překonfigurovat Xiaomi Air Purifier",
+        "description": "Aktualizujte údaje pro připojení k vašemu zařízení Xiaomi.",
+        "data": {
+          "host": "Hostitel",
+          "token": "Token",
+          "model": "Model"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Opětovné ověření Xiaomi Air Purifier",
+        "description": "Token pro {host} již není platný. Zadejte prosím nový token.",
+        "data": {
+          "token": "Token"
+        },
+        "data_description": {
+          "token": "Nový 32znakový token pro ověření zařízení."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nepodařilo se připojit k zařízení. Zkontrolujte prosím hostitele a token.",
+      "unknown": "Došlo k neočekávané chybě."
+    },
+    "abort": {
+      "already_configured": "Toto zařízení je již nakonfigurováno.",
+      "reconfigure_successful": "Konfigurace byla úspěšně aktualizována.",
+      "reauth_successful": "Opětovné ověření bylo úspěšné."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Nádrž na vodu"
+      },
+      "water_shortage": {
+        "name": "Nedostatek vody"
+      },
+      "water_tank_detached": {
+        "name": "Nádrž na vodu odpojena"
+      },
+      "no_water": {
+        "name": "Žádná voda"
+      },
+      "ac_power": {
+        "name": "Napájení ze sítě"
+      },
+      "battery_charge": {
+        "name": "Nabíjení baterie"
+      },
+      "oscillate": {
+        "name": "Oscilace"
+      },
+      "ptc_status": {
+        "name": "Ohřívač aktivní"
+      }
+    },
+    "sensor": {
+      "aqi": {
+        "name": "Index kvality ovzduší"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "average_aqi": {
+        "name": "Průměrný AQI"
+      },
+      "temperature": {
+        "name": "Teplota"
+      },
+      "humidity": {
+        "name": "Vlhkost"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "tvoc": {
+        "name": "TVOC"
+      },
+      "illuminance": {
+        "name": "Osvětlení"
+      },
+      "filter_life_remaining": {
+        "name": "Životnost filtru"
+      },
+      "filter_hours_used": {
+        "name": "Hodiny filtru"
+      },
+      "filter_left_time": {
+        "name": "Zbývající dny filtru"
+      },
+      "filter_type": {
+        "name": "Typ filtru"
+      },
+      "motor_speed": {
+        "name": "Otáčky motoru"
+      },
+      "motor2_speed": {
+        "name": "Otáčky motoru 2"
+      },
+      "use_time": {
+        "name": "Doba používání"
+      },
+      "purify_volume": {
+        "name": "Objem čištění"
+      },
+      "water_level": {
+        "name": "Hladina vody"
+      },
+      "target_humidity": {
+        "name": "Cílová vlhkost"
+      },
+      "battery": {
+        "name": "Baterie"
+      },
+      "mode": {
+        "name": "Režim"
+      },
+      "volume": {
+        "name": "Hlasitost"
+      },
+      "temperature_outside": {
+        "name": "Venkovní teplota"
+      },
+      "dust_filter_life_remaining": {
+        "name": "Životnost prachového filtru"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "Zbývající dny prachového filtru"
+      },
+      "upper_filter_life_remaining": {
+        "name": "Životnost horního filtru"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "Zbývající dny horního filtru"
+      },
+      "favorite_speed": {
+        "name": "Oblíbená rychlost"
+      },
+      "control_speed": {
+        "name": "Rychlost ovládání"
+      },
+      "speed": {
+        "name": "Rychlost"
+      },
+      "natural_speed": {
+        "name": "Přirozená rychlost"
+      },
+      "direct_speed": {
+        "name": "Přímá rychlost"
+      },
+      "angle": {
+        "name": "Úhel oscilace"
+      }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "Bzučák"
+      },
+      "led": {
+        "name": "LED"
+      },
+      "led_light": {
+        "name": "LED světlo"
+      },
+      "child_lock": {
+        "name": "Dětský zámek"
+      },
+      "dry": {
+        "name": "Režim sušení"
+      },
+      "learn_mode": {
+        "name": "Režim učení"
+      },
+      "auto_detect": {
+        "name": "Automatická detekce"
+      },
+      "oscillate": {
+        "name": "Oscilace"
+      },
+      "ptc": {
+        "name": "PTC ohřívač"
+      },
+      "overwet_protect": {
+        "name": "Ochrana před převlhčením"
+      },
+      "display": {
+        "name": "Displej"
+      },
+      "anion": {
+        "name": "Ionizátor"
+      },
+      "gestures": {
+        "name": "Ovládání gesty"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "Resetovat filtr"
+      },
+      "filters_cleaned": {
+        "name": "Označit filtry jako vyčištěné"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "Oblíbená úroveň"
+      },
+      "fan_level": {
+        "name": "Úroveň ventilátoru"
+      },
+      "volume": {
+        "name": "Hlasitost"
+      },
+      "target_humidity": {
+        "name": "Cílová vlhkost"
+      },
+      "angle": {
+        "name": "Úhel oscilace"
+      },
+      "delay_off_countdown": {
+        "name": "Odložené vypnutí"
+      }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "Jas LED",
+        "state": {
+          "bright": "Jasný",
+          "dim": "Tlumený",
+          "off": "Vypnuto"
+        }
+      },
+      "display_orientation": {
+        "name": "Orientace displeje",
+        "state": {
+          "forward": "Vpřed",
+          "left": "Vlevo",
+          "right": "Vpravo"
+        }
+      },
+      "ptc_level": {
+        "name": "Úroveň PTC",
+        "state": {
+          "low": "Nízký",
+          "medium": "Střední",
+          "high": "Vysoký"
+        }
+      },
+      "mode": {
+        "name": "Režim",
+        "state": {
+          "Low": "Nízký",
+          "Medium": "Střední",
+          "High": "Vysoký",
+          "Humidity": "Auto",
+          "Auto": "Auto",
+          "Silent": "Tichý",
+          "Strong": "Silný",
+          "Favorite": "Oblíbený",
+          "WetAndProtect": "Vlhčení a ochrana"
+        }
+      }
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "YAML konfigurace je zastaralá",
+      "description": "YAML konfigurace pro {integration} ({platform}) je zastaralá a bude odstraněna v budoucí verzi. Použijte prosím uživatelské rozhraní pro konfiguraci této integrace v Nastavení > Zařízení a služby > Přidat integraci."
+    }
+  }
+}

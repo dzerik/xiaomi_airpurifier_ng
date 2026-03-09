@@ -1,0 +1,308 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opções",
+        "description": "Configure as opções da integração.",
+        "data": {
+          "scan_interval": "Intervalo de atualização"
+        },
+        "data_description": {
+          "scan_interval": "Frequência de consulta ao dispositivo para atualizações (em segundos)."
+        }
+      }
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurar Xiaomi Air Purifier",
+        "description": "Insira os detalhes de conexão do seu dispositivo Xiaomi.",
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "name": "Nome (opcional)",
+          "model": "Modelo (opcional, detectado automaticamente)"
+        },
+        "data_description": {
+          "host": "O endereço IP ou nome do host do seu dispositivo Xiaomi.",
+          "token": "O token de 32 caracteres para autenticação do dispositivo. Você pode obtê-lo usando os métodos descritos na documentação.",
+          "name": "Um nome amigável para o dispositivo.",
+          "model": "O modelo do dispositivo. Deixe vazio para detecção automática."
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigurar Xiaomi Air Purifier",
+        "description": "Atualize os detalhes de conexão do seu dispositivo Xiaomi.",
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "model": "Modelo"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reautenticar Xiaomi Air Purifier",
+        "description": "O token para {host} não é mais válido. Insira um novo token.",
+        "data": {
+          "token": "Token"
+        },
+        "data_description": {
+          "token": "O novo token de 32 caracteres para autenticação do dispositivo."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Falha ao conectar ao dispositivo. Verifique o host e o token.",
+      "unknown": "Ocorreu um erro inesperado."
+    },
+    "abort": {
+      "already_configured": "Este dispositivo já está configurado.",
+      "reconfigure_successful": "Configuração atualizada com sucesso.",
+      "reauth_successful": "Reautenticação realizada com sucesso."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Reservatório de água"
+      },
+      "water_shortage": {
+        "name": "Falta de água"
+      },
+      "water_tank_detached": {
+        "name": "Reservatório de água removido"
+      },
+      "no_water": {
+        "name": "Sem água"
+      },
+      "ac_power": {
+        "name": "Alimentação AC"
+      },
+      "battery_charge": {
+        "name": "Bateria carregando"
+      },
+      "oscillate": {
+        "name": "Oscilação"
+      },
+      "ptc_status": {
+        "name": "Aquecedor ativo"
+      }
+    },
+    "sensor": {
+      "aqi": {
+        "name": "Índice de qualidade do ar"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "average_aqi": {
+        "name": "AQI médio"
+      },
+      "temperature": {
+        "name": "Temperatura"
+      },
+      "humidity": {
+        "name": "Umidade"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "tvoc": {
+        "name": "TVOC"
+      },
+      "illuminance": {
+        "name": "Iluminância"
+      },
+      "filter_life_remaining": {
+        "name": "Vida útil do filtro"
+      },
+      "filter_hours_used": {
+        "name": "Horas do filtro"
+      },
+      "filter_left_time": {
+        "name": "Dias restantes do filtro"
+      },
+      "filter_type": {
+        "name": "Tipo de filtro"
+      },
+      "motor_speed": {
+        "name": "Velocidade do motor"
+      },
+      "motor2_speed": {
+        "name": "Velocidade do motor 2"
+      },
+      "use_time": {
+        "name": "Tempo de uso"
+      },
+      "purify_volume": {
+        "name": "Volume purificado"
+      },
+      "water_level": {
+        "name": "Nível de água"
+      },
+      "target_humidity": {
+        "name": "Umidade alvo"
+      },
+      "battery": {
+        "name": "Bateria"
+      },
+      "mode": {
+        "name": "Modo"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "temperature_outside": {
+        "name": "Temperatura externa"
+      },
+      "dust_filter_life_remaining": {
+        "name": "Vida útil do filtro de poeira"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "Dias restantes do filtro de poeira"
+      },
+      "upper_filter_life_remaining": {
+        "name": "Vida útil do filtro superior"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "Dias restantes do filtro superior"
+      },
+      "favorite_speed": {
+        "name": "Velocidade favorita"
+      },
+      "control_speed": {
+        "name": "Velocidade de controle"
+      },
+      "speed": {
+        "name": "Velocidade"
+      },
+      "natural_speed": {
+        "name": "Velocidade natural"
+      },
+      "direct_speed": {
+        "name": "Velocidade direta"
+      },
+      "angle": {
+        "name": "Ângulo de oscilação"
+      }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "Campainha"
+      },
+      "led": {
+        "name": "LED"
+      },
+      "led_light": {
+        "name": "Luz LED"
+      },
+      "child_lock": {
+        "name": "Trava infantil"
+      },
+      "dry": {
+        "name": "Modo secagem"
+      },
+      "learn_mode": {
+        "name": "Modo aprendizado"
+      },
+      "auto_detect": {
+        "name": "Detecção automática"
+      },
+      "oscillate": {
+        "name": "Oscilação"
+      },
+      "ptc": {
+        "name": "Aquecedor PTC"
+      },
+      "overwet_protect": {
+        "name": "Proteção contra umidade excessiva"
+      },
+      "display": {
+        "name": "Display"
+      },
+      "anion": {
+        "name": "Ionizador"
+      },
+      "gestures": {
+        "name": "Controle por gestos"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "Redefinir filtro"
+      },
+      "filters_cleaned": {
+        "name": "Marcar filtros como limpos"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "Nível favorito"
+      },
+      "fan_level": {
+        "name": "Nível do ventilador"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "target_humidity": {
+        "name": "Umidade alvo"
+      },
+      "angle": {
+        "name": "Ângulo de oscilação"
+      },
+      "delay_off_countdown": {
+        "name": "Desligamento programado"
+      }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "Brilho do LED",
+        "state": {
+          "bright": "Brilhante",
+          "dim": "Fraco",
+          "off": "Desligado"
+        }
+      },
+      "display_orientation": {
+        "name": "Orientação do display",
+        "state": {
+          "forward": "Frontal",
+          "left": "Esquerda",
+          "right": "Direita"
+        }
+      },
+      "ptc_level": {
+        "name": "Nível PTC",
+        "state": {
+          "low": "Baixo",
+          "medium": "Médio",
+          "high": "Alto"
+        }
+      },
+      "mode": {
+        "name": "Modo",
+        "state": {
+          "Low": "Baixo",
+          "Medium": "Médio",
+          "High": "Alto",
+          "Humidity": "Automático",
+          "Auto": "Automático",
+          "Silent": "Silencioso",
+          "Strong": "Forte",
+          "Favorite": "Favorito",
+          "WetAndProtect": "Umidificar e proteger"
+        }
+      }
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "Configuração YAML descontinuada",
+      "description": "A configuração YAML para {integration} ({platform}) está descontinuada e será removida em uma versão futura. Use a interface do usuário para configurar esta integração acessando Configurações > Dispositivos e serviços > Adicionar integração."
+    }
+  }
+}

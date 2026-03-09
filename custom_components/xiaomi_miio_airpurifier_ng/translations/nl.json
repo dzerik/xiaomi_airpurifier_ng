@@ -1,0 +1,308 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opties",
+        "description": "Configureer de integratie-instellingen.",
+        "data": {
+          "scan_interval": "Verversingsinterval"
+        },
+        "data_description": {
+          "scan_interval": "Hoe vaak het apparaat wordt gepolld voor updates (in seconden)."
+        }
+      }
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Xiaomi Air Purifier configureren",
+        "description": "Voer de verbindingsgegevens van je Xiaomi-apparaat in.",
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "name": "Naam (optioneel)",
+          "model": "Model (optioneel, automatisch gedetecteerd)"
+        },
+        "data_description": {
+          "host": "Het IP-adres of de hostnaam van je Xiaomi-apparaat.",
+          "token": "Het 32-tekens token voor apparaatauthenticatie. Je kunt dit verkrijgen via de methoden beschreven in de documentatie.",
+          "name": "Een beschrijvende naam voor het apparaat.",
+          "model": "Het apparaatmodel. Laat leeg voor automatische detectie."
+        }
+      },
+      "reconfigure": {
+        "title": "Xiaomi Air Purifier herconfigureren",
+        "description": "Werk de verbindingsgegevens van je Xiaomi-apparaat bij.",
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "model": "Model"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Xiaomi Air Purifier opnieuw authenticeren",
+        "description": "Het token voor {host} is niet meer geldig. Voer een nieuw token in.",
+        "data": {
+          "token": "Token"
+        },
+        "data_description": {
+          "token": "Het nieuwe 32-tekens token voor apparaatauthenticatie."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan geen verbinding maken met het apparaat. Controleer de host en het token.",
+      "unknown": "Er is een onverwachte fout opgetreden."
+    },
+    "abort": {
+      "already_configured": "Dit apparaat is al geconfigureerd.",
+      "reconfigure_successful": "Configuratie succesvol bijgewerkt.",
+      "reauth_successful": "Herauthenticatie geslaagd."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "water_tank": {
+        "name": "Watertank"
+      },
+      "water_shortage": {
+        "name": "Watertekort"
+      },
+      "water_tank_detached": {
+        "name": "Watertank losgekoppeld"
+      },
+      "no_water": {
+        "name": "Geen water"
+      },
+      "ac_power": {
+        "name": "Netstroom"
+      },
+      "battery_charge": {
+        "name": "Batterij laden"
+      },
+      "oscillate": {
+        "name": "Oscillatie"
+      },
+      "ptc_status": {
+        "name": "Verwarming actief"
+      }
+    },
+    "sensor": {
+      "aqi": {
+        "name": "Luchtkwaliteitsindex"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "average_aqi": {
+        "name": "Gemiddelde AQI"
+      },
+      "temperature": {
+        "name": "Temperatuur"
+      },
+      "humidity": {
+        "name": "Luchtvochtigheid"
+      },
+      "co2": {
+        "name": "CO2"
+      },
+      "tvoc": {
+        "name": "TVOC"
+      },
+      "illuminance": {
+        "name": "Verlichtingssterkte"
+      },
+      "filter_life_remaining": {
+        "name": "Filterlevensduur"
+      },
+      "filter_hours_used": {
+        "name": "Filteruren"
+      },
+      "filter_left_time": {
+        "name": "Resterende filterdagen"
+      },
+      "filter_type": {
+        "name": "Filtertype"
+      },
+      "motor_speed": {
+        "name": "Motorsnelheid"
+      },
+      "motor2_speed": {
+        "name": "Motor 2-snelheid"
+      },
+      "use_time": {
+        "name": "Gebruikstijd"
+      },
+      "purify_volume": {
+        "name": "Gezuiverd volume"
+      },
+      "water_level": {
+        "name": "Waterniveau"
+      },
+      "target_humidity": {
+        "name": "Doelluchtvochtigheid"
+      },
+      "battery": {
+        "name": "Batterij"
+      },
+      "mode": {
+        "name": "Modus"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "temperature_outside": {
+        "name": "Buitentemperatuur"
+      },
+      "dust_filter_life_remaining": {
+        "name": "Stoffilterlevensduur"
+      },
+      "dust_filter_life_remaining_days": {
+        "name": "Resterende stofilterdagen"
+      },
+      "upper_filter_life_remaining": {
+        "name": "Bovenste filterlevensduur"
+      },
+      "upper_filter_life_remaining_days": {
+        "name": "Resterende dagen bovenste filter"
+      },
+      "favorite_speed": {
+        "name": "Favoriete snelheid"
+      },
+      "control_speed": {
+        "name": "Regelsnelheid"
+      },
+      "speed": {
+        "name": "Snelheid"
+      },
+      "natural_speed": {
+        "name": "Natuurlijke snelheid"
+      },
+      "direct_speed": {
+        "name": "Directe snelheid"
+      },
+      "angle": {
+        "name": "Oscillatiehoek"
+      }
+    },
+    "switch": {
+      "buzzer": {
+        "name": "Zoemer"
+      },
+      "led": {
+        "name": "LED"
+      },
+      "led_light": {
+        "name": "LED-verlichting"
+      },
+      "child_lock": {
+        "name": "Kinderslot"
+      },
+      "dry": {
+        "name": "Droogmodus"
+      },
+      "learn_mode": {
+        "name": "Leermodus"
+      },
+      "auto_detect": {
+        "name": "Automatische detectie"
+      },
+      "oscillate": {
+        "name": "Oscillatie"
+      },
+      "ptc": {
+        "name": "PTC-verwarming"
+      },
+      "overwet_protect": {
+        "name": "Overbevochtigingsbescherming"
+      },
+      "display": {
+        "name": "Display"
+      },
+      "anion": {
+        "name": "Ionisator"
+      },
+      "gestures": {
+        "name": "Gebarenbediening"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "Filter resetten"
+      },
+      "filters_cleaned": {
+        "name": "Filters als schoon markeren"
+      }
+    },
+    "number": {
+      "favorite_level": {
+        "name": "Favoriet niveau"
+      },
+      "fan_level": {
+        "name": "Ventilatorniveau"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "target_humidity": {
+        "name": "Doelluchtvochtigheid"
+      },
+      "angle": {
+        "name": "Oscillatiehoek"
+      },
+      "delay_off_countdown": {
+        "name": "Uitschakelvertraging"
+      }
+    },
+    "select": {
+      "led_brightness": {
+        "name": "LED-helderheid",
+        "state": {
+          "bright": "Helder",
+          "dim": "Gedimd",
+          "off": "Uit"
+        }
+      },
+      "display_orientation": {
+        "name": "Displayoriëntatie",
+        "state": {
+          "forward": "Vooruit",
+          "left": "Links",
+          "right": "Rechts"
+        }
+      },
+      "ptc_level": {
+        "name": "PTC-niveau",
+        "state": {
+          "low": "Laag",
+          "medium": "Gemiddeld",
+          "high": "Hoog"
+        }
+      },
+      "mode": {
+        "name": "Modus",
+        "state": {
+          "Low": "Laag",
+          "Medium": "Gemiddeld",
+          "High": "Hoog",
+          "Humidity": "Automatisch",
+          "Auto": "Automatisch",
+          "Silent": "Stil",
+          "Strong": "Sterk",
+          "Favorite": "Favoriet",
+          "WetAndProtect": "Bevochtigen en beschermen"
+        }
+      }
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "YAML-configuratie verouderd",
+      "description": "YAML-configuratie voor {integration} ({platform}) is verouderd en wordt in een toekomstige versie verwijderd. Gebruik de gebruikersinterface om deze integratie te configureren via Instellingen > Apparaten en services > Integratie toevoegen."
+    }
+  }
+}

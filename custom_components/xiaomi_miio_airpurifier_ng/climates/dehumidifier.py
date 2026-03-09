@@ -22,7 +22,6 @@ from ..const import (
     FEATURE_SET_TARGET_HUMIDITY,
 )
 from ..entity import XiaomiMiioEntity
-from ..service_mixin import DeviceServiceMixin
 
 if TYPE_CHECKING:
     from ..coordinator import XiaomiMiioDataUpdateCoordinator
@@ -30,12 +29,8 @@ if TYPE_CHECKING:
 _LOGGER = logging.getLogger(__name__)
 
 
-class XiaomiAirDehumidifierClimate(DeviceServiceMixin, XiaomiMiioEntity, ClimateEntity):
-    """Coordinator-based climate entity for Air Dehumidifier.
-
-    Service handler methods (buzzer, led, child_lock) are inherited
-    from DeviceServiceMixin.
-    """
+class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
+    """Coordinator-based climate entity for Air Dehumidifier."""
 
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_min_humidity = 40
@@ -135,54 +130,61 @@ class XiaomiAirDehumidifierClimate(DeviceServiceMixin, XiaomiMiioEntity, Climate
 
     @property
     def preset_mode(self) -> str | None:
-        """Return the current preset mode."""
+        """Return the current preset mode.
+
+        coordinator.data["mode"] is already a string (enum .name) via _parse_mode().
+        """
         if self.coordinator.data:
-            mode = self.coordinator.data.get("mode")
-            if mode is not None:
-                try:
-                    return AirdehumidifierOperationMode(mode).name
-                except ValueError:
-                    _LOGGER.debug("Unknown operation mode value: %s", mode)
+            return self.coordinator.data.get("mode")
         return None
 
     @property
     def fan_mode(self) -> str | None:
-        """Return the current fan mode."""
+        """Return the current fan mode.
+
+        coordinator.data["fan_speed"] is already a string (enum .name).
+        """
         if self.coordinator.data:
-            fan_speed = self.coordinator.data.get("fan_speed")
-            if fan_speed is not None:
-                try:
-                    return AirdehumidifierFanSpeed(fan_speed).name
-                except ValueError:
-                    _LOGGER.debug("Unknown fan speed value: %s", fan_speed)
+            return self.coordinator.data.get("fan_speed")
         return None
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new HVAC mode."""
+        result = False
         if hvac_mode == HVACMode.DRY:
-            await self._try_command(
+            result = await self._try_command(
                 "Turning the miio device on failed: %s",
                 self.coordinator.device.on,
             )
+            if result and self.coordinator.data is not None:
+                self.coordinator.data["power"] = "on"
+                self.async_write_ha_state()
         elif hvac_mode == HVACMode.OFF:
-            await self._try_command(
+            result = await self._try_command(
                 "Turning the miio device off failed: %s",
                 self.coordinator.device.off,
             )
+            if result and self.coordinator.data is not None:
+                self.coordinator.data["power"] = "off"
+                self.async_write_ha_state()
         await self.coordinator.async_request_refresh()
 
     async def async_set_humidity(self, humidity: int) -> None:
         """Set new target humidity."""
-        if self._device_features & FEATURE_SET_TARGET_HUMIDITY == 0:
+        if not self._check_feature(FEATURE_SET_TARGET_HUMIDITY, "set_target_humidity"):
             return
 
         # Switch to Auto mode if not already (device only accepts humidity in Auto mode)
         if self.preset_mode != AirdehumidifierOperationMode.Auto.name:
-            await self._try_command(
+            result = await self._try_command(
                 "Setting preset mode of the miio device failed: %s",
                 self.coordinator.device.set_mode,
                 AirdehumidifierOperationMode.Auto,
             )
+            if not result:
+                return
+            # Wait for device to confirm mode change before setting humidity
+            await self.coordinator.async_request_refresh()
 
         # Round to nearest 10
         humidity = round(humidity / 10) * 10

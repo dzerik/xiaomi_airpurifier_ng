@@ -27,7 +27,7 @@ rules:
     comment: python-miio is declared in manifest.json
   docs-actions:
     status: done
-    comment: Services documented in services.yaml
+    comment: Legacy services removed; functionality provided via entity platforms (switch, number, select, button)
   docs-high-level-description:
     status: done
     comment: README.md provides overview

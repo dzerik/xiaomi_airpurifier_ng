@@ -12,7 +12,6 @@ from ..const import (
     FEATURE_SET_CHILD_LOCK,
 )
 from ..entity import XiaomiMiioEntity
-from ..service_mixin import DeviceServiceMixin
 
 if TYPE_CHECKING:
     from ..coordinator import XiaomiMiioDataUpdateCoordinator
@@ -20,12 +19,8 @@ if TYPE_CHECKING:
 _LOGGER = logging.getLogger(__name__)
 
 
-class XiaomiMiioBaseFan(DeviceServiceMixin, XiaomiMiioEntity, FanEntity):
-    """Base class for coordinator-based Xiaomi fan entities.
-
-    Core fan logic (on/off, features, attributes). Service handler methods
-    are inherited from DeviceServiceMixin.
-    """
+class XiaomiMiioBaseFan(XiaomiMiioEntity, FanEntity):
+    """Base class for coordinator-based Xiaomi fan entities."""
 
     _enable_turn_on_off_backwards_compatibility = False
 
@@ -98,18 +93,24 @@ class XiaomiMiioBaseFan(DeviceServiceMixin, XiaomiMiioEntity, FanEntity):
             # If operation mode was set the device must not be turned on.
             await self.async_set_preset_mode(preset_mode)
         else:
-            await self._try_command(
+            result = await self._try_command(
                 "Turning the miio device on failed: %s",
                 self.coordinator.device.on,
             )
+            if result and self.coordinator.data is not None:
+                self.coordinator.data["power"] = "on"
+                self.async_write_ha_state()
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the device off."""
-        await self._try_command(
+        result = await self._try_command(
             "Turning the miio device off failed: %s",
             self.coordinator.device.off,
         )
+        if result and self.coordinator.data is not None:
+            self.coordinator.data["power"] = "off"
+            self.async_write_ha_state()
         await self.coordinator.async_request_refresh()
 
 

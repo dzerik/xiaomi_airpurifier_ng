@@ -96,8 +96,20 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
         # Initialize base class after setting attributes
         super().__init__(coordinator)
 
-        # Track natural mode state
-        self._natural_mode = False
+    @property
+    def _is_natural_mode(self) -> bool:
+        """Determine natural mode from coordinator data.
+
+        For P5-style fans: mode == "Nature".
+        For legacy fans: natural_speed > 0 indicates natural mode.
+        """
+        if not self.coordinator.data:
+            return False
+        if self._is_p5_style:
+            return self.coordinator.data.get("mode") == "Nature"
+        # Legacy fans: natural_speed > 0 means natural mode is active
+        natural_speed = self.coordinator.data.get("natural_speed")
+        return bool(natural_speed and natural_speed > 0)
 
     @property
     def supported_features(self) -> FanEntityFeature:
@@ -205,7 +217,7 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
         else:
             # Standard fan - use natural or direct speed based on mode
             speed = FAN_PRESET_MODE_VALUES.get(preset_mode, 35)
-            if self._natural_mode:
+            if self._is_natural_mode:
                 await self._try_command(
                     "Setting fan speed of the miio device failed: %s",
                     self.coordinator.device.set_natural_speed,
@@ -258,7 +270,7 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
             )
         else:
             # Standard fan - use natural or direct speed
-            if self._natural_mode:
+            if self._is_natural_mode:
                 await self._try_command(
                     "Setting fan speed percentage of the miio device failed: %s",
                     self.coordinator.device.set_natural_speed,
@@ -351,8 +363,7 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
             return
 
-        self._natural_mode = True
-
+        
         if self._is_p5_style:
             await self._try_command(
                 "Turning on natural mode of the miio device failed: %s",
@@ -375,8 +386,7 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
             return
 
-        self._natural_mode = False
-
+        
         if self._is_p5_style:
             await self._try_command(
                 "Turning off natural mode of the miio device failed: %s",
