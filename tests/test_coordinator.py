@@ -112,13 +112,29 @@ async def test_async_update_data_device_exception(hass: HomeAssistant) -> None:
     assert coordinator._available is False
 
 
-async def test_async_update_data_auth_error(hass: HomeAssistant) -> None:
-    """Test that token errors raise ConfigEntryAuthFailed."""
+async def test_async_update_data_unable_to_discover(hass: HomeAssistant) -> None:
+    """Test that 'Unable to discover' raises UpdateFailed, not ConfigEntryAuthFailed."""
     entry = _create_config_entry()
     entry.add_to_hass(hass)
 
     mock_device = MagicMock()
     mock_device.status.side_effect = DeviceException("Unable to discover the device")
+
+    coordinator = XiaomiMiioDataUpdateCoordinator(hass, entry, mock_device)
+
+    with pytest.raises(UpdateFailed, match="Error communicating with device"):
+        await coordinator._async_update_data()
+
+    assert coordinator._available is False
+
+
+async def test_async_update_data_token_error(hass: HomeAssistant) -> None:
+    """Test that pure token errors raise ConfigEntryAuthFailed."""
+    entry = _create_config_entry()
+    entry.add_to_hass(hass)
+
+    mock_device = MagicMock()
+    mock_device.status.side_effect = DeviceException("Invalid token")
 
     coordinator = XiaomiMiioDataUpdateCoordinator(hass, entry, mock_device)
 

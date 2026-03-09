@@ -232,7 +232,9 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return status
         except DeviceException as ex:
             self._available = False
-            if "Unable to discover" in str(ex) or "token" in str(ex).lower():
+            error_msg = str(ex).lower()
+            # Only raise auth failure for actual token errors, not network issues
+            if "token" in error_msg and "unable to discover" not in error_msg:
                 raise ConfigEntryAuthFailed(f"Authentication failed for device: {ex}") from ex
             raise UpdateFailed(f"Error communicating with device: {ex}") from ex
 
