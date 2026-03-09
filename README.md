@@ -5,20 +5,22 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-3.0.0--rc.1-blue.svg)](CHANGELOG.md)
 
-Кастомная интеграция для Home Assistant для управления устройствами Xiaomi: очистителями воздуха, увлажнителями, вентиляторами, устройствами Air Fresh и осушителями воздуха.
+[README на русском](README_RU.md)
 
-Устройства опрашиваются локально по WiFi через протокол miIO — без облака и интернета.
+Custom Home Assistant integration for Xiaomi devices: air purifiers, humidifiers, fans, air fresh systems and dehumidifiers.
 
-> Форк [syssi/xiaomi_airpurifier](https://github.com/syssi/xiaomi_airpurifier) с переработанной архитектурой, UI-конфигурацией и поддержкой актуальных версий Home Assistant.
+Devices are polled locally over WiFi via the miIO protocol — no cloud or internet required.
+
+> Fork of [syssi/xiaomi_airpurifier](https://github.com/syssi/xiaomi_airpurifier) with reworked architecture, UI-based configuration and support for current Home Assistant versions.
 
 ---
 
-## Поддерживаемые устройства
+## Supported Devices
 
-### Air Purifier — очистители воздуха (платформа `fan`)
+### Air Purifier (`fan` platform)
 
-| Название | Модель |
-|---|---|
+| Name | Model |
+| --- | --- |
 | Air Purifier | zhimi.airpurifier.v1 |
 | Air Purifier 2 | zhimi.airpurifier.v2 |
 | Air Purifier V3 | zhimi.airpurifier.v3 |
@@ -40,10 +42,10 @@
 | Air Dog X5 | airdog.airpurifier.x5 |
 | Air Dog X7SM | airdog.airpurifier.x7sm |
 
-### Air Humidifier — увлажнители воздуха (платформа `humidifier`)
+### Air Humidifier (`humidifier` platform)
 
-| Название | Модель |
-|---|---|
+| Name | Model |
+| --- | --- |
 | Air Humidifier | zhimi.humidifier.v1 |
 | Air Humidifier CA1 | zhimi.humidifier.ca1 |
 | Smartmi Humidifier Evaporator 2 | zhimi.humidifier.ca4 |
@@ -58,19 +60,19 @@
 | Mijia Smart Sterilization Humidifier S EU | deerma.humidifier.jsqs |
 | Zero Fog Humidifier | shuii.humidifier.jsq001 |
 
-### Air Fresh — приточная вентиляция (платформа `fan`)
+### Air Fresh (`fan` platform)
 
-| Название | Модель |
-|---|---|
+| Name | Model |
+| --- | --- |
 | Mi Fresh Air Ventilator A1 | dmaker.airfresh.a1 |
 | Smartmi Fresh Air System | zhimi.airfresh.va2 |
 | Smartmi Fresh Air System PTC | zhimi.airfresh.va4 |
 | Mi Fresh Air Ventilator T2017 | dmaker.airfresh.t2017 |
 
-### Standing Fan — напольные вентиляторы (платформа `fan`)
+### Standing Fan (`fan` platform)
 
-| Название | Модель |
-|---|---|
+| Name | Model |
+| --- | --- |
 | Pedestal Fan V2 | zhimi.fan.v2 |
 | Pedestal Fan V3 | zhimi.fan.v3 |
 | Pedestal Fan SA1 | zhimi.fan.sa1 |
@@ -86,79 +88,79 @@
 | Rosou SS4 Ventilator | leshow.fan.ss4 |
 | Pedestal Fan 1C | dmaker.fan.1c |
 
-### Air Dehumidifier — осушитель воздуха (платформа `climate`)
+### Air Dehumidifier (`climate` platform)
 
-| Название | Модель |
-|---|---|
+| Name | Model |
+| --- | --- |
 | New Widetech Internet Dehumidifier | nwt.derh.wdh318efw1 |
 
 ---
 
-## Установка через HACS
+## Installation via HACS
 
-1. Откройте HACS в Home Assistant.
-2. Перейдите в раздел **Integrations**.
-3. Нажмите меню (три точки) → **Custom repositories**.
-4. Добавьте репозиторий: `https://github.com/dzerik/xiaomi_airpurifier_ng`, категория — **Integration**.
-5. Найдите **Xiaomi Air Purifier NG** и нажмите **Download**.
-6. Перезапустите Home Assistant.
+1. Open HACS in Home Assistant.
+2. Go to **Integrations**.
+3. Click the menu (three dots) -> **Custom repositories**.
+4. Add repository: `https://github.com/dzerik/xiaomi_airpurifier_ng`, category — **Integration**.
+5. Find **Xiaomi Air Purifier NG** and click **Download**.
+6. Restart Home Assistant.
 
-## Ручная установка
+## Manual Installation
 
-1. Скопируйте папку `custom_components/xiaomi_miio_airpurifier_ng` в директорию `config/custom_components/` вашей установки Home Assistant.
-2. Перезапустите Home Assistant.
-
----
-
-## Настройка
-
-Интеграция настраивается через UI — YAML-конфигурация не используется.
-
-1. Перейдите в **Settings** → **Devices & Services**.
-2. Нажмите **+ Add Integration**.
-3. Найдите **Xiaomi Air Purifier NG**.
-4. Введите параметры:
-
-| Параметр | Описание |
-|---|---|
-| Host | IP-адрес устройства в локальной сети |
-| Token | 32-символьный токен устройства |
-| Model | Модель устройства (например, `zhimi.airpurifier.ma4`) |
-
-После добавления интервал опроса можно изменить через **Options** (по умолчанию 30 секунд).
+1. Copy the `custom_components/xiaomi_miio_airpurifier_ng` folder into your Home Assistant `config/custom_components/` directory.
+2. Restart Home Assistant.
 
 ---
 
-## Платформы и сущности
+## Configuration
 
-Интеграция автоматически создаёт сущности в зависимости от возможностей конкретной модели устройства.
+The integration is configured via the UI — no YAML configuration is needed.
 
-| Платформа | Описание |
-|---|---|
-| `fan` | Очистители воздуха, Air Fresh, напольные вентиляторы — включение, скорость, режимы |
-| `humidifier` | Увлажнители — включение, целевая влажность, режимы |
-| `climate` | Осушитель — включение, целевая влажность, режим HVAC |
-| `sensor` | Температура, влажность, AQI, CO2, скорость мотора, состояние фильтра и другие |
-| `switch` | Зуммер, LED, детский замок, сухой режим, осциллятор и другие |
-| `number` | Любимый уровень, уровень вентилятора, целевая влажность, угол осцилляции и другие |
-| `select` | Яркость LED, ориентация дисплея, уровень PTC, режим работы |
-| `binary_sensor` | Уровень воды, питание от сети, заряд батареи, статус PTC-нагревателя |
-| `button` | Сброс счётчика фильтра |
+1. Go to **Settings** -> **Devices & Services**.
+2. Click **+ Add Integration**.
+3. Search for **Xiaomi Air Purifier NG**.
+4. Enter the parameters:
 
----
+| Parameter | Description |
+| --- | --- |
+| Host | Device IP address on the local network |
+| Token | 32-character device token |
+| Model | Device model (e.g. `zhimi.airpurifier.ma4`) |
 
-## Как получить токен устройства
-
-Токен необходим для локального подключения. Получить его можно несколькими способами:
-
-- **Xiaomi Cloud Token Extractor** — рекомендуемый способ: [инструкция на сайте Home Assistant](https://www.home-assistant.io/integrations/xiaomi_miio/#xiaomi-cloud-tokens-extractor)
-- Через приложение **MiHome** с помощью сниффера трафика или резервной копии (для Android)
+After setup, the polling interval can be changed via **Options** (default: 30 seconds).
 
 ---
 
-## Отладка
+## Platforms and Entities
 
-Для диагностики проблем включите debug-логирование в `configuration.yaml`:
+The integration automatically creates entities based on the capabilities of each device model.
+
+| Platform | Description |
+| --- | --- |
+| `fan` | Air purifiers, air fresh, standing fans — on/off, speed, modes |
+| `humidifier` | Humidifiers — on/off, target humidity, modes |
+| `climate` | Dehumidifier — on/off, target humidity, HVAC mode |
+| `sensor` | Temperature, humidity, AQI, CO2, motor speed, filter status, etc. |
+| `switch` | Buzzer, LED, child lock, dry mode, oscillation, etc. |
+| `number` | Favorite level, fan level, target humidity, oscillation angle, etc. |
+| `select` | LED brightness, display orientation, PTC level, operation mode |
+| `binary_sensor` | Water level, AC power, battery charging, PTC heater status |
+| `button` | Reset filter counter |
+
+---
+
+## How to Get the Device Token
+
+The token is required for local communication. You can obtain it in several ways:
+
+- **Xiaomi Cloud Token Extractor** (recommended): [instructions on the Home Assistant website](https://www.home-assistant.io/integrations/xiaomi_miio/#xiaomi-cloud-tokens-extractor)
+- Via the **MiHome** app using a traffic sniffer or backup extraction (Android)
+
+---
+
+## Debugging
+
+To diagnose issues, enable debug logging in `configuration.yaml`:
 
 ```yaml
 logger:
@@ -170,40 +172,40 @@ logger:
 
 ---
 
-## Breaking Changes в версии 3.0.0
+## Breaking Changes in 3.0.0
 
-### Увлажнители переведены на платформу `humidifier` (alpha.18)
+### Humidifiers moved to `humidifier` platform
 
-Увлажнители больше не регистрируются как `fan`-сущности. Entity ID изменились:
+Humidifiers are no longer registered as `fan` entities. Entity IDs have changed:
 
-- `fan.xiaomi_*` → `humidifier.xiaomi_*`
-- Сервис `fan.set_preset_mode` заменён на `humidifier.set_mode`
-- Добавлен сервис `humidifier.set_humidity` для установки целевой влажности
-- Автоматизации с `fan.turn_on` / `fan.turn_off` для увлажнителей необходимо обновить на `humidifier.turn_on` / `humidifier.turn_off`
+- `fan.xiaomi_*` -> `humidifier.xiaomi_*`
+- Service `fan.set_preset_mode` replaced with `humidifier.set_mode`
+- New service `humidifier.set_humidity` for setting target humidity
+- Automations using `fan.turn_on` / `fan.turn_off` for humidifiers must be updated to `humidifier.turn_on` / `humidifier.turn_off`
 
-### Удалены все кастомные сервисы (alpha.16)
+### All custom services removed
 
-37 кастомных сервисов вида `xiaomi_miio_airpurifier_ng.fan_set_*` удалены. Управление устройствами осуществляется через стандартные entity-платформы: `switch`, `number`, `select`, `button`.
+37 custom services like `xiaomi_miio_airpurifier_ng.fan_set_*` have been removed. Device control is now done via standard entity platforms: `switch`, `number`, `select`, `button`.
 
-### Изменены Entity ID бинарных сенсоров увлажнителей (alpha.19)
+### Humidifier binary sensor entity IDs changed
 
-- `binary_sensor.*_water_tank` → `binary_sensor.*_water_level_low`
-- `binary_sensor.*_water_shortage` → `binary_sensor.*_water_tank_removed`
+- `binary_sensor.*_water_tank` -> `binary_sensor.*_water_level_low`
+- `binary_sensor.*_water_shortage` -> `binary_sensor.*_water_tank_removed`
 
 ---
 
-## Требования
+## Requirements
 
-- Home Assistant 2024.8.0 или новее
+- Home Assistant 2024.8.0 or newer
 - Python 3.11+
 - `python-miio` >= 0.5.12, < 1.0.0
 
 ---
 
-## Лицензия
+## License
 
-Apache License 2.0. Подробнее см. файл [LICENSE](LICENSE).
+Apache License 2.0. See [LICENSE](LICENSE) for details.
 
 ---
 
-Благодарности: [Rytilahti](https://github.com/rytilahti/python-miio) за библиотеку `python-miio`, [syssi](https://github.com/syssi/xiaomi_airpurifier) за оригинальную интеграцию.
+Credits: [Rytilahti](https://github.com/rytilahti/python-miio) for the `python-miio` library, [syssi](https://github.com/syssi/xiaomi_airpurifier) for the original integration.
