@@ -7,3 +7,12 @@ __pycache__/
 venv
 .claude
 .serena
+/audit/
+/CLAUDE.md
+.env
+*.egg-info/
+dist/
+build/
+.mypy_cache/
+.pytest_cache/
+.coverage

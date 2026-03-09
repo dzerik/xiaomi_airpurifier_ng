@@ -35,6 +35,7 @@ from .const import (
     CONF_MODEL,
     DOMAIN,
     HUMIDIFIER_MIOT,
+    MODEL_AIRDEHUMIDIFIER_V1,
     MODEL_AIRFRESH_A1,
     MODEL_AIRFRESH_T2017,
     MODEL_AIRFRESH_VA2,
@@ -197,18 +198,17 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
         MODEL_AIRHUMIDIFIER_CB2,
     ):
         return AirHumidifier(ip=host, token=token, model=model)
-    if model == MODEL_AIRHUMIDIFIER_MJJSQ:
+    if model in (MODEL_AIRHUMIDIFIER_MJJSQ, MODEL_AIRHUMIDIFIER_JSQ, MODEL_AIRHUMIDIFIER_JSQ1):
         return AirHumidifierMjjsq(ip=host, token=token, model=model)
     if model in (
-        MODEL_AIRHUMIDIFIER_JSQ,
-        MODEL_AIRHUMIDIFIER_JSQ1,
+        MODEL_AIRHUMIDIFIER_JSQ2W,
         MODEL_AIRHUMIDIFIER_JSQ3,
-        MODEL_AIRHUMIDIFIER_JSQ001,
+        MODEL_AIRHUMIDIFIER_JSQ5,
+        MODEL_AIRHUMIDIFIER_JSQS,
     ):
-        return AirHumidifierJsq(ip=host, token=token, model=model)
-    if model in (MODEL_AIRHUMIDIFIER_JSQS, MODEL_AIRHUMIDIFIER_JSQ2W, MODEL_AIRHUMIDIFIER_JSQ5):
-        # jsq2w and jsq5 use MiOT protocol like jsqs
         return AirHumidifierJsqs(ip=host, token=token, model=model)
+    if model == MODEL_AIRHUMIDIFIER_JSQ001:
+        return AirHumidifierJsq(ip=host, token=token, model=model)
 
     # Air Fresh models
     if model == MODEL_AIRFRESH_A1:
@@ -219,9 +219,10 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
         return AirFreshT2017(ip=host, token=token, model=model)
 
     # Fan models
+    if model in (MODEL_FAN_1C, MODEL_FAN_P8):
+        return Fan1C(ip=host, token=token, model=model)
     if model in (
         MODEL_FAN_P5,
-        MODEL_FAN_P8,
         MODEL_FAN_P9,
         MODEL_FAN_P10,
         MODEL_FAN_P11,
@@ -230,8 +231,6 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
         return FanMiot(ip=host, token=token, model=model)
     if model == MODEL_FAN_LESHOW_SS4:
         return FanLeshow(ip=host, token=token, model=model)
-    if model == MODEL_FAN_1C:
-        return Fan1C(ip=host, token=token, model=model)
     if model in (
         MODEL_FAN_V2,
         MODEL_FAN_V3,
@@ -241,6 +240,12 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
         MODEL_FAN_ZA4,
     ):
         return Fan(ip=host, token=token, model=model)
+
+    # Air Dehumidifier
+    if model == MODEL_AIRDEHUMIDIFIER_V1:
+        from miio import AirDehumidifier
+
+        return AirDehumidifier(ip=host, token=token, model=model)
 
     # Default: Try generic device, let it auto-detect
     return Device(ip=host, token=token, model=model)
