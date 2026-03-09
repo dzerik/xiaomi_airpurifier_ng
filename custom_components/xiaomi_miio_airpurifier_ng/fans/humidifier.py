@@ -5,23 +5,29 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from miio.integrations.humidifier.zhimi.airhumidifier import (
-    LedBrightness as AirhumidifierLedBrightness,
-    OperationMode as AirhumidifierOperationMode,
-)
-from miio.integrations.humidifier.zhimi.airhumidifier_miot import (
-    LedBrightness as AirhumidifierMiotLedBrightness,
-    OperationMode as AirhumidifierMiotOperationMode,
+from miio.integrations.humidifier.deerma.airhumidifier_jsqs import (
+    OperationMode as AirhumidifierJsqsOperationMode,
 )
 from miio.integrations.humidifier.deerma.airhumidifier_mjjsq import (
     OperationMode as AirhumidifierMjjsqOperationMode,
 )
-from miio.integrations.humidifier.deerma.airhumidifier_jsqs import (
-    OperationMode as AirhumidifierJsqsOperationMode,
-)
 from miio.integrations.humidifier.shuii.airhumidifier_jsq import (
     LedBrightness as AirhumidifierJsqLedBrightness,
+)
+from miio.integrations.humidifier.shuii.airhumidifier_jsq import (
     OperationMode as AirhumidifierJsqOperationMode,
+)
+from miio.integrations.humidifier.zhimi.airhumidifier import (
+    LedBrightness as AirhumidifierLedBrightness,
+)
+from miio.integrations.humidifier.zhimi.airhumidifier import (
+    OperationMode as AirhumidifierOperationMode,
+)
+from miio.integrations.humidifier.zhimi.airhumidifier_miot import (
+    LedBrightness as AirhumidifierMiotLedBrightness,
+)
+from miio.integrations.humidifier.zhimi.airhumidifier_miot import (
+    OperationMode as AirhumidifierMiotOperationMode,
 )
 
 from ..const import (
@@ -93,7 +99,11 @@ class XiaomiAirHumidifierFan(XiaomiMiioBaseFan):
         self._is_jsq = model == MODEL_AIRHUMIDIFIER_JSQ001
 
         # Set device features and available attributes based on model
-        if model in [MODEL_AIRHUMIDIFIER_CA1, MODEL_AIRHUMIDIFIER_CB1, MODEL_AIRHUMIDIFIER_CB2]:
+        if model in [
+            MODEL_AIRHUMIDIFIER_CA1,
+            MODEL_AIRHUMIDIFIER_CB1,
+            MODEL_AIRHUMIDIFIER_CB2,
+        ]:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA_AND_CB
             self._preset_modes = [

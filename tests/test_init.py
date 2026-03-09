@@ -8,10 +8,9 @@ import pytest
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_HOST, CONF_TOKEN
 from homeassistant.core import HomeAssistant
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import CONF_MODEL, DOMAIN
-
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 
 @pytest.fixture
@@ -65,12 +64,15 @@ async def test_setup_entry_success(
     mock_coordinator = _create_mock_coordinator()
     mock_coordinator.config_entry = mock_config_entry
 
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_device",
-        return_value=mock_device,
-    ), patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_coordinator",
-        return_value=mock_coordinator,
+    with (
+        patch(
+            "custom_components.xiaomi_miio_airpurifier_ng._create_device",
+            return_value=mock_device,
+        ),
+        patch(
+            "custom_components.xiaomi_miio_airpurifier_ng._create_coordinator",
+            return_value=mock_coordinator,
+        ),
     ):
         mock_config_entry.add_to_hass(hass)
 
@@ -87,11 +89,10 @@ async def test_setup_entry_device_not_ready(
     """Test setup entry when device is not ready."""
     from homeassistant.exceptions import ConfigEntryNotReady
 
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_device"
-    ) as mock_create, patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_coordinator"
-    ) as mock_coord:
+    with (
+        patch("custom_components.xiaomi_miio_airpurifier_ng._create_device"),
+        patch("custom_components.xiaomi_miio_airpurifier_ng._create_coordinator") as mock_coord,
+    ):
         mock_coord.side_effect = ConfigEntryNotReady("Device offline")
 
         mock_config_entry.add_to_hass(hass)
@@ -117,12 +118,15 @@ async def test_unload_entry(
     mock_coordinator = _create_mock_coordinator()
     mock_coordinator.config_entry = mock_config_entry
 
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_device",
-        return_value=mock_device,
-    ), patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_coordinator",
-        return_value=mock_coordinator,
+    with (
+        patch(
+            "custom_components.xiaomi_miio_airpurifier_ng._create_device",
+            return_value=mock_device,
+        ),
+        patch(
+            "custom_components.xiaomi_miio_airpurifier_ng._create_coordinator",
+            return_value=mock_coordinator,
+        ),
     ):
         mock_config_entry.add_to_hass(hass)
 

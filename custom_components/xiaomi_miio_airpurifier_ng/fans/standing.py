@@ -8,7 +8,11 @@ from typing import TYPE_CHECKING
 from homeassistant.components.fan import FanEntityFeature
 from miio.fan_common import (
     LedBrightness as FanLedBrightness,
+)
+from miio.fan_common import (
     MoveDirection as FanMoveDirection,
+)
+from miio.fan_common import (
     OperationMode as FanOperationMode,
 )
 from miio.integrations.fan.leshow.fan_leshow import (
@@ -34,12 +38,12 @@ from ..const import (
     FEATURE_SET_OSCILLATION_ANGLE,
     MODEL_FAN_1C,
     MODEL_FAN_LESHOW_SS4,
-    MODEL_FAN_P10,
-    MODEL_FAN_P11,
-    MODEL_FAN_P18,
     MODEL_FAN_P5,
     MODEL_FAN_P8,
     MODEL_FAN_P9,
+    MODEL_FAN_P10,
+    MODEL_FAN_P11,
+    MODEL_FAN_P18,
     SPEED_OFF,
 )
 from .base import XiaomiMiioBaseFan
@@ -154,9 +158,8 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
                             from homeassistant.util.percentage import (
                                 ordered_list_item_to_percentage,
                             )
-                            return ordered_list_item_to_percentage(
-                                FAN_SPEEDS_1C, preset_mode
-                            )
+
+                            return ordered_list_item_to_percentage(FAN_SPEEDS_1C, preset_mode)
         return None
 
     @property
@@ -239,6 +242,7 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
             from homeassistant.util.percentage import (
                 percentage_to_ordered_list_item,
             )
+
             preset_mode = percentage_to_ordered_list_item(FAN_SPEEDS_1C, percentage)
             speed = FAN_PRESET_MODES_1C.get(preset_mode, 1)
             await self._try_command(

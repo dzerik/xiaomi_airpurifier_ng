@@ -9,18 +9,16 @@ from homeassistant.components.climate import ClimateEntityFeature
 from homeassistant.components.climate.const import HVACMode
 from miio.airdehumidifier import (
     FanSpeed as AirdehumidifierFanSpeed,
+)
+from miio.airdehumidifier import (
     OperationMode as AirdehumidifierOperationMode,
 )
 
-from custom_components.xiaomi_miio_airpurifier_ng.const import (
-    ATTR_MODEL,
-    FEATURE_SET_BUZZER,
-    FEATURE_SET_CHILD_LOCK,
-    FEATURE_SET_LED,
-    FEATURE_SET_TARGET_HUMIDITY,
-)
 from custom_components.xiaomi_miio_airpurifier_ng.climates.dehumidifier import (
     XiaomiAirDehumidifierClimate,
+)
+from custom_components.xiaomi_miio_airpurifier_ng.const import (
+    ATTR_MODEL,
 )
 
 
@@ -314,7 +312,9 @@ class TestSetFanMode:
     @pytest.mark.asyncio
     async def test_set_fan_mode_valid(self):
         """Valid fan mode calls set_fan_speed."""
-        coord = _make_coordinator(data={"power": "on", "mode": AirdehumidifierOperationMode.Auto.value})
+        coord = _make_coordinator(
+            data={"power": "on", "mode": AirdehumidifierOperationMode.Auto.value}
+        )
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
         await entity.async_set_fan_mode("Low")
@@ -323,7 +323,9 @@ class TestSetFanMode:
     @pytest.mark.asyncio
     async def test_set_fan_mode_drycloth_noop(self):
         """Fan mode cannot be changed in DryCloth mode."""
-        coord = _make_coordinator(data={"power": "on", "mode": AirdehumidifierOperationMode.DryCloth.value})
+        coord = _make_coordinator(
+            data={"power": "on", "mode": AirdehumidifierOperationMode.DryCloth.value}
+        )
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
         await entity.async_set_fan_mode("Low")
@@ -332,7 +334,9 @@ class TestSetFanMode:
     @pytest.mark.asyncio
     async def test_set_fan_mode_invalid(self):
         """Invalid fan mode does not call device."""
-        coord = _make_coordinator(data={"power": "on", "mode": AirdehumidifierOperationMode.Auto.value})
+        coord = _make_coordinator(
+            data={"power": "on", "mode": AirdehumidifierOperationMode.Auto.value}
+        )
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
         await entity.async_set_fan_mode("InvalidFanMode")

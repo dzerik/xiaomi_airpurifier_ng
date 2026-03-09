@@ -108,26 +108,86 @@ TOGGLE_SERVICES = [
     ("async_set_dry_off", FEATURE_SET_DRY, "set_dry", (False,)),
     ("async_set_clean_mode_on", FEATURE_SET_CLEAN_MODE, "set_clean_mode", (True,)),
     ("async_set_clean_mode_off", FEATURE_SET_CLEAN_MODE, "set_clean_mode", (False,)),
-    ("async_set_wet_protection_on", FEATURE_SET_WET_PROTECTION, "set_wet_protection", (True,)),
-    ("async_set_wet_protection_off", FEATURE_SET_WET_PROTECTION, "set_wet_protection", (False,)),
-    ("async_set_natural_mode_on", FEATURE_SET_NATURAL_MODE, "set_natural_mode", (True,)),
-    ("async_set_natural_mode_off", FEATURE_SET_NATURAL_MODE, "set_natural_mode", (False,)),
+    (
+        "async_set_wet_protection_on",
+        FEATURE_SET_WET_PROTECTION,
+        "set_wet_protection",
+        (True,),
+    ),
+    (
+        "async_set_wet_protection_off",
+        FEATURE_SET_WET_PROTECTION,
+        "set_wet_protection",
+        (False,),
+    ),
+    (
+        "async_set_natural_mode_on",
+        FEATURE_SET_NATURAL_MODE,
+        "set_natural_mode",
+        (True,),
+    ),
+    (
+        "async_set_natural_mode_off",
+        FEATURE_SET_NATURAL_MODE,
+        "set_natural_mode",
+        (False,),
+    ),
     ("async_set_ptc_on", FEATURE_SET_PTC, "set_ptc", (True,)),
     ("async_set_ptc_off", FEATURE_SET_PTC, "set_ptc", (False,)),
 ]
 
 PARAMETERIZED_SERVICES = [
-    ("async_set_led_brightness", FEATURE_SET_LED_BRIGHTNESS, "set_led_brightness", {"brightness": 2}),
-    ("async_set_favorite_level", FEATURE_SET_FAVORITE_LEVEL, "set_favorite_level", {"level": 5}),
+    (
+        "async_set_led_brightness",
+        FEATURE_SET_LED_BRIGHTNESS,
+        "set_led_brightness",
+        {"brightness": 2},
+    ),
+    (
+        "async_set_favorite_level",
+        FEATURE_SET_FAVORITE_LEVEL,
+        "set_favorite_level",
+        {"level": 5},
+    ),
     ("async_set_fan_level", FEATURE_SET_FAN_LEVEL, "set_fan_level", {"level": 3}),
     ("async_set_volume", FEATURE_SET_VOLUME, "set_volume", {"volume": 75}),
-    ("async_set_extra_features", FEATURE_SET_EXTRA_FEATURES, "set_extra_features", {"features": 42}),
-    ("async_set_target_humidity", FEATURE_SET_TARGET_HUMIDITY, "set_target_humidity", {"humidity": 60}),
-    ("async_set_motor_speed", FEATURE_SET_MOTOR_SPEED, "set_motor_speed", {"motor_speed": 1200}),
-    ("async_set_favorite_speed", FEATURE_SET_FAVORITE_SPEED, "set_favorite_speed", {"speed": 800}),
-    ("async_set_oscillation_angle", FEATURE_SET_OSCILLATION_ANGLE, "set_angle", {"angle": 90}),
+    (
+        "async_set_extra_features",
+        FEATURE_SET_EXTRA_FEATURES,
+        "set_extra_features",
+        {"features": 42},
+    ),
+    (
+        "async_set_target_humidity",
+        FEATURE_SET_TARGET_HUMIDITY,
+        "set_target_humidity",
+        {"humidity": 60},
+    ),
+    (
+        "async_set_motor_speed",
+        FEATURE_SET_MOTOR_SPEED,
+        "set_motor_speed",
+        {"motor_speed": 1200},
+    ),
+    (
+        "async_set_favorite_speed",
+        FEATURE_SET_FAVORITE_SPEED,
+        "set_favorite_speed",
+        {"speed": 800},
+    ),
+    (
+        "async_set_oscillation_angle",
+        FEATURE_SET_OSCILLATION_ANGLE,
+        "set_angle",
+        {"angle": 90},
+    ),
     ("async_set_ptc_level", FEATURE_SET_PTC_LEVEL, "set_ptc_level", {"level": "high"}),
-    ("async_set_display_orientation", FEATURE_SET_DISPLAY_ORIENTATION, "set_display_orientation", {"orientation": "landscape"}),
+    (
+        "async_set_display_orientation",
+        FEATURE_SET_DISPLAY_ORIENTATION,
+        "set_display_orientation",
+        {"orientation": "landscape"},
+    ),
 ]
 
 # Методы без feature-guard (всегда выполняются)
@@ -493,17 +553,13 @@ class TestDefaultParameterValues:
         assert host_all_features._try_command.call_args[0][2] == 1
 
     @pytest.mark.asyncio
-    async def test_fan_level_default_is_1(
-        self, host_all_features: ConcreteServiceHost
-    ) -> None:
+    async def test_fan_level_default_is_1(self, host_all_features: ConcreteServiceHost) -> None:
         """async_set_fan_level без аргументов использует level=1."""
         await host_all_features.async_set_fan_level()
         assert host_all_features._try_command.call_args[0][2] == 1
 
     @pytest.mark.asyncio
-    async def test_volume_default_is_50(
-        self, host_all_features: ConcreteServiceHost
-    ) -> None:
+    async def test_volume_default_is_50(self, host_all_features: ConcreteServiceHost) -> None:
         """async_set_volume без аргументов использует volume=50."""
         await host_all_features.async_set_volume()
         assert host_all_features._try_command.call_args[0][2] == 50

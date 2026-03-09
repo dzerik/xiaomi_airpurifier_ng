@@ -7,9 +7,9 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from custom_components.xiaomi_miio_airpurifier_ng.switch import (
+    SWITCH_DESCRIPTIONS,
     XiaomiMiioSwitch,
     XiaomiMiioSwitchEntityDescription,
-    SWITCH_DESCRIPTIONS,
 )
 
 

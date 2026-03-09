@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-import logging
 
 from homeassistant.components.button import ButtonEntity, ButtonEntityDescription
 from homeassistant.config_entries import ConfigEntry
@@ -114,9 +114,7 @@ class XiaomiMiioButton(XiaomiMiioEntity, ButtonEntity):
             if method:
                 await self.hass.async_add_executor_job(method)
                 await self.coordinator.async_request_refresh()
-                _LOGGER.debug(
-                    "Successfully pressed button %s", self.entity_description.key
-                )
+                _LOGGER.debug("Successfully pressed button %s", self.entity_description.key)
             else:
                 _LOGGER.error(
                     "Method %s not found on device for button %s",

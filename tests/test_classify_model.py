@@ -5,7 +5,6 @@ from __future__ import annotations
 import pytest
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import (
-    DeviceCategory,
     HUMIDIFIER_MIOT,
     MODEL_AIRDEHUMIDIFIER_V1,
     MODEL_AIRFRESH_A1,
@@ -33,6 +32,7 @@ from custom_components.xiaomi_miio_airpurifier_ng.const import (
     MODEL_FAN_V2,
     MODEL_FAN_ZA1,
     PURIFIER_MIOT,
+    DeviceCategory,
     classify_model,
 )
 
@@ -66,7 +66,11 @@ class TestClassifyModelPurifier:
 
     @pytest.mark.parametrize(
         "model",
-        [MODEL_AIRPURIFIER_AIRDOG_X3, MODEL_AIRPURIFIER_AIRDOG_X5, MODEL_AIRPURIFIER_AIRDOG_X7SM],
+        [
+            MODEL_AIRPURIFIER_AIRDOG_X3,
+            MODEL_AIRPURIFIER_AIRDOG_X5,
+            MODEL_AIRPURIFIER_AIRDOG_X7SM,
+        ],
         ids=["x3", "x5", "x7sm"],
     )
     def test_airdog_airpurifier_prefix_returns_purifier(self, model: str) -> None:

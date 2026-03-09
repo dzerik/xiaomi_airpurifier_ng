@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 
 import voluptuous as vol
-
 from homeassistant.components.fan import FanEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -142,7 +141,11 @@ async def async_setup_entry(
     )
     platform.async_register_entity_service(
         "fan_set_display_orientation",
-        {vol.Required("display_orientation"): vol.In(["Portrait", "LandscapeLeft", "LandscapeRight"])},
+        {
+            vol.Required("display_orientation"): vol.In(
+                ["Portrait", "LandscapeLeft", "LandscapeRight"]
+            )
+        },
         "async_set_display_orientation",
     )
     platform.async_register_entity_service(

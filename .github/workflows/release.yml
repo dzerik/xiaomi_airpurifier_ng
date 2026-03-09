@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version from manifest
+        id: manifest
+        run: |
+          version=$(python3 -c "import json; print(json.load(open('custom_components/xiaomi_miio_airpurifier_ng/manifest.json'))['version'])")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Verify release tag matches manifest version
+        run: |
+          tag="${{ github.event.release.tag_name }}"
+          manifest_version="${{ steps.manifest.outputs.version }}"
+          # Strip leading 'v' from tag if present
+          tag_version="${tag#v}"
+          if [ "$tag_version" != "$manifest_version" ]; then
+            echo "::error::Release tag ($tag_version) does not match manifest version ($manifest_version)"
+            exit 1
+          fi
+
+      - name: Create integration zip
+        run: |
+          cd custom_components/xiaomi_miio_airpurifier_ng
+          zip -r ../../xiaomi_miio_airpurifier_ng.zip .
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./xiaomi_miio_airpurifier_ng.zip
+          asset_name: xiaomi_miio_airpurifier_ng.zip
+          asset_content_type: application/zip

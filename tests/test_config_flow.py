@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from miio import DeviceException
-import pytest
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_NAME, CONF_TOKEN
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
+from miio import DeviceException
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import CONF_MODEL, DOMAIN
 
@@ -87,9 +86,7 @@ async def test_form_cannot_connect(
     mock_config_entry_data: dict,
 ) -> None:
     """Test we handle cannot connect error."""
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng.config_flow.Device"
-    ) as mock_device:
+    with patch("custom_components.xiaomi_miio_airpurifier_ng.config_flow.Device") as mock_device:
         mock_device.return_value.info.side_effect = DeviceException("Cannot connect")
 
         result = await hass.config_entries.flow.async_init(
@@ -114,9 +111,7 @@ async def test_form_unknown_error(
     mock_config_entry_data: dict,
 ) -> None:
     """Test we handle unknown error."""
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng.config_flow.Device"
-    ) as mock_device:
+    with patch("custom_components.xiaomi_miio_airpurifier_ng.config_flow.Device") as mock_device:
         mock_device.return_value.info.side_effect = Exception("Unknown error")
 
         result = await hass.config_entries.flow.async_init(

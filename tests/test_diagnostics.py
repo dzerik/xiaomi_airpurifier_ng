@@ -7,13 +7,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from homeassistant.const import CONF_HOST, CONF_TOKEN
 from homeassistant.core import HomeAssistant
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import CONF_MODEL, DOMAIN
 from custom_components.xiaomi_miio_airpurifier_ng.diagnostics import (
     async_get_config_entry_diagnostics,
 )
-
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 
 @pytest.fixture
@@ -67,20 +66,21 @@ async def test_diagnostics_redacts_token(
     mock_coordinator = _create_mock_coordinator()
     mock_coordinator.config_entry = mock_config_entry
 
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_device",
-        return_value=mock_device,
-    ), patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_coordinator",
-        return_value=mock_coordinator,
+    with (
+        patch(
+            "custom_components.xiaomi_miio_airpurifier_ng._create_device",
+            return_value=mock_device,
+        ),
+        patch(
+            "custom_components.xiaomi_miio_airpurifier_ng._create_coordinator",
+            return_value=mock_coordinator,
+        ),
     ):
         mock_config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done()
 
-        diagnostics = await async_get_config_entry_diagnostics(
-            hass, mock_config_entry
-        )
+        diagnostics = await async_get_config_entry_diagnostics(hass, mock_config_entry)
 
         # Token should be redacted
         assert diagnostics["entry"]["data"][CONF_TOKEN] == "**REDACTED**"
@@ -110,19 +110,20 @@ async def test_diagnostics_includes_coordinator_data(
     mock_coordinator.config_entry = mock_config_entry
     mock_coordinator.data = {"power": "on", "aqi": 42, "humidity": 55}
 
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_device",
-        return_value=mock_device,
-    ), patch(
-        "custom_components.xiaomi_miio_airpurifier_ng._create_coordinator",
-        return_value=mock_coordinator,
+    with (
+        patch(
+            "custom_components.xiaomi_miio_airpurifier_ng._create_device",
+            return_value=mock_device,
+        ),
+        patch(
+            "custom_components.xiaomi_miio_airpurifier_ng._create_coordinator",
+            return_value=mock_coordinator,
+        ),
     ):
         mock_config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done()
 
-        diagnostics = await async_get_config_entry_diagnostics(
-            hass, mock_config_entry
-        )
+        diagnostics = await async_get_config_entry_diagnostics(hass, mock_config_entry)
 
         assert "data" in diagnostics

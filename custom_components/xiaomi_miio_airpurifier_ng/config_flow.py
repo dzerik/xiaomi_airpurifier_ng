@@ -5,9 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from miio import Device, DeviceException
 import voluptuous as vol
-
 from homeassistant.config_entries import (
     ConfigFlow,
     ConfigFlowResult,
@@ -26,6 +24,7 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
+from miio import Device, DeviceException
 
 from .const import (
     CONF_MODEL,
@@ -59,9 +58,7 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
         self._name: str | None = None
         self._model: str | None = None
 
-    async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Handle the initial step."""
         errors: dict[str, str] = {}
 
@@ -73,9 +70,7 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
 
             # Validate connection
             try:
-                device_info = await self._async_try_connect(
-                    self._host, self._token, self._model
-                )
+                device_info = await self._async_try_connect(self._host, self._token, self._model)
             except DeviceException as ex:
                 _LOGGER.error("Cannot connect to device: %s", ex)
                 errors["base"] = "cannot_connect"
@@ -87,9 +82,7 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
                 mac = device_info.get("mac")
                 if mac:
                     await self.async_set_unique_id(mac.replace(":", "").lower())
-                    self._abort_if_unique_id_configured(
-                        updates={CONF_HOST: self._host}
-                    )
+                    self._abort_if_unique_id_configured(updates={CONF_HOST: self._host})
                 else:
                     # Fall back to host-based unique ID
                     await self.async_set_unique_id(f"{DOMAIN}_{self._host}")
@@ -134,13 +127,10 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_import(
-        self, import_config: dict[str, Any]
-    ) -> ConfigFlowResult:
+    async def async_step_import(self, import_config: dict[str, Any]) -> ConfigFlowResult:
         """Handle import from YAML configuration."""
         _LOGGER.warning(
-            "Configuration via YAML is deprecated. "
-            "Please use the UI to configure the integration"
+            "Configuration via YAML is deprecated. Please use the UI to configure the integration"
         )
 
         # Check if already configured
@@ -150,9 +140,7 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return await self.async_step_user(import_config)
 
-    async def async_step_reauth(
-        self, entry_data: dict[str, Any]
-    ) -> ConfigFlowResult:
+    async def async_step_reauth(self, entry_data: dict[str, Any]) -> ConfigFlowResult:
         """Handle reauthorization flow triggered by auth failure."""
         self._host = entry_data.get(CONF_HOST)
         self._model = entry_data.get(CONF_MODEL)
@@ -226,17 +214,13 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="reconfigure",
             data_schema=vol.Schema(
                 {
-                    vol.Required(
-                        CONF_HOST, default=entry.data.get(CONF_HOST)
-                    ): TextSelector(TextSelectorConfig(type=TextSelectorType.TEXT)),
-                    vol.Required(
-                        CONF_TOKEN, default=entry.data.get(CONF_TOKEN)
-                    ): TextSelector(
+                    vol.Required(CONF_HOST, default=entry.data.get(CONF_HOST)): TextSelector(
+                        TextSelectorConfig(type=TextSelectorType.TEXT)
+                    ),
+                    vol.Required(CONF_TOKEN, default=entry.data.get(CONF_TOKEN)): TextSelector(
                         TextSelectorConfig(type=TextSelectorType.PASSWORD)
                     ),
-                    vol.Optional(
-                        CONF_MODEL, default=entry.data.get(CONF_MODEL)
-                    ): SelectSelector(
+                    vol.Optional(CONF_MODEL, default=entry.data.get(CONF_MODEL)): SelectSelector(
                         SelectSelectorConfig(
                             options=SUPPORTED_MODELS,
                             mode=SelectSelectorMode.DROPDOWN,
@@ -268,16 +252,12 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
 class XiaomiMiioOptionsFlowHandler(OptionsFlowWithConfigEntry):
     """Handle options flow for Xiaomi Air Purifier NG."""
 
-    async def async_step_init(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Manage the options."""
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
-        current_interval = self.options.get(
-            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
-        )
+        current_interval = self.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
 
         return self.async_show_form(
             step_id="init",

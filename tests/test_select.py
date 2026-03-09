@@ -6,22 +6,21 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from custom_components.xiaomi_miio_airpurifier_ng.select import (
-    XiaomiMiioSelect,
-    XiaomiMiioModeSelect,
-    XiaomiMiioSelectEntityDescription,
-    SELECT_DESCRIPTIONS,
-    LED_BRIGHTNESS_MAP,
-    LED_BRIGHTNESS_OPTIONS,
-    _get_led_brightness_option,
-    _normalize_option,
-)
 from custom_components.xiaomi_miio_airpurifier_ng.const import (
-    MODEL_AIRHUMIDIFIER_JSQS,
+    MODEL_AIRHUMIDIFIER_CA1,
     MODEL_AIRHUMIDIFIER_CA4,
     MODEL_AIRHUMIDIFIER_JSQ001,
+    MODEL_AIRHUMIDIFIER_JSQS,
     MODEL_AIRHUMIDIFIER_MJJSQ,
-    MODEL_AIRHUMIDIFIER_CA1,
+)
+from custom_components.xiaomi_miio_airpurifier_ng.select import (
+    LED_BRIGHTNESS_OPTIONS,
+    SELECT_DESCRIPTIONS,
+    XiaomiMiioModeSelect,
+    XiaomiMiioSelect,
+    XiaomiMiioSelectEntityDescription,
+    _get_led_brightness_option,
+    _normalize_option,
 )
 
 

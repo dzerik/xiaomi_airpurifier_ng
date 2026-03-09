@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 from homeassistant.const import CONF_HOST, CONF_TOKEN
@@ -11,6 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from miio import DeviceException
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import CONF_MODEL, DOMAIN
 from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
@@ -20,9 +21,6 @@ from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
     XiaomiFanCoordinator,
     XiaomiMiioDataUpdateCoordinator,
 )
-
-from pytest_homeassistant_custom_component.common import MockConfigEntry
-
 from tests.conftest import MockDeviceInfo
 
 
@@ -55,7 +53,12 @@ async def test_async_setup_caches_device_info(hass: HomeAssistant) -> None:
 
     mock_device = MagicMock()
     mock_info = MockDeviceInfo(
-        {"model": "zhimi.airpurifier.mc1", "mac": "AA:BB:CC:DD:EE:FF", "firmware": "1.2.3", "hardware": "ESP32"}
+        {
+            "model": "zhimi.airpurifier.mc1",
+            "mac": "AA:BB:CC:DD:EE:FF",
+            "firmware": "1.2.3",
+            "hardware": "ESP32",
+        }
     )
     mock_device.info.return_value = mock_info
 

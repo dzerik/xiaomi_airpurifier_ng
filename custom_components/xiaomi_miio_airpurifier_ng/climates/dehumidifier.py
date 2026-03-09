@@ -10,6 +10,8 @@ from homeassistant.components.climate.const import HVACMode
 from homeassistant.const import UnitOfTemperature
 from miio.airdehumidifier import (
     FanSpeed as AirdehumidifierFanSpeed,
+)
+from miio.airdehumidifier import (
     OperationMode as AirdehumidifierOperationMode,
 )
 
@@ -55,9 +57,7 @@ class XiaomiAirDehumidifierClimate(DeviceServiceMixin, XiaomiMiioEntity, Climate
 
         # Initialize state attributes
         self._state_attrs: dict[str, Any] = {ATTR_MODEL: coordinator.model}
-        self._state_attrs.update(
-            {attribute: None for attribute in self._available_attributes}
-        )
+        self._state_attrs.update({attribute: None for attribute in self._available_attributes})
 
         # Set preset and fan modes
         self._attr_preset_modes = [mode.name for mode in AirdehumidifierOperationMode]

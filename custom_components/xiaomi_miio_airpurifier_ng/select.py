@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-import logging
 from typing import Any
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
@@ -239,38 +239,54 @@ class XiaomiMiioModeSelect(XiaomiMiioEntity, SelectEntity):
             return None
 
         # Humidifier models
-        if model in [MODEL_AIRHUMIDIFIER_JSQ2W, MODEL_AIRHUMIDIFIER_JSQ3,
-                     MODEL_AIRHUMIDIFIER_JSQ5, MODEL_AIRHUMIDIFIER_JSQS]:
+        if model in [
+            MODEL_AIRHUMIDIFIER_JSQ2W,
+            MODEL_AIRHUMIDIFIER_JSQ3,
+            MODEL_AIRHUMIDIFIER_JSQ5,
+            MODEL_AIRHUMIDIFIER_JSQS,
+        ]:
             from miio.integrations.humidifier.deerma.airhumidifier_jsqs import (
                 OperationMode as JsqsOperationMode,
             )
+
             return JsqsOperationMode
-        if model in [MODEL_AIRHUMIDIFIER_MJJSQ, MODEL_AIRHUMIDIFIER_JSQ,
-                     MODEL_AIRHUMIDIFIER_JSQ1]:
+        if model in [
+            MODEL_AIRHUMIDIFIER_MJJSQ,
+            MODEL_AIRHUMIDIFIER_JSQ,
+            MODEL_AIRHUMIDIFIER_JSQ1,
+        ]:
             from miio.integrations.humidifier.deerma.airhumidifier_mjjsq import (
                 OperationMode as MjjsqOperationMode,
             )
+
             return MjjsqOperationMode
         if model == MODEL_AIRHUMIDIFIER_JSQ001:
             from miio.integrations.humidifier.shuii.airhumidifier_jsq import (
                 OperationMode as JsqOperationMode,
             )
+
             return JsqOperationMode
         if model == MODEL_AIRHUMIDIFIER_CA4 or model in HUMIDIFIER_MIOT:
             from miio.integrations.humidifier.zhimi.airhumidifier_miot import (
                 OperationMode as MiotOperationMode,
             )
+
             return MiotOperationMode
-        if model in [MODEL_AIRHUMIDIFIER_CA1, MODEL_AIRHUMIDIFIER_CB1,
-                     MODEL_AIRHUMIDIFIER_CB2]:
+        if model in [
+            MODEL_AIRHUMIDIFIER_CA1,
+            MODEL_AIRHUMIDIFIER_CB1,
+            MODEL_AIRHUMIDIFIER_CB2,
+        ]:
             from miio.integrations.humidifier.zhimi.airhumidifier import (
                 OperationMode as ZhimiOperationMode,
             )
+
             return ZhimiOperationMode
         if model.startswith("zhimi.humidifier."):
             from miio.integrations.humidifier.zhimi.airhumidifier import (
                 OperationMode as ZhimiOperationMode,
             )
+
             return ZhimiOperationMode
 
         return None
@@ -297,9 +313,7 @@ class XiaomiMiioModeSelect(XiaomiMiioEntity, SelectEntity):
         try:
             # Convert option string to enum
             mode_enum = self._mode_enum[option]
-            await self.hass.async_add_executor_job(
-                self.coordinator.device.set_mode, mode_enum
-            )
+            await self.hass.async_add_executor_job(self.coordinator.device.set_mode, mode_enum)
             await self.coordinator.async_request_refresh()
             _LOGGER.debug("Successfully set mode to %s", option)
         except KeyError:

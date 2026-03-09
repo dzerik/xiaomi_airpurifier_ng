@@ -2,38 +2,37 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from homeassistant.components.fan import FanEntityFeature
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import (
     ATTR_MODEL,
+    FEATURE_RESET_FILTER,
+    FEATURE_SET_AUTO_DETECT,
     FEATURE_SET_BUZZER,
     FEATURE_SET_CHILD_LOCK,
+    FEATURE_SET_CLEAN_MODE,
+    FEATURE_SET_DISPLAY_ORIENTATION,
+    FEATURE_SET_DRY,
+    FEATURE_SET_EXTRA_FEATURES,
+    FEATURE_SET_FAN_LEVEL,
+    FEATURE_SET_FAVORITE_LEVEL,
+    FEATURE_SET_FAVORITE_SPEED,
+    FEATURE_SET_LEARN_MODE,
     FEATURE_SET_LED,
     FEATURE_SET_LED_BRIGHTNESS,
-    FEATURE_SET_FAVORITE_LEVEL,
-    FEATURE_SET_FAN_LEVEL,
-    FEATURE_SET_AUTO_DETECT,
-    FEATURE_SET_LEARN_MODE,
-    FEATURE_SET_VOLUME,
-    FEATURE_SET_EXTRA_FEATURES,
-    FEATURE_RESET_FILTER,
-    FEATURE_SET_TARGET_HUMIDITY,
-    FEATURE_SET_DRY,
-    FEATURE_SET_CLEAN_MODE,
-    FEATURE_SET_WET_PROTECTION,
     FEATURE_SET_MOTOR_SPEED,
-    FEATURE_SET_FAVORITE_SPEED,
-    FEATURE_SET_OSCILLATION_ANGLE,
     FEATURE_SET_NATURAL_MODE,
+    FEATURE_SET_OSCILLATION_ANGLE,
     FEATURE_SET_PTC,
     FEATURE_SET_PTC_LEVEL,
-    FEATURE_SET_DISPLAY_ORIENTATION,
+    FEATURE_SET_TARGET_HUMIDITY,
+    FEATURE_SET_VOLUME,
+    FEATURE_SET_WET_PROTECTION,
 )
 from custom_components.xiaomi_miio_airpurifier_ng.fans.base import (
-    XiaomiMiioBaseFan,
     XiaomiGenericFan,
 )
 

@@ -45,9 +45,7 @@ class XiaomiMiioBaseFan(DeviceServiceMixin, XiaomiMiioEntity, FanEntity):
         self._state_attrs: dict[str, Any] = {ATTR_MODEL: coordinator.model}
 
         # Initialize available attribute values to None
-        self._state_attrs.update(
-            {attribute: None for attribute in self._available_attributes}
-        )
+        self._state_attrs.update({attribute: None for attribute in self._available_attributes})
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:

@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 from collections.abc import Generator
-from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from homeassistant.const import CONF_HOST, CONF_TOKEN
 
-from custom_components.xiaomi_miio_airpurifier_ng.const import CONF_MODEL, DOMAIN
+from custom_components.xiaomi_miio_airpurifier_ng.const import CONF_MODEL
 
 pytest_plugins = "pytest_homeassistant_custom_component"
 
@@ -71,9 +71,7 @@ class MockDeviceInfo:
 @pytest.fixture
 def mock_device(mock_device_info: dict) -> Generator[MagicMock, None, None]:
     """Return a mocked Device."""
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng.config_flow.Device"
-    ) as mock:
+    with patch("custom_components.xiaomi_miio_airpurifier_ng.config_flow.Device") as mock:
         device = mock.return_value
         device.info.return_value = MockDeviceInfo(mock_device_info)
         yield mock
@@ -92,9 +90,7 @@ def mock_setup_entry() -> Generator[AsyncMock, None, None]:
 @pytest.fixture
 def mock_air_purifier() -> Generator[MagicMock, None, None]:
     """Return a mocked AirPurifier device."""
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng.coordinator.AirPurifier"
-    ) as mock:
+    with patch("custom_components.xiaomi_miio_airpurifier_ng.coordinator.AirPurifier") as mock:
         device = mock.return_value
         device.status.return_value = MagicMock(
             power="on",
@@ -118,9 +114,7 @@ def mock_air_purifier() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def mock_air_purifier_miot() -> Generator[MagicMock, None, None]:
     """Return a mocked AirPurifierMiot device."""
-    with patch(
-        "custom_components.xiaomi_miio_airpurifier_ng.coordinator.AirPurifierMiot"
-    ) as mock:
+    with patch("custom_components.xiaomi_miio_airpurifier_ng.coordinator.AirPurifierMiot") as mock:
         device = mock.return_value
         device.status.return_value = MagicMock(
             power="on",

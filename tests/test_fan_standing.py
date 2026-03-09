@@ -8,22 +8,21 @@ import pytest
 from homeassistant.components.fan import FanEntityFeature
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import (
+    FAN_PRESET_MODES_1C,
+    FAN_SPEEDS_1C,
+    FEATURE_FLAGS_FAN,
+    FEATURE_FLAGS_FAN_1C,
+    FEATURE_FLAGS_FAN_LESHOW_SS4,
+    FEATURE_FLAGS_FAN_P5,
+    MODEL_FAN_1C,
+    MODEL_FAN_LESHOW_SS4,
     MODEL_FAN_P5,
     MODEL_FAN_P8,
     MODEL_FAN_P9,
     MODEL_FAN_P10,
     MODEL_FAN_P11,
     MODEL_FAN_P18,
-    MODEL_FAN_1C,
-    MODEL_FAN_LESHOW_SS4,
-    FAN_PRESET_MODES,
-    FAN_PRESET_MODES_1C,
-    FAN_SPEEDS_1C,
     SPEED_OFF,
-    FEATURE_FLAGS_FAN,
-    FEATURE_FLAGS_FAN_P5,
-    FEATURE_FLAGS_FAN_1C,
-    FEATURE_FLAGS_FAN_LESHOW_SS4,
 )
 from custom_components.xiaomi_miio_airpurifier_ng.fans.standing import (
     XiaomiStandingFan,
@@ -226,7 +225,10 @@ class TestSetPresetMode:
         fan = XiaomiStandingFan(coord)
         fan.hass = coord.hass
         # Use a valid leshow mode
-        from miio.integrations.fan.leshow.fan_leshow import OperationMode as FanLeshowOperationMode
+        from miio.integrations.fan.leshow.fan_leshow import (
+            OperationMode as FanLeshowOperationMode,
+        )
+
         valid_mode = list(FanLeshowOperationMode)[0].name
         await fan.async_set_preset_mode(valid_mode)
         coord.device.set_mode.assert_called_once()

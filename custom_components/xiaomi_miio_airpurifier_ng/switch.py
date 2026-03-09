@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-import logging
 from typing import Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
@@ -233,9 +233,7 @@ class XiaomiMiioSwitch(XiaomiMiioEntity, SwitchEntity):
         """Set the switch state."""
         device = self.coordinator.device
         method_name = (
-            self.entity_description.turn_on_fn
-            if state
-            else self.entity_description.turn_off_fn
+            self.entity_description.turn_on_fn if state else self.entity_description.turn_off_fn
         )
 
         if not method_name:

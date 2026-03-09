@@ -5,6 +5,10 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_HOST, CONF_TOKEN, Platform
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from miio import (
     AirDogX3,
     AirFresh,
@@ -26,15 +30,8 @@ from miio import (
     FanP5,
 )
 
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, CONF_TOKEN, Platform
-from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
-
 from .const import (
     CONF_MODEL,
-    DOMAIN as DOMAIN,
-    DeviceCategory,
     HUMIDIFIER_MIOT,
     MODEL_AIRDEHUMIDIFIER_V1,
     MODEL_AIRFRESH_A1,
@@ -72,12 +69,12 @@ from .const import (
     MODEL_AIRPURIFIER_V5,
     MODEL_FAN_1C,
     MODEL_FAN_LESHOW_SS4,
-    MODEL_FAN_P10,
-    MODEL_FAN_P11,
-    MODEL_FAN_P18,
     MODEL_FAN_P5,
     MODEL_FAN_P8,
     MODEL_FAN_P9,
+    MODEL_FAN_P10,
+    MODEL_FAN_P11,
+    MODEL_FAN_P18,
     MODEL_FAN_SA1,
     MODEL_FAN_V2,
     MODEL_FAN_V3,
@@ -85,7 +82,11 @@ from .const import (
     MODEL_FAN_ZA3,
     MODEL_FAN_ZA4,
     PURIFIER_MIOT,
+    DeviceCategory,
     classify_model,
+)
+from .const import (
+    DOMAIN as DOMAIN,
 )
 from .coordinator import (
     XiaomiAirDehumidifierCoordinator,
@@ -130,9 +131,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: XiaomiMiioConfigEntry) -
 
     # Create the appropriate device instance based on model
     try:
-        device = await hass.async_add_executor_job(
-            _create_device, host, token, model
-        )
+        device = await hass.async_add_executor_job(_create_device, host, token, model)
     except DeviceException as ex:
         raise ConfigEntryNotReady(f"Unable to connect to device: {ex}") from ex
 
@@ -197,7 +196,11 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
         MODEL_AIRHUMIDIFIER_CB2,
     ):
         return AirHumidifier(ip=host, token=token, model=model)
-    if model in (MODEL_AIRHUMIDIFIER_MJJSQ, MODEL_AIRHUMIDIFIER_JSQ, MODEL_AIRHUMIDIFIER_JSQ1):
+    if model in (
+        MODEL_AIRHUMIDIFIER_MJJSQ,
+        MODEL_AIRHUMIDIFIER_JSQ,
+        MODEL_AIRHUMIDIFIER_JSQ1,
+    ):
         return AirHumidifierMjjsq(ip=host, token=token, model=model)
     if model in (
         MODEL_AIRHUMIDIFIER_JSQ2W,

@@ -5,14 +5,20 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from miio.integrations.airpurifier.zhimi.airfresh import (
-    LedBrightness as AirfreshLedBrightness,
-    OperationMode as AirfreshOperationMode,
-)
 from miio.integrations.airpurifier.dmaker.airfresh_t2017 import (
     DisplayOrientation as AirfreshT2017DisplayOrientation,
+)
+from miio.integrations.airpurifier.dmaker.airfresh_t2017 import (
     OperationMode as AirfreshT2017OperationMode,
+)
+from miio.integrations.airpurifier.dmaker.airfresh_t2017 import (
     PtcLevel as AirfreshT2017PtcLevel,
+)
+from miio.integrations.airpurifier.zhimi.airfresh import (
+    LedBrightness as AirfreshLedBrightness,
+)
+from miio.integrations.airpurifier.zhimi.airfresh import (
+    OperationMode as AirfreshOperationMode,
 )
 
 from ..const import (

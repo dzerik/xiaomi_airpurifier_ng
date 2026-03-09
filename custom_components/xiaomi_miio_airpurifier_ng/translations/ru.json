@@ -67,7 +67,7 @@
         "name": "Бак для воды"
       },
       "water_shortage": {
-        "name": "Нет воды"
+        "name": "Нехватка воды"
       },
       "water_tank_detached": {
         "name": "Бак снят"
@@ -95,6 +95,9 @@
       "pm25": {
         "name": "PM2.5"
       },
+      "pm10": {
+        "name": "PM10"
+      },
       "average_aqi": {
         "name": "Средний AQI"
       },
@@ -107,20 +110,35 @@
       "co2": {
         "name": "CO2"
       },
+      "tvoc": {
+        "name": "ЛОС"
+      },
+      "illuminance": {
+        "name": "Освещённость"
+      },
       "filter_life_remaining": {
         "name": "Ресурс фильтра"
       },
       "filter_hours_used": {
         "name": "Часы работы фильтра"
       },
+      "filter_left_time": {
+        "name": "Дней до замены фильтра"
+      },
+      "filter_type": {
+        "name": "Тип фильтра"
+      },
       "motor_speed": {
         "name": "Скорость мотора"
+      },
+      "motor2_speed": {
+        "name": "Скорость мотора 2"
       },
       "use_time": {
         "name": "Время работы"
       },
       "purify_volume": {
-        "name": "Объем очистки"
+        "name": "Объём очистки"
       },
       "water_level": {
         "name": "Уровень воды"
@@ -133,24 +151,6 @@
       },
       "mode": {
         "name": "Режим"
-      },
-      "pm10": {
-        "name": "PM10"
-      },
-      "tvoc": {
-        "name": "ЛОС"
-      },
-      "illuminance": {
-        "name": "Освещенность"
-      },
-      "filter_left_time": {
-        "name": "Дней до замены фильтра"
-      },
-      "filter_type": {
-        "name": "Тип фильтра"
-      },
-      "motor2_speed": {
-        "name": "Скорость мотора 2"
       },
       "volume": {
         "name": "Громкость"
@@ -196,6 +196,9 @@
       "led": {
         "name": "Подсветка"
       },
+      "led_light": {
+        "name": "Подсветка"
+      },
       "child_lock": {
         "name": "Блокировка от детей"
       },
@@ -213,9 +216,6 @@
       },
       "ptc": {
         "name": "PTC нагреватель"
-      },
-      "led_light": {
-        "name": "Подсветка"
       },
       "overwet_protect": {
         "name": "Защита от переувлажнения"
@@ -270,7 +270,7 @@
       "display_orientation": {
         "name": "Ориентация дисплея",
         "state": {
-          "forward": "Вперед",
+          "forward": "Вперёд",
           "left": "Влево",
           "right": "Вправо"
         }
@@ -302,52 +302,32 @@
   "services": {
     "fan_set_buzzer_on": {
       "name": "Включить звуковой сигнал",
-      "description": "Включить звуковой сигнал.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Включить звуковой сигнал."
     },
     "fan_set_buzzer_off": {
       "name": "Выключить звуковой сигнал",
-      "description": "Выключить звуковой сигнал.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Выключить звуковой сигнал."
+    },
+    "fan_set_led_on": {
+      "name": "Включить подсветку",
+      "description": "Включить подсветку."
+    },
+    "fan_set_led_off": {
+      "name": "Выключить подсветку",
+      "description": "Выключить подсветку."
     },
     "fan_set_child_lock_on": {
       "name": "Включить блокировку от детей",
-      "description": "Включить блокировку от детей.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Включить блокировку от детей."
     },
     "fan_set_child_lock_off": {
       "name": "Выключить блокировку от детей",
-      "description": "Выключить блокировку от детей.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Выключить блокировку от детей."
     },
     "fan_set_favorite_level": {
       "name": "Установить избранный уровень",
       "description": "Установить избранный уровень.",
       "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        },
         "level": {
           "name": "Уровень",
           "description": "Уровень от 0 до 16."
@@ -358,10 +338,6 @@
       "name": "Установить уровень вентилятора",
       "description": "Установить уровень вентилятора.",
       "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        },
         "level": {
           "name": "Уровень",
           "description": "Уровень от 1 до 3."
@@ -372,10 +348,6 @@
       "name": "Установить яркость подсветки",
       "description": "Установить яркость подсветки.",
       "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        },
         "brightness": {
           "name": "Яркость",
           "description": "Яркость (0 = Ярко, 1 = Тускло, 2 = Выкл)"
@@ -384,52 +356,24 @@
     },
     "fan_set_auto_detect_on": {
       "name": "Включить автоопределение",
-      "description": "Включить автоопределение.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Включить автоопределение."
     },
     "fan_set_auto_detect_off": {
       "name": "Выключить автоопределение",
-      "description": "Выключить автоопределение.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Выключить автоопределение."
     },
     "fan_set_learn_mode_on": {
       "name": "Включить режим обучения",
-      "description": "Включить режим обучения.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Включить режим обучения."
     },
     "fan_set_learn_mode_off": {
       "name": "Выключить режим обучения",
-      "description": "Выключить режим обучения.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Выключить режим обучения."
     },
     "fan_set_volume": {
       "name": "Установить громкость",
       "description": "Установить громкость звука.",
       "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        },
         "volume": {
           "name": "Громкость",
           "description": "Громкость от 0 до 100."
@@ -438,25 +382,15 @@
     },
     "fan_reset_filter": {
       "name": "Сбросить фильтр",
-      "description": "Сбросить время работы и ресурс фильтра.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Сбросить время работы и ресурс фильтра."
     },
     "fan_set_extra_features": {
       "name": "Установить дополнительные функции",
-      "description": "Управляет регистром хранения дополнительных функций.",
+      "description": "Установить значение дополнительных функций.",
       "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        },
         "features": {
           "name": "Функции",
-          "description": "Целое число, известные значения: 0 (по умолчанию) и 1 (турбо режим)."
+          "description": "Целочисленное значение (0 = по умолчанию, 1 = турбо режим)."
         }
       }
     },
@@ -464,45 +398,153 @@
       "name": "Установить целевую влажность",
       "description": "Установить целевую влажность.",
       "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        },
         "humidity": {
           "name": "Влажность",
-          "description": "Целевая влажность. Допустимые значения: 30, 40, 50, 60, 70 и 80."
+          "description": "Целевая влажность в процентах."
         }
       }
     },
     "fan_set_dry_on": {
       "name": "Включить режим сушки",
-      "description": "Включить режим сушки.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Включить режим сушки."
     },
     "fan_set_dry_off": {
       "name": "Выключить режим сушки",
-      "description": "Выключить режим сушки.",
-      "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
-        }
-      }
+      "description": "Выключить режим сушки."
     },
     "fan_set_filters_cleaned": {
       "name": "Отметить фильтры очищенными",
-      "description": "Сообщить устройству, что фильтры очищены.",
+      "description": "Сообщить устройству, что фильтры очищены."
+    },
+    "fan_set_motor_speed": {
+      "name": "Установить скорость мотора",
+      "description": "Установить скорость мотора (об/мин).",
       "fields": {
-        "entity_id": {
-          "name": "Объект",
-          "description": "Имя объекта xiaomi miio airpurifier."
+        "motor_speed": {
+          "name": "Скорость мотора",
+          "description": "Скорость мотора в об/мин (200-2000)."
         }
       }
+    },
+    "fan_set_clean_mode_on": {
+      "name": "Включить режим очистки",
+      "description": "Включить режим очистки."
+    },
+    "fan_set_clean_mode_off": {
+      "name": "Выключить режим очистки",
+      "description": "Выключить режим очистки."
+    },
+    "fan_set_wet_protection_on": {
+      "name": "Включить защиту от влаги",
+      "description": "Включить защиту от влаги."
+    },
+    "fan_set_wet_protection_off": {
+      "name": "Выключить защиту от влаги",
+      "description": "Выключить защиту от влаги."
+    },
+    "fan_set_favorite_speed": {
+      "name": "Установить избранную скорость",
+      "description": "Установить избранную скорость.",
+      "fields": {
+        "speed": {
+          "name": "Скорость",
+          "description": "Значение скорости (60-300)."
+        }
+      }
+    },
+    "fan_set_display_on": {
+      "name": "Включить дисплей",
+      "description": "Включить дисплей."
+    },
+    "fan_set_display_off": {
+      "name": "Выключить дисплей",
+      "description": "Выключить дисплей."
+    },
+    "fan_set_ptc_on": {
+      "name": "Включить PTC нагреватель",
+      "description": "Включить PTC нагреватель."
+    },
+    "fan_set_ptc_off": {
+      "name": "Выключить PTC нагреватель",
+      "description": "Выключить PTC нагреватель."
+    },
+    "fan_set_ptc_level": {
+      "name": "Установить уровень PTC",
+      "description": "Установить уровень PTC нагревателя.",
+      "fields": {
+        "level": {
+          "name": "Уровень",
+          "description": "Уровень PTC."
+        }
+      }
+    },
+    "fan_set_display_orientation": {
+      "name": "Установить ориентацию дисплея",
+      "description": "Установить ориентацию дисплея.",
+      "fields": {
+        "display_orientation": {
+          "name": "Ориентация",
+          "description": "Ориентация дисплея."
+        }
+      }
+    },
+    "fan_set_delay_off": {
+      "name": "Установить таймер отключения",
+      "description": "Установить таймер отключения.",
+      "fields": {
+        "delay_off_countdown": {
+          "name": "Задержка",
+          "description": "Задержка в минутах (0 для отключения)."
+        }
+      }
+    },
+    "fan_set_oscillation_angle": {
+      "name": "Установить угол вращения",
+      "description": "Установить угол вращения.",
+      "fields": {
+        "angle": {
+          "name": "Угол",
+          "description": "Угол вращения в градусах."
+        }
+      }
+    },
+    "fan_set_natural_mode_on": {
+      "name": "Включить естественный режим",
+      "description": "Включить естественный режим."
+    },
+    "fan_set_natural_mode_off": {
+      "name": "Выключить естественный режим",
+      "description": "Выключить естественный режим."
+    },
+    "xiaomi_miio_set_buzzer_on": {
+      "name": "Включить звуковой сигнал",
+      "description": "Включить звуковой сигнал."
+    },
+    "xiaomi_miio_set_buzzer_off": {
+      "name": "Выключить звуковой сигнал",
+      "description": "Выключить звуковой сигнал."
+    },
+    "xiaomi_miio_set_led_on": {
+      "name": "Включить подсветку",
+      "description": "Включить подсветку."
+    },
+    "xiaomi_miio_set_led_off": {
+      "name": "Выключить подсветку",
+      "description": "Выключить подсветку."
+    },
+    "xiaomi_miio_set_child_lock_on": {
+      "name": "Включить блокировку от детей",
+      "description": "Включить блокировку от детей."
+    },
+    "xiaomi_miio_set_child_lock_off": {
+      "name": "Выключить блокировку от детей",
+      "description": "Выключить блокировку от детей."
+    }
+  },
+  "issues": {
+    "yaml_deprecation": {
+      "title": "Конфигурация YAML устарела",
+      "description": "Конфигурация YAML для {integration} ({platform}) устарела и будет удалена в будущей версии. Используйте интерфейс для настройки интеграции: Настройки > Устройства и службы > Добавить интеграцию."
     }
   }
 }

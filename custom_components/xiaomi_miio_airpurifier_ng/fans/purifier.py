@@ -5,16 +5,20 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from miio.integrations.airpurifier.airdog.airpurifier_airdog import (
+    OperationMode as AirDogOperationMode,
+)
 from miio.integrations.airpurifier.zhimi.airpurifier import (
     LedBrightness as AirpurifierLedBrightness,
+)
+from miio.integrations.airpurifier.zhimi.airpurifier import (
     OperationMode as AirpurifierOperationMode,
 )
 from miio.integrations.airpurifier.zhimi.airpurifier_miot import (
     LedBrightness as AirpurifierMiotLedBrightness,
-    OperationMode as AirpurifierMiotOperationMode,
 )
-from miio.integrations.airpurifier.airdog.airpurifier_airdog import (
-    OperationMode as AirDogOperationMode,
+from miio.integrations.airpurifier.zhimi.airpurifier_miot import (
+    OperationMode as AirpurifierMiotOperationMode,
 )
 
 from ..const import (
