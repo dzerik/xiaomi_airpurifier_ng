@@ -12,7 +12,7 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import XiaomiMiioDataUpdateCoordinator
@@ -125,15 +125,24 @@ async def async_setup_entry(
     if not coordinator.data:
         await coordinator.async_config_entry_first_refresh()
 
-    entities: list[XiaomiMiioBinarySensor] = []
+    known_keys: set[str] = set()
 
-    # Create binary sensors based on available data
-    for description in BINARY_SENSOR_DESCRIPTIONS:
-        if description.exists_fn and coordinator.data:
-            if description.exists_fn(coordinator.data):
-                entities.append(XiaomiMiioBinarySensor(coordinator, description))
+    @callback
+    def _async_discover_binary_sensors() -> None:
+        """Discover binary sensors based on coordinator data."""
+        new_entities: list[XiaomiMiioBinarySensor] = []
+        for description in BINARY_SENSOR_DESCRIPTIONS:
+            if description.key in known_keys:
+                continue
+            if description.exists_fn and coordinator.data:
+                if description.exists_fn(coordinator.data):
+                    known_keys.add(description.key)
+                    new_entities.append(XiaomiMiioBinarySensor(coordinator, description))
+        if new_entities:
+            async_add_entities(new_entities)
 
-    async_add_entities(entities)
+    _async_discover_binary_sensors()
+    entry.async_on_unload(coordinator.async_add_listener(_async_discover_binary_sensors))
 
 
 class XiaomiMiioBinarySensor(XiaomiMiioEntity, BinarySensorEntity):

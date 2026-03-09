@@ -15,7 +15,7 @@ from homeassistant.components.number import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import PERCENTAGE
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import XiaomiMiioDataUpdateCoordinator
@@ -133,15 +133,24 @@ async def async_setup_entry(
     if not coordinator.data:
         await coordinator.async_config_entry_first_refresh()
 
-    entities: list[XiaomiMiioNumber] = []
+    known_keys: set[str] = set()
 
-    # Create numbers based on available data
-    for description in NUMBER_DESCRIPTIONS:
-        if description.exists_fn and coordinator.data:
-            if description.exists_fn(coordinator.data):
-                entities.append(XiaomiMiioNumber(coordinator, description))
+    @callback
+    def _async_discover_numbers() -> None:
+        """Discover number entities based on coordinator data."""
+        new_entities: list[XiaomiMiioNumber] = []
+        for description in NUMBER_DESCRIPTIONS:
+            if description.key in known_keys:
+                continue
+            if description.exists_fn and coordinator.data:
+                if description.exists_fn(coordinator.data):
+                    known_keys.add(description.key)
+                    new_entities.append(XiaomiMiioNumber(coordinator, description))
+        if new_entities:
+            async_add_entities(new_entities)
 
-    async_add_entities(entities)
+    _async_discover_numbers()
+    entry.async_on_unload(coordinator.async_add_listener(_async_discover_numbers))
 
 
 class XiaomiMiioNumber(XiaomiMiioEntity, NumberEntity):

@@ -9,7 +9,7 @@ from typing import Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -189,15 +189,24 @@ async def async_setup_entry(
     if not coordinator.data:
         await coordinator.async_config_entry_first_refresh()
 
-    entities: list[XiaomiMiioSwitch] = []
+    known_keys: set[str] = set()
 
-    # Create switches based on available data
-    for description in SWITCH_DESCRIPTIONS:
-        if description.exists_fn and coordinator.data:
-            if description.exists_fn(coordinator.data):
-                entities.append(XiaomiMiioSwitch(coordinator, description))
+    @callback
+    def _async_discover_switches() -> None:
+        """Discover switches based on coordinator data."""
+        new_entities: list[XiaomiMiioSwitch] = []
+        for description in SWITCH_DESCRIPTIONS:
+            if description.key in known_keys:
+                continue
+            if description.exists_fn and coordinator.data:
+                if description.exists_fn(coordinator.data):
+                    known_keys.add(description.key)
+                    new_entities.append(XiaomiMiioSwitch(coordinator, description))
+        if new_entities:
+            async_add_entities(new_entities)
 
-    async_add_entities(entities)
+    _async_discover_switches()
+    entry.async_on_unload(coordinator.async_add_listener(_async_discover_switches))
 
 
 class XiaomiMiioSwitch(XiaomiMiioEntity, SwitchEntity):

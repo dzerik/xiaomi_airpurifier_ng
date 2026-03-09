@@ -10,7 +10,7 @@ from typing import Any
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
@@ -130,22 +130,32 @@ async def async_setup_entry(
     if not coordinator.data:
         await coordinator.async_config_entry_first_refresh()
 
-    entities: list[SelectEntity] = []
+    known_keys: set[str] = set()
 
-    # Create selects based on available data
-    for description in SELECT_DESCRIPTIONS:
-        if description.exists_fn and coordinator.data:
-            if description.exists_fn(coordinator.data):
-                entities.append(XiaomiMiioSelect(coordinator, description))
+    @callback
+    def _async_discover_selects() -> None:
+        """Discover select entities based on coordinator data."""
+        new_entities: list[SelectEntity] = []
+        for description in SELECT_DESCRIPTIONS:
+            if description.key in known_keys:
+                continue
+            if description.exists_fn and coordinator.data:
+                if description.exists_fn(coordinator.data):
+                    known_keys.add(description.key)
+                    new_entities.append(XiaomiMiioSelect(coordinator, description))
 
-    # Create mode select if mode is available
-    if coordinator.data and "mode" in coordinator.data:
-        mode_select = XiaomiMiioModeSelect(coordinator)
-        # Only add if we have valid mode options
-        if mode_select._attr_options:
-            entities.append(mode_select)
+        # Mode select (special case — not description-based)
+        if "mode_select" not in known_keys and coordinator.data and "mode" in coordinator.data:
+            mode_select = XiaomiMiioModeSelect(coordinator)
+            if mode_select._attr_options:
+                known_keys.add("mode_select")
+                new_entities.append(mode_select)
 
-    async_add_entities(entities)
+        if new_entities:
+            async_add_entities(new_entities)
+
+    _async_discover_selects()
+    entry.async_on_unload(coordinator.async_add_listener(_async_discover_selects))
 
 
 class XiaomiMiioSelect(XiaomiMiioEntity, SelectEntity):
