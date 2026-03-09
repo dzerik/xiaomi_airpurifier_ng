@@ -311,9 +311,7 @@ class TestSetFanMode:
     @pytest.mark.asyncio
     async def test_set_fan_mode_valid(self):
         """Valid fan mode calls set_fan_speed."""
-        coord = _make_coordinator(
-            data={"power": "on", "mode": "Auto"}
-        )
+        coord = _make_coordinator(data={"power": "on", "mode": "Auto"})
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
         await entity.async_set_fan_mode("Low")
@@ -322,9 +320,7 @@ class TestSetFanMode:
     @pytest.mark.asyncio
     async def test_set_fan_mode_drycloth_noop(self):
         """Fan mode cannot be changed in DryCloth mode."""
-        coord = _make_coordinator(
-            data={"power": "on", "mode": "DryCloth"}
-        )
+        coord = _make_coordinator(data={"power": "on", "mode": "DryCloth"})
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
         await entity.async_set_fan_mode("Low")
@@ -333,9 +329,7 @@ class TestSetFanMode:
     @pytest.mark.asyncio
     async def test_set_fan_mode_invalid(self):
         """Invalid fan mode does not call device."""
-        coord = _make_coordinator(
-            data={"power": "on", "mode": "Auto"}
-        )
+        coord = _make_coordinator(data={"power": "on", "mode": "Auto"})
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
         await entity.async_set_fan_mode("InvalidFanMode")

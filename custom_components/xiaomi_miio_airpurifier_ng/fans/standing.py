@@ -307,4 +307,3 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
             move_direction,
         )
         await self.coordinator.async_request_refresh()
-

@@ -224,9 +224,7 @@ def _create_device(host: str, token: str, model: str | None) -> Device:
         MODEL_AIRHUMIDIFIER_JSQ5,
         MODEL_AIRHUMIDIFIER_JSQS,
     ):
-        return AirHumidifierJsqs(
-            ip=host, token=token, model=model, mapping=_JSQS_MAPPING
-        )
+        return AirHumidifierJsqs(ip=host, token=token, model=model, mapping=_JSQS_MAPPING)
     if model == MODEL_AIRHUMIDIFIER_JSQ001:
         return AirHumidifierJsq(ip=host, token=token, model=model)
 

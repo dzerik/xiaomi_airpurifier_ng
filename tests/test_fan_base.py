@@ -175,7 +175,6 @@ class TestTurnOnOff:
         coord.async_request_refresh.assert_awaited()
 
 
-
 class TestGenericFan:
     """Tests for XiaomiGenericFan."""
 

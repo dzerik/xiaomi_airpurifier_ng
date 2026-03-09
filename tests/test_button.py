@@ -41,21 +41,27 @@ def _make_coordinator(model="zhimi.airpurifier.mc1", data=None):
 class TestIsAirPurifier:
     """Tests for _is_air_purifier helper."""
 
-    @pytest.mark.parametrize("model", [
-        "zhimi.airpurifier.mc1",
-        "zhimi.airpurifier.v1",
-        "airdog.airpurifier.x3",
-        "airdog.airpurifier.x5",
-    ])
+    @pytest.mark.parametrize(
+        "model",
+        [
+            "zhimi.airpurifier.mc1",
+            "zhimi.airpurifier.v1",
+            "airdog.airpurifier.x3",
+            "airdog.airpurifier.x5",
+        ],
+    )
     def test_valid_purifier_models(self, model):
         """Returns True for valid air purifier models."""
         assert _is_air_purifier(model) is True
 
-    @pytest.mark.parametrize("model", [
-        "zhimi.humidifier.ca1",
-        "dmaker.fan.p5",
-        "unknown.model",
-    ])
+    @pytest.mark.parametrize(
+        "model",
+        [
+            "zhimi.humidifier.ca1",
+            "dmaker.fan.p5",
+            "unknown.model",
+        ],
+    )
     def test_non_purifier_models(self, model):
         """Returns False for non-purifier models."""
         assert _is_air_purifier(model) is False
@@ -72,21 +78,27 @@ class TestIsAirPurifier:
 class TestIsHumidifier:
     """Tests for _is_humidifier helper."""
 
-    @pytest.mark.parametrize("model", [
-        "zhimi.humidifier.v1",
-        "zhimi.humidifier.ca4",
-        "deerma.humidifier.mjjsq",
-        "deerma.humidifier.jsq5",
-        "shuii.humidifier.jsq001",
-    ])
+    @pytest.mark.parametrize(
+        "model",
+        [
+            "zhimi.humidifier.v1",
+            "zhimi.humidifier.ca4",
+            "deerma.humidifier.mjjsq",
+            "deerma.humidifier.jsq5",
+            "shuii.humidifier.jsq001",
+        ],
+    )
     def test_valid_humidifier_models(self, model):
         """Returns True for valid humidifier models."""
         assert _is_humidifier(model) is True
 
-    @pytest.mark.parametrize("model", [
-        "zhimi.airpurifier.mc1",
-        "dmaker.fan.p5",
-    ])
+    @pytest.mark.parametrize(
+        "model",
+        [
+            "zhimi.airpurifier.mc1",
+            "dmaker.fan.p5",
+        ],
+    )
     def test_non_humidifier_models(self, model):
         """Returns False for non-humidifier models."""
         assert _is_humidifier(model) is False
@@ -103,20 +115,26 @@ class TestIsHumidifier:
 class TestIsAirFresh:
     """Tests for _is_air_fresh helper."""
 
-    @pytest.mark.parametrize("model", [
-        "zhimi.airfresh.va2",
-        "zhimi.airfresh.va4",
-        "dmaker.airfresh.a1",
-        "dmaker.airfresh.t2017",
-    ])
+    @pytest.mark.parametrize(
+        "model",
+        [
+            "zhimi.airfresh.va2",
+            "zhimi.airfresh.va4",
+            "dmaker.airfresh.a1",
+            "dmaker.airfresh.t2017",
+        ],
+    )
     def test_valid_air_fresh_models(self, model):
         """Returns True for valid air fresh models."""
         assert _is_air_fresh(model) is True
 
-    @pytest.mark.parametrize("model", [
-        "zhimi.airpurifier.mc1",
-        "dmaker.fan.p5",
-    ])
+    @pytest.mark.parametrize(
+        "model",
+        [
+            "zhimi.airpurifier.mc1",
+            "dmaker.fan.p5",
+        ],
+    )
     def test_non_air_fresh_models(self, model):
         """Returns False for non-air-fresh models."""
         assert _is_air_fresh(model) is False

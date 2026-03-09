@@ -262,5 +262,3 @@ class TestSetPercentage:
         await fan.async_set_percentage(1)
         level = coord.device.set_fan_level.call_args[0][0]
         assert level >= 1
-
-

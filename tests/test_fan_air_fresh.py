@@ -136,5 +136,3 @@ class TestSetPresetMode:
         fan.hass = coord.hass
         await fan.async_set_preset_mode("NonexistentMode")
         coord.device.set_mode.assert_not_called()
-
-

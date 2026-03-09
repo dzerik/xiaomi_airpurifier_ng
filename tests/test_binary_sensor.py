@@ -85,15 +85,18 @@ class TestIsOn:
         sensor = XiaomiMiioBinarySensor(coord, desc)
         assert sensor.is_on is None
 
-    @pytest.mark.parametrize("key,data_key,value", [
-        ("water_tank_removed", "water_shortage_fault", True),
-        ("water_tank_detached", "water_tank_detached", True),
-        ("no_water", "no_water", True),
-        ("ac_power", "ac_power", True),
-        ("battery_charge", "battery_charge", True),
-        ("oscillate", "oscillate", True),
-        ("ptc_status", "ptc_status", True),
-    ])
+    @pytest.mark.parametrize(
+        "key,data_key,value",
+        [
+            ("water_tank_removed", "water_shortage_fault", True),
+            ("water_tank_detached", "water_tank_detached", True),
+            ("no_water", "no_water", True),
+            ("ac_power", "ac_power", True),
+            ("battery_charge", "battery_charge", True),
+            ("oscillate", "oscillate", True),
+            ("ptc_status", "ptc_status", True),
+        ],
+    )
     def test_is_on_various_sensors(self, key, data_key, value):
         """Various sensors return correct value from data."""
         desc = _get_description(key)
@@ -101,12 +104,15 @@ class TestIsOn:
         sensor = XiaomiMiioBinarySensor(coord, desc)
         assert sensor.is_on is True
 
-    @pytest.mark.parametrize("key,data_key", [
-        ("water_tank_removed", "water_shortage_fault"),
-        ("no_water", "no_water"),
-        ("ac_power", "ac_power"),
-        ("oscillate", "oscillate"),
-    ])
+    @pytest.mark.parametrize(
+        "key,data_key",
+        [
+            ("water_tank_removed", "water_shortage_fault"),
+            ("no_water", "no_water"),
+            ("ac_power", "ac_power"),
+            ("oscillate", "oscillate"),
+        ],
+    )
     def test_is_on_false_for_various_sensors(self, key, data_key):
         """Various sensors return False when data value is False."""
         desc = _get_description(key)
@@ -121,10 +127,12 @@ class TestAsyncSetupEntry:
     @pytest.mark.asyncio
     async def test_discovers_sensors_from_data(self):
         """Discovers sensors based on coordinator data keys."""
-        coord = _make_coordinator(data={
-            "tank_filed": True,
-            "water_shortage_fault": False,
-        })
+        coord = _make_coordinator(
+            data={
+                "tank_filed": True,
+                "water_shortage_fault": False,
+            }
+        )
         entry = MagicMock()
         entry.runtime_data = coord
         entry.async_on_unload = MagicMock()
@@ -242,16 +250,19 @@ class TestBinarySensorDescriptions:
         for desc in BINARY_SENSOR_DESCRIPTIONS:
             assert desc.exists_fn is not None
 
-    @pytest.mark.parametrize("key,data_key", [
-        ("water_level_low", "tank_filed"),
-        ("water_tank_removed", "water_shortage_fault"),
-        ("water_tank_detached", "water_tank_detached"),
-        ("no_water", "no_water"),
-        ("ac_power", "ac_power"),
-        ("battery_charge", "battery_charge"),
-        ("oscillate", "oscillate"),
-        ("ptc_status", "ptc_status"),
-    ])
+    @pytest.mark.parametrize(
+        "key,data_key",
+        [
+            ("water_level_low", "tank_filed"),
+            ("water_tank_removed", "water_shortage_fault"),
+            ("water_tank_detached", "water_tank_detached"),
+            ("no_water", "no_water"),
+            ("ac_power", "ac_power"),
+            ("battery_charge", "battery_charge"),
+            ("oscillate", "oscillate"),
+            ("ptc_status", "ptc_status"),
+        ],
+    )
     def test_exists_fn_checks_correct_key(self, key, data_key):
         """exists_fn returns True when data has the correct key."""
         desc = _get_description(key)

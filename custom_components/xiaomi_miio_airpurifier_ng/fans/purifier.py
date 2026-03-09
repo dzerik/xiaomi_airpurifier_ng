@@ -201,4 +201,3 @@ class XiaomiAirPurifierFan(XiaomiMiioBaseFan):
                 level,
             )
         await self.coordinator.async_request_refresh()
-

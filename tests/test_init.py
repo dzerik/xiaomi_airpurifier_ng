@@ -200,163 +200,230 @@ async def test_setup_entry_unsupported_model(
 # Tests for _create_device — all model branches
 # ---------------------------------------------------------------------------
 
+
 class TestCreateDevice:
     """Tests for _create_device function covering all model branches."""
 
     def test_purifier_miot_model(self):
         """PURIFIER_MIOT model creates AirPurifierMiot."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRPURIFIER_3)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRPURIFIER_3
+        )
         from miio import AirPurifierMiot
+
         assert isinstance(device, AirPurifierMiot)
 
     def test_purifier_legacy_model(self):
         """Legacy purifier model creates AirPurifier."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRPURIFIER_V1)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRPURIFIER_V1
+        )
         from miio import AirPurifier
+
         assert isinstance(device, AirPurifier)
 
     def test_purifier_2s_model(self):
         """2S purifier model creates AirPurifier."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRPURIFIER_2S)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRPURIFIER_2S
+        )
         from miio import AirPurifier
+
         assert isinstance(device, AirPurifier)
 
     def test_airdog_model(self):
         """AirDog model creates AirDogX3."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRPURIFIER_AIRDOG_X3)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRPURIFIER_AIRDOG_X3
+        )
         from miio import AirDogX3
+
         assert isinstance(device, AirDogX3)
 
     def test_humidifier_miot_model(self):
         """Humidifier MiOT model creates AirHumidifierMiot."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_CA4)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_CA4
+        )
         from miio import AirHumidifierMiot
+
         assert isinstance(device, AirHumidifierMiot)
 
     def test_humidifier_legacy_model(self):
         """Legacy humidifier model creates AirHumidifier."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_V1)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_V1
+        )
         from miio import AirHumidifier
+
         assert isinstance(device, AirHumidifier)
 
     def test_humidifier_ca1_model(self):
         """CA1 humidifier model creates AirHumidifier."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_CA1)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_CA1
+        )
         from miio import AirHumidifier
+
         assert isinstance(device, AirHumidifier)
 
     def test_humidifier_cb1_model(self):
         """CB1 humidifier model creates AirHumidifier."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_CB1)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_CB1
+        )
         from miio import AirHumidifier
+
         assert isinstance(device, AirHumidifier)
 
     def test_humidifier_mjjsq_model(self):
         """MJJSQ humidifier model creates AirHumidifierMjjsq."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_MJJSQ)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_MJJSQ
+        )
         from miio import AirHumidifierMjjsq
+
         assert isinstance(device, AirHumidifierMjjsq)
 
     def test_humidifier_jsq_model(self):
         """JSQ humidifier model creates AirHumidifierMjjsq."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_JSQ)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_JSQ
+        )
         from miio import AirHumidifierMjjsq
+
         assert isinstance(device, AirHumidifierMjjsq)
 
     def test_humidifier_jsqs_model(self):
         """JSQS humidifier model creates AirHumidifierJsqs."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_JSQS)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_JSQS
+        )
         from miio import AirHumidifierJsqs
+
         assert isinstance(device, AirHumidifierJsqs)
 
     def test_humidifier_jsq2w_model(self):
         """JSQ2W humidifier model creates AirHumidifierJsqs."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_JSQ2W)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_JSQ2W
+        )
         from miio import AirHumidifierJsqs
+
         assert isinstance(device, AirHumidifierJsqs)
 
     def test_humidifier_jsq001_model(self):
         """JSQ001 humidifier model creates AirHumidifierJsq."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_JSQ001)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRHUMIDIFIER_JSQ001
+        )
         from miio import AirHumidifierJsq
+
         assert isinstance(device, AirHumidifierJsq)
 
     def test_airfresh_a1_model(self):
         """Air Fresh A1 model creates AirFreshA1."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRFRESH_A1)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRFRESH_A1
+        )
         from miio import AirFreshA1
+
         assert isinstance(device, AirFreshA1)
 
     def test_airfresh_va2_model(self):
         """Air Fresh VA2 model creates AirFresh."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRFRESH_VA2)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRFRESH_VA2
+        )
         from miio import AirFresh
+
         assert isinstance(device, AirFresh)
 
     def test_airfresh_va4_model(self):
         """Air Fresh VA4 model creates AirFresh."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRFRESH_VA4)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRFRESH_VA4
+        )
         from miio import AirFresh
+
         assert isinstance(device, AirFresh)
 
     def test_airfresh_t2017_model(self):
         """Air Fresh T2017 model creates AirFreshT2017."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRFRESH_T2017)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRFRESH_T2017
+        )
         from miio import AirFreshT2017
+
         assert isinstance(device, AirFreshT2017)
 
     def test_fan_1c_model(self):
         """Fan 1C model creates Fan1C."""
         device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_FAN_1C)
         from miio import Fan1C
+
         assert isinstance(device, Fan1C)
 
     def test_fan_p5_model(self):
         """Fan P5 model creates FanP5."""
         device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_FAN_P5)
         from miio import FanP5
+
         assert isinstance(device, FanP5)
 
     def test_fan_p9_miot_model(self):
         """Fan P9 MiOT model creates FanMiot."""
         device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_FAN_P9)
         from miio import FanMiot
+
         assert isinstance(device, FanMiot)
 
     def test_fan_leshow_model(self):
         """Leshow fan model creates FanLeshow."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_FAN_LESHOW_SS4)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_FAN_LESHOW_SS4
+        )
         from miio import FanLeshow
+
         assert isinstance(device, FanLeshow)
 
     def test_fan_legacy_model(self):
         """Legacy fan model creates Fan."""
         device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_FAN_V2)
         from miio import Fan
+
         assert isinstance(device, Fan)
 
     def test_dehumidifier_model(self):
         """Dehumidifier model creates AirDehumidifier."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRDEHUMIDIFIER_V1)
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", MODEL_AIRDEHUMIDIFIER_V1
+        )
         from miio import AirDehumidifier
+
         assert isinstance(device, AirDehumidifier)
 
     def test_unknown_model_creates_generic_device(self):
         """Unknown model falls back to generic Device."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", "unknown.model.v1")
+        device = _create_device(
+            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", "unknown.model.v1"
+        )
         from miio import Device
+
         assert isinstance(device, Device)
 
     def test_none_model_creates_generic_device(self):
         """None model falls back to generic Device."""
         device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", None)
         from miio import Device
+
         assert isinstance(device, Device)
 
 
 # ---------------------------------------------------------------------------
 # Tests for _create_coordinator — all device categories
 # ---------------------------------------------------------------------------
+
 
 class TestCreateCoordinator:
     """Tests for _create_coordinator function."""
@@ -381,6 +448,7 @@ class TestCreateCoordinator:
         from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
             XiaomiAirPurifierCoordinator,
         )
+
         hass = MagicMock()
         entry = self._make_entry("zhimi.airpurifier.mc1")
         device = MagicMock()
@@ -392,6 +460,7 @@ class TestCreateCoordinator:
         from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
             XiaomiAirHumidifierCoordinator,
         )
+
         hass = MagicMock()
         entry = self._make_entry("zhimi.humidifier.ca4")
         device = MagicMock()
@@ -403,6 +472,7 @@ class TestCreateCoordinator:
         from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
             XiaomiAirFreshCoordinator,
         )
+
         hass = MagicMock()
         entry = self._make_entry("zhimi.airfresh.va2")
         device = MagicMock()
@@ -414,6 +484,7 @@ class TestCreateCoordinator:
         from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
             XiaomiFanCoordinator,
         )
+
         hass = MagicMock()
         entry = self._make_entry("dmaker.fan.p5")
         device = MagicMock()
@@ -425,6 +496,7 @@ class TestCreateCoordinator:
         from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
             XiaomiAirDehumidifierCoordinator,
         )
+
         hass = MagicMock()
         entry = self._make_entry(MODEL_AIRDEHUMIDIFIER_V1)
         device = MagicMock()
@@ -436,6 +508,7 @@ class TestCreateCoordinator:
         from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
             XiaomiMiioDataUpdateCoordinator,
         )
+
         hass = MagicMock()
         entry = self._make_entry("unknown.model.v1")
         device = MagicMock()
@@ -447,6 +520,7 @@ class TestCreateCoordinator:
         from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
             XiaomiMiioDataUpdateCoordinator,
         )
+
         hass = MagicMock()
         entry = self._make_entry(None)
         device = MagicMock()

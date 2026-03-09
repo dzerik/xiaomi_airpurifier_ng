@@ -103,4 +103,3 @@ class XiaomiAirFreshFan(XiaomiMiioBaseFan):
             mode_enum,
         )
         await self.coordinator.async_request_refresh()
-

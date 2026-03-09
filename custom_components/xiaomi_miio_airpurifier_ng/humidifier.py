@@ -136,9 +136,7 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
         elif model == MODEL_AIRHUMIDIFIER_CA4:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_CA4
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA4
-            self._attr_available_modes = [
-                mode.name for mode in AirhumidifierMiotOperationMode
-            ]
+            self._attr_available_modes = [mode.name for mode in AirhumidifierMiotOperationMode]
         elif model == MODEL_AIRHUMIDIFIER_JSQ1:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQ1
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ1
@@ -160,27 +158,19 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
         elif model in [MODEL_AIRHUMIDIFIER_JSQ3, MODEL_AIRHUMIDIFIER_JSQ5]:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ5
-            self._attr_available_modes = [
-                mode.name for mode in AirhumidifierJsqsOperationMode
-            ]
+            self._attr_available_modes = [mode.name for mode in AirhumidifierJsqsOperationMode]
         elif model in [MODEL_AIRHUMIDIFIER_JSQ2W, MODEL_AIRHUMIDIFIER_JSQS]:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQS
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQS
-            self._attr_available_modes = [
-                mode.name for mode in AirhumidifierJsqsOperationMode
-            ]
+            self._attr_available_modes = [mode.name for mode in AirhumidifierJsqsOperationMode]
         elif model == MODEL_AIRHUMIDIFIER_JSQ001:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQ
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ
-            self._attr_available_modes = [
-                mode.name for mode in AirhumidifierJsqOperationMode
-            ]
+            self._attr_available_modes = [mode.name for mode in AirhumidifierJsqOperationMode]
         elif self._is_miot:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_CA4
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA4
-            self._attr_available_modes = [
-                mode.name for mode in AirhumidifierMiotOperationMode
-            ]
+            self._attr_available_modes = [mode.name for mode in AirhumidifierMiotOperationMode]
         else:
             self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER
             self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER

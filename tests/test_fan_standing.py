@@ -399,5 +399,3 @@ class TestSetDirection:
         # Should have called set_oscillate(False) first
         coord.device.set_oscillate.assert_called_once_with(False)
         coord.device.set_rotate.assert_called_once()
-
-

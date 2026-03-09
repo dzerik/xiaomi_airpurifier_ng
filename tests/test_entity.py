@@ -35,12 +35,14 @@ def _make_coordinator(
     if device_info_obj is not None:
         coordinator._device_info = device_info_obj
     else:
-        coordinator._device_info = MockDeviceInfo({
-            "model": model,
-            "mac": mac,
-            "firmware": firmware,
-            "hardware": hardware,
-        })
+        coordinator._device_info = MockDeviceInfo(
+            {
+                "model": model,
+                "mac": mac,
+                "firmware": firmware,
+                "hardware": hardware,
+            }
+        )
 
     hass = MagicMock()
     hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
@@ -480,7 +482,9 @@ class TestAvailable:
         # Parent CoordinatorEntity.available checks coordinator.last_update_success
         coord.last_update_success = True
         # We mock super().available
-        with patch.object(type(entity).__mro__[2], "available", new_callable=lambda: property(lambda self: True)):
+        with patch.object(
+            type(entity).__mro__[2], "available", new_callable=lambda: property(lambda self: True)
+        ):
             assert entity.available is True
 
     def test_available_false_when_coordinator_unavailable(self):
@@ -488,5 +492,7 @@ class TestAvailable:
         coord = _make_coordinator(data={})
         coord.available = False
         entity = XiaomiMiioEntity(coord)
-        with patch.object(type(entity).__mro__[2], "available", new_callable=lambda: property(lambda self: True)):
+        with patch.object(
+            type(entity).__mro__[2], "available", new_callable=lambda: property(lambda self: True)
+        ):
             assert entity.available is False
