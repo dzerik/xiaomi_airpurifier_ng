@@ -212,9 +212,7 @@ class TestSetNativeValue:
         coord = _make_coordinator(data={"favorite_level": 5})
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
-        coord.hass.async_add_executor_job = AsyncMock(
-            side_effect=DeviceException("Device error")
-        )
+        coord.hass.async_add_executor_job = AsyncMock(side_effect=DeviceException("Device error"))
         # Should not raise — _try_command catches DeviceException
         await number.async_set_native_value(10.0)
 

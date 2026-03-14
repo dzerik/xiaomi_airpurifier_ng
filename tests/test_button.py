@@ -270,9 +270,7 @@ class TestAsyncPress:
         """DeviceException is caught and logged via _try_command."""
         desc = BUTTON_DESCRIPTIONS[0]  # reset_filter
         coord = _make_coordinator(model="zhimi.airpurifier.mc1")
-        coord.hass.async_add_executor_job = AsyncMock(
-            side_effect=DeviceException("Device error")
-        )
+        coord.hass.async_add_executor_job = AsyncMock(side_effect=DeviceException("Device error"))
         button = XiaomiMiioButton(coord, desc)
         button.hass = coord.hass
 
