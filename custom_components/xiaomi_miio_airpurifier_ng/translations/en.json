@@ -16,7 +16,30 @@
   "config": {
     "step": {
       "user": {
-        "title": "Configure Xiaomi Air Purifier",
+        "title": "Add Xiaomi Device",
+        "description": "Choose how to set up your device. Cloud Login automatically retrieves the device token from your Xiaomi account.",
+        "data": {
+          "setup_method": "Setup method"
+        }
+      },
+      "cloud": {
+        "title": "Xiaomi Cloud Login",
+        "description": "Enter your Xiaomi account credentials. They are used once to fetch device tokens and are NOT stored.",
+        "data": {
+          "cloud_username": "Email / Xiaomi ID",
+          "cloud_password": "Password",
+          "cloud_server": "Server region"
+        }
+      },
+      "select": {
+        "title": "Select Device",
+        "description": "Choose the device you want to add.",
+        "data": {
+          "device": "Device"
+        }
+      },
+      "manual": {
+        "title": "Manual Setup",
         "description": "Enter the connection details for your Xiaomi device.",
         "data": {
           "host": "Host",
@@ -26,7 +49,7 @@
         },
         "data_description": {
           "host": "The IP address or hostname of your Xiaomi device.",
-          "token": "The 32-character token for device authentication. You can obtain this using various methods described in the documentation.",
+          "token": "The 32-character token for device authentication.",
           "name": "A friendly name for the device.",
           "model": "The device model. Leave empty for auto-detection."
         }
@@ -53,6 +76,8 @@
     },
     "error": {
       "cannot_connect": "Failed to connect to the device. Please check the host and token.",
+      "cloud_login_error": "Could not login to Xiaomi Cloud. Please check your credentials.",
+      "cloud_no_devices": "No supported devices found in your Xiaomi account.",
       "unknown": "An unexpected error occurred."
     },
     "abort": {
