@@ -26,6 +26,7 @@ from ..const import (
     MODEL_AIRFRESH_VA4,
     OPERATION_MODES_AIRFRESH,
     OPERATION_MODES_AIRFRESH_T2017,
+    ModelConfig,
 )
 from .base import XiaomiMiioBaseFan
 
@@ -33,6 +34,32 @@ if TYPE_CHECKING:
     from ..coordinator import XiaomiMiioDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+# Default config for unknown air fresh models
+_DEFAULT_AIRFRESH_CONFIG = ModelConfig(
+    features=FEATURE_FLAGS_AIRFRESH,
+    attributes=AVAILABLE_ATTRIBUTES_AIRFRESH,
+    preset_modes=list(OPERATION_MODES_AIRFRESH),
+)
+
+# Model → config lookup (replaces if/elif chain)
+_AIRFRESH_MODEL_CONFIGS: dict[str, ModelConfig] = {
+    MODEL_AIRFRESH_T2017: ModelConfig(
+        features=FEATURE_FLAGS_AIRFRESH_T2017,
+        attributes=AVAILABLE_ATTRIBUTES_AIRFRESH_T2017,
+        preset_modes=list(OPERATION_MODES_AIRFRESH_T2017),
+    ),
+    MODEL_AIRFRESH_A1: ModelConfig(
+        features=FEATURE_FLAGS_AIRFRESH_A1,
+        attributes=AVAILABLE_ATTRIBUTES_AIRFRESH_A1,
+        preset_modes=list(OPERATION_MODES_AIRFRESH_T2017),
+    ),
+    MODEL_AIRFRESH_VA4: ModelConfig(
+        features=FEATURE_FLAGS_AIRFRESH_VA4,
+        attributes=AVAILABLE_ATTRIBUTES_AIRFRESH_VA4,
+        preset_modes=list(OPERATION_MODES_AIRFRESH),
+    ),
+}
 
 
 class XiaomiAirFreshFan(XiaomiMiioBaseFan):
@@ -48,23 +75,11 @@ class XiaomiAirFreshFan(XiaomiMiioBaseFan):
         # Determine device type
         self._is_t2017 = model in [MODEL_AIRFRESH_T2017, MODEL_AIRFRESH_A1]
 
-        # Set device features and available attributes based on model
-        if model == MODEL_AIRFRESH_T2017:
-            self._device_features = FEATURE_FLAGS_AIRFRESH_T2017
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRFRESH_T2017
-            self._preset_modes = list(OPERATION_MODES_AIRFRESH_T2017)
-        elif model == MODEL_AIRFRESH_A1:
-            self._device_features = FEATURE_FLAGS_AIRFRESH_A1
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRFRESH_A1
-            self._preset_modes = list(OPERATION_MODES_AIRFRESH_T2017)
-        elif model == MODEL_AIRFRESH_VA4:
-            self._device_features = FEATURE_FLAGS_AIRFRESH_VA4
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRFRESH_VA4
-            self._preset_modes = list(OPERATION_MODES_AIRFRESH)
-        else:
-            self._device_features = FEATURE_FLAGS_AIRFRESH
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRFRESH
-            self._preset_modes = list(OPERATION_MODES_AIRFRESH)
+        # Lookup model config (replaces if/elif chain)
+        config = _AIRFRESH_MODEL_CONFIGS.get(model, _DEFAULT_AIRFRESH_CONFIG)
+        self._device_features = config.features
+        self._available_attributes = config.attributes
+        self._preset_modes = list(config.preset_modes)
 
         # Initialize base class after setting attributes
         super().__init__(coordinator)

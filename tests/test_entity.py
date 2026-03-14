@@ -33,9 +33,9 @@ def _make_coordinator(
     coordinator.available = True
 
     if device_info_obj is not None:
-        coordinator._device_info = device_info_obj
+        coordinator.device_info_raw = device_info_obj
     else:
-        coordinator._device_info = MockDeviceInfo(
+        coordinator.device_info_raw = MockDeviceInfo(
             {
                 "model": model,
                 "mac": mac,
@@ -91,9 +91,9 @@ class TestBuildDeviceInfo:
         assert (DOMAIN, "test_entry_id") in info["identifiers"]
 
     def test_mac_fallback_when_no_device_info(self):
-        """Falls back to entry_id when _device_info is None."""
+        """Falls back to entry_id when device_info_raw is None."""
         coord = _make_coordinator(device_info_obj=None)
-        coord._device_info = None
+        coord.device_info_raw = None
         entity = XiaomiMiioEntity(coord)
         info = entity._attr_device_info
         assert (DOMAIN, "test_entry_id") in info["identifiers"]
@@ -144,9 +144,9 @@ class TestGetFirmwareVersion:
         assert entity._get_firmware_version() == "2.0.1"
 
     def test_returns_none_when_no_device_info(self):
-        """Returns None when _device_info is None."""
+        """Returns None when device_info_raw is None."""
         coord = _make_coordinator()
-        coord._device_info = None
+        coord.device_info_raw = None
         entity = XiaomiMiioEntity(coord)
         assert entity._get_firmware_version() is None
 
@@ -161,9 +161,9 @@ class TestGetHardwareVersion:
         assert entity._get_hardware_version() == "ESP32-S3"
 
     def test_returns_none_when_no_device_info(self):
-        """Returns None when _device_info is None."""
+        """Returns None when device_info_raw is None."""
         coord = _make_coordinator()
-        coord._device_info = None
+        coord.device_info_raw = None
         entity = XiaomiMiioEntity(coord)
         assert entity._get_hardware_version() is None
 

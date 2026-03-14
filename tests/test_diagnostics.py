@@ -39,7 +39,7 @@ def _create_mock_coordinator(mock_device_info_data=None):
     mock_coordinator.last_update_success = True
     mock_coordinator.model = "zhimi.airpurifier.mc1"
     mock_coordinator.async_config_entry_first_refresh = AsyncMock()
-    mock_coordinator._device_info = MockDeviceInfo(
+    mock_coordinator.device_info_raw = MockDeviceInfo(
         mock_device_info_data
         or {
             "model": "zhimi.airpurifier.mc1",

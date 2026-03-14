@@ -5,6 +5,7 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from miio import DeviceException
 
 from custom_components.xiaomi_miio_airpurifier_ng.number import (
     NUMBER_DESCRIPTIONS,
@@ -23,10 +24,10 @@ def _make_coordinator(data=None):
     coordinator.config_entry.title = "Test Device"
     coordinator.device = MagicMock()
     coordinator.async_request_refresh = AsyncMock()
-    coordinator._device_info = MagicMock()
-    coordinator._device_info.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator._device_info.firmware_version = "1.0.0"
-    coordinator._device_info.hardware_version = "ESP32"
+    coordinator.device_info_raw = MagicMock()
+    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
+    coordinator.device_info_raw.firmware_version = "1.0.0"
+    coordinator.device_info_raw.hardware_version = "ESP32"
     coordinator.available = True
     hass = MagicMock()
     hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
@@ -206,14 +207,15 @@ class TestSetNativeValue:
 
     @pytest.mark.asyncio
     async def test_set_value_exception_handling(self):
-        """Exception is caught and logged."""
+        """DeviceException is caught and logged via _try_command."""
         desc = _get_description("favorite_level")
         coord = _make_coordinator(data={"favorite_level": 5})
-        coord.device.set_favorite_level.side_effect = Exception("Device error")
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
-        coord.hass.async_add_executor_job = AsyncMock(side_effect=Exception("Device error"))
-        # Should not raise
+        coord.hass.async_add_executor_job = AsyncMock(
+            side_effect=DeviceException("Device error")
+        )
+        # Should not raise — _try_command catches DeviceException
         await number.async_set_native_value(10.0)
 
 

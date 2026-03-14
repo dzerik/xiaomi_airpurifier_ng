@@ -38,6 +38,7 @@ from ..const import (
     MODEL_FAN_P18,
     MODEL_FAN_P33,
     SPEED_OFF,
+    ModelConfig,
 )
 from .base import XiaomiMiioBaseFan
 
@@ -45,6 +46,55 @@ if TYPE_CHECKING:
     from ..coordinator import XiaomiMiioDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+# Pre-compute mode lists
+_LESHOW_MODES = [mode.name for mode in FanLeshowOperationMode]
+_1C_MODES = list(FAN_PRESET_MODES_1C.keys())
+_STANDARD_MODES = list(FAN_PRESET_MODES.keys())
+
+# P5-style models list (shared between config and protocol flag)
+_P5_STYLE_MODELS = [
+    MODEL_FAN_P5,
+    MODEL_FAN_P9,
+    MODEL_FAN_P10,
+    MODEL_FAN_P11,
+    MODEL_FAN_P15,
+    MODEL_FAN_P18,
+    MODEL_FAN_P33,
+]
+
+# Default config for unknown/legacy fan models
+_DEFAULT_FAN_CONFIG = ModelConfig(
+    features=FEATURE_FLAGS_FAN,
+    attributes=AVAILABLE_ATTRIBUTES_FAN,
+    preset_modes=_STANDARD_MODES,
+)
+
+_LESHOW_CONFIG = ModelConfig(
+    features=FEATURE_FLAGS_FAN_LESHOW_SS4,
+    attributes=AVAILABLE_ATTRIBUTES_FAN_LESHOW_SS4,
+    preset_modes=_LESHOW_MODES,
+)
+
+_1C_CONFIG = ModelConfig(
+    features=FEATURE_FLAGS_FAN_1C,
+    attributes=AVAILABLE_ATTRIBUTES_FAN_1C,
+    preset_modes=_1C_MODES,
+)
+
+_P5_CONFIG = ModelConfig(
+    features=FEATURE_FLAGS_FAN_P5,
+    attributes=AVAILABLE_ATTRIBUTES_FAN_P5,
+    preset_modes=_STANDARD_MODES,
+)
+
+# Model → config lookup (replaces if/elif chain)
+_STANDING_FAN_MODEL_CONFIGS: dict[str, ModelConfig] = {
+    MODEL_FAN_LESHOW_SS4: _LESHOW_CONFIG,
+    MODEL_FAN_1C: _1C_CONFIG,
+    MODEL_FAN_P8: _1C_CONFIG,
+    **{model: _P5_CONFIG for model in _P5_STYLE_MODELS},
+}
 
 
 class XiaomiStandingFan(XiaomiMiioBaseFan):
@@ -57,36 +107,16 @@ class XiaomiStandingFan(XiaomiMiioBaseFan):
         """Initialize the standing fan entity."""
         model = coordinator.model
 
-        # Determine device type (P8 uses 1C protocol, not P5-style)
+        # Protocol flags (used in method dispatch)
         self._is_1c = model in [MODEL_FAN_1C, MODEL_FAN_P8]
         self._is_leshow = model == MODEL_FAN_LESHOW_SS4
-        self._is_p5_style = not self._is_1c and model in [
-            MODEL_FAN_P5,
-            MODEL_FAN_P9,
-            MODEL_FAN_P10,
-            MODEL_FAN_P11,
-            MODEL_FAN_P15,
-            MODEL_FAN_P18,
-            MODEL_FAN_P33,
-        ]
+        self._is_p5_style = not self._is_1c and model in _P5_STYLE_MODELS
 
-        # Set device features and available attributes based on model
-        if self._is_leshow:
-            self._device_features = FEATURE_FLAGS_FAN_LESHOW_SS4
-            self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_LESHOW_SS4
-            self._preset_modes = [mode.name for mode in FanLeshowOperationMode]
-        elif self._is_1c:
-            self._device_features = FEATURE_FLAGS_FAN_1C
-            self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_1C
-            self._preset_modes = list(FAN_PRESET_MODES_1C.keys())
-        elif self._is_p5_style:
-            self._device_features = FEATURE_FLAGS_FAN_P5
-            self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_P5
-            self._preset_modes = list(FAN_PRESET_MODES.keys())
-        else:
-            self._device_features = FEATURE_FLAGS_FAN
-            self._available_attributes = AVAILABLE_ATTRIBUTES_FAN
-            self._preset_modes = list(FAN_PRESET_MODES.keys())
+        # Lookup model config (replaces if/elif chain)
+        config = _STANDING_FAN_MODEL_CONFIGS.get(model, _DEFAULT_FAN_CONFIG)
+        self._device_features = config.features
+        self._available_attributes = config.attributes
+        self._preset_modes = list(config.preset_modes)
 
         # Initialize base class after setting attributes
         super().__init__(coordinator)

@@ -1,5 +1,6 @@
 """Constants for the Xiaomi Air Purifier NG integration."""
 
+from dataclasses import dataclass
 from enum import Enum
 from typing import Final
 
@@ -920,6 +921,15 @@ AVAILABLE_ATTRIBUTES_AIRDEHUMIDIFIER: Final = {
     ATTR_FAN_ST: "fan_st",
     ATTR_ALARM: "alarm",
 }
+
+
+@dataclass(frozen=True)
+class ModelConfig:
+    """Static configuration for a device model (features, attributes, modes)."""
+
+    features: int
+    attributes: dict[str, str]
+    preset_modes: list[str]
 
 
 def classify_model(model: str | None) -> DeviceCategory:

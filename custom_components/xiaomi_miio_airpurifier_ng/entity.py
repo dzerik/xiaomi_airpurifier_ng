@@ -24,8 +24,6 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
 
     _attr_has_entity_name = True
     _device_features: int = 0
-    _available_attributes: dict[str, str] = {}
-    _state_attrs: dict[str, Any] = {}
 
     def __init__(
         self,
@@ -39,6 +37,13 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
             unique_id_suffix: Optional suffix for unique_id (e.g., "_aqi" for sensors).
         """
         super().__init__(coordinator)
+
+        # Instance-level mutable attributes (NOT class-level to avoid shared state)
+        # Only set defaults if not already initialized by subclass __init__
+        if not hasattr(self, "_available_attributes"):
+            self._available_attributes: dict[str, str] = {}
+        if not hasattr(self, "_state_attrs"):
+            self._state_attrs: dict[str, Any] = {}
 
         # Build unique ID
         entry_id = coordinator.config_entry.entry_id
@@ -59,7 +64,7 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
         identifiers: set[tuple[str, str]] = set()
 
         # Use MAC address as primary identifier if available (cached from _async_setup)
-        info = coordinator._device_info
+        info = coordinator.device_info_raw
         if info and info.mac_address:
             mac = info.mac_address.replace(":", "").lower()
             identifiers.add((DOMAIN, mac))
@@ -153,14 +158,14 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
 
     def _get_firmware_version(self) -> str | None:
         """Get firmware version from cached device info."""
-        info = self.coordinator._device_info
+        info = self.coordinator.device_info_raw
         if info:
             return info.firmware_version
         return None
 
     def _get_hardware_version(self) -> str | None:
         """Get hardware version from cached device info."""
-        info = self.coordinator._device_info
+        info = self.coordinator.device_info_raw
         if info:
             return info.hardware_version
         return None

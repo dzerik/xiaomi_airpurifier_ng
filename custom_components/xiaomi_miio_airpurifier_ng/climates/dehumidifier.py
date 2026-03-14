@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
@@ -159,8 +160,8 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
             )
             if not result:
                 return
-            # Wait for device to confirm mode change before setting humidity
-            await self.coordinator.async_request_refresh()
+            # Wait for device to apply mode change before setting humidity
+            await asyncio.sleep(1)
 
         # Round to nearest 10
         humidity = round(humidity / 10) * 10

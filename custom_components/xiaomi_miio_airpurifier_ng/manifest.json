@@ -13,5 +13,5 @@
     "construct==2.10.68",
     "python-miio>=0.5.12,<1.0.0"
   ],
-  "version": "3.1.0"
+  "version": "3.2.0"
 }

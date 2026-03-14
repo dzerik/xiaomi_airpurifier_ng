@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -27,6 +28,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import XiaomiMiioDataUpdateCoordinator
 from .entity import XiaomiMiioEntity
+
+_LOGGER = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -422,6 +425,10 @@ async def async_setup_entry(
 
     # Initial discovery + subscribe to future updates for late discovery
     _async_discover_sensors()
+    if coordinator.data:
+        missing = [d.key for d in SENSOR_DESCRIPTIONS if d.key not in known_keys]
+        if missing:
+            _LOGGER.debug("Sensors not created (data key absent): %s", missing)
     entry.async_on_unload(coordinator.async_add_listener(_async_discover_sensors))
 
 

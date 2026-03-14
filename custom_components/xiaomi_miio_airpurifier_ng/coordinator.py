@@ -204,6 +204,11 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Return True if the device is available."""
         return self._available
 
+    @property
+    def device_info_raw(self) -> Any:
+        """Return cached device info from initial connection."""
+        return self._device_info
+
     async def _async_setup(self) -> None:
         """Set up the coordinator.
 
@@ -277,14 +282,10 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def _get_status(self) -> dict[str, Any]:
         """Get the device status (runs in executor)."""
-        try:
-            status = self.device.status()
-            if hasattr(status, "__dict__"):
-                return {k: v for k, v in vars(status).items() if not k.startswith("_")}
-            return {"raw": status}
-        except Exception as ex:
-            _LOGGER.debug("Error getting status: %s", ex)
-            raise
+        status = self.device.status()
+        if hasattr(status, "__dict__"):
+            return {k: v for k, v in vars(status).items() if not k.startswith("_")}
+        return {"raw": status}
 
 
 class XiaomiAirPurifierCoordinator(XiaomiMiioDataUpdateCoordinator):

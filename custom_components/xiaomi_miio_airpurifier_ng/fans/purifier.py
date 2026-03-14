@@ -50,6 +50,7 @@ from ..const import (
     OPERATION_MODES_AIRPURIFIER_PRO_V7,
     OPERATION_MODES_AIRPURIFIER_V3,
     PURIFIER_MIOT,
+    ModelConfig,
 )
 from .base import XiaomiMiioBaseFan
 
@@ -64,6 +65,68 @@ MIOT_PERCENT_PER_LEVEL = 100 / MIOT_SPEED_LEVELS  # ~33.33%
 LEGACY_SPEED_LEVELS = 16  # favorite_level 0-16
 LEGACY_PERCENT_PER_LEVEL = 100 / LEGACY_SPEED_LEVELS  # 6.25%
 
+# Pre-compute airdog modes from enum
+_AIRDOG_MODES = [mode.name for mode in AirDogOperationMode]
+
+# Default config for unknown purifier models
+_DEFAULT_PURIFIER_CONFIG = ModelConfig(
+    features=FEATURE_FLAGS_AIRPURIFIER,
+    attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER,
+    preset_modes=list(OPERATION_MODES_AIRPURIFIER),
+)
+
+# MIOT config shared by 13 models
+_MIOT_PURIFIER_CONFIG = ModelConfig(
+    features=FEATURE_FLAGS_AIRPURIFIER_3,
+    attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER_3,
+    preset_modes=list(OPERATION_MODES_AIRPURIFIER_3),
+)
+
+# Model → config lookup (replaces if/elif chain)
+_PURIFIER_MODEL_CONFIGS: dict[str, ModelConfig] = {
+    MODEL_AIRPURIFIER_PRO: ModelConfig(
+        features=FEATURE_FLAGS_AIRPURIFIER_PRO,
+        attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER_PRO,
+        preset_modes=list(OPERATION_MODES_AIRPURIFIER_PRO),
+    ),
+    MODEL_AIRPURIFIER_PRO_V7: ModelConfig(
+        features=FEATURE_FLAGS_AIRPURIFIER_PRO_V7,
+        attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER_PRO_V7,
+        preset_modes=list(OPERATION_MODES_AIRPURIFIER_PRO_V7),
+    ),
+    MODEL_AIRPURIFIER_2S: ModelConfig(
+        features=FEATURE_FLAGS_AIRPURIFIER_2S,
+        attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER_2S,
+        preset_modes=list(OPERATION_MODES_AIRPURIFIER_2S),
+    ),
+    MODEL_AIRPURIFIER_2H: ModelConfig(
+        features=FEATURE_FLAGS_AIRPURIFIER_2H,
+        attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER_2H,
+        preset_modes=list(OPERATION_MODES_AIRPURIFIER_2H),
+    ),
+    MODEL_AIRPURIFIER_V3: ModelConfig(
+        features=FEATURE_FLAGS_AIRPURIFIER_V3,
+        attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER_V3,
+        preset_modes=list(OPERATION_MODES_AIRPURIFIER_V3),
+    ),
+    MODEL_AIRPURIFIER_AIRDOG_X3: ModelConfig(
+        features=FEATURE_FLAGS_AIRPURIFIER_AIRDOG,
+        attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER_AIRDOG_X3,
+        preset_modes=_AIRDOG_MODES,
+    ),
+    MODEL_AIRPURIFIER_AIRDOG_X5: ModelConfig(
+        features=FEATURE_FLAGS_AIRPURIFIER_AIRDOG,
+        attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER_AIRDOG_X5,
+        preset_modes=_AIRDOG_MODES,
+    ),
+    MODEL_AIRPURIFIER_AIRDOG_X7SM: ModelConfig(
+        features=FEATURE_FLAGS_AIRPURIFIER_AIRDOG,
+        attributes=AVAILABLE_ATTRIBUTES_AIRPURIFIER_AIRDOG_X7SM,
+        preset_modes=_AIRDOG_MODES,
+    ),
+    **{model: _MIOT_PURIFIER_CONFIG for model in PURIFIER_MIOT},
+}
+
 
 class XiaomiAirPurifierFan(XiaomiMiioBaseFan):
     """Coordinator-based fan entity for Air Purifiers."""
@@ -75,47 +138,11 @@ class XiaomiAirPurifierFan(XiaomiMiioBaseFan):
         """Initialize the air purifier fan entity."""
         model = coordinator.model
 
-        # Set device features and available attributes based on model
-        if model == MODEL_AIRPURIFIER_PRO:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_PRO
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_PRO
-            self._preset_modes = list(OPERATION_MODES_AIRPURIFIER_PRO)
-        elif model == MODEL_AIRPURIFIER_PRO_V7:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_PRO_V7
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_PRO_V7
-            self._preset_modes = list(OPERATION_MODES_AIRPURIFIER_PRO_V7)
-        elif model == MODEL_AIRPURIFIER_2S:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_2S
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_2S
-            self._preset_modes = list(OPERATION_MODES_AIRPURIFIER_2S)
-        elif model == MODEL_AIRPURIFIER_2H:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_2H
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_2H
-            self._preset_modes = list(OPERATION_MODES_AIRPURIFIER_2H)
-        elif model in PURIFIER_MIOT:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_3
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_3
-            self._preset_modes = list(OPERATION_MODES_AIRPURIFIER_3)
-        elif model == MODEL_AIRPURIFIER_V3:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_V3
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_V3
-            self._preset_modes = list(OPERATION_MODES_AIRPURIFIER_V3)
-        elif model == MODEL_AIRPURIFIER_AIRDOG_X3:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_AIRDOG
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_AIRDOG_X3
-            self._preset_modes = [mode.name for mode in AirDogOperationMode]
-        elif model == MODEL_AIRPURIFIER_AIRDOG_X5:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_AIRDOG
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_AIRDOG_X5
-            self._preset_modes = [mode.name for mode in AirDogOperationMode]
-        elif model == MODEL_AIRPURIFIER_AIRDOG_X7SM:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER_AIRDOG
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER_AIRDOG_X7SM
-            self._preset_modes = [mode.name for mode in AirDogOperationMode]
-        else:
-            self._device_features = FEATURE_FLAGS_AIRPURIFIER
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRPURIFIER
-            self._preset_modes = list(OPERATION_MODES_AIRPURIFIER)
+        # Lookup model config (replaces if/elif chain)
+        config = _PURIFIER_MODEL_CONFIGS.get(model, _DEFAULT_PURIFIER_CONFIG)
+        self._device_features = config.features
+        self._available_attributes = config.attributes
+        self._preset_modes = list(config.preset_modes)
 
         # Initialize base class after setting attributes
         super().__init__(coordinator)

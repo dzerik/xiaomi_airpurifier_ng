@@ -182,7 +182,6 @@ class XiaomiMiioSelect(XiaomiMiioEntity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
-        device = self.coordinator.device
         method_name = self.entity_description.set_fn
 
         if not method_name:
@@ -192,35 +191,27 @@ class XiaomiMiioSelect(XiaomiMiioEntity, SelectEntity):
             )
             return
 
-        try:
-            method = getattr(device, method_name, None)
-            if method:
-                # Convert option to device value if mapping exists
-                if self.entity_description.options_map:
-                    value = self.entity_description.options_map.get(option, option)
-                else:
-                    value = option
-
-                await self.hass.async_add_executor_job(method, value)
-                await self.coordinator.async_request_refresh()
-                _LOGGER.debug(
-                    "Successfully set %s to %s",
-                    self.entity_description.key,
-                    option,
-                )
-            else:
-                _LOGGER.error(
-                    "Method %s not found on device for %s",
-                    method_name,
-                    self.entity_description.key,
-                )
-        except Exception as ex:  # noqa: BLE001
+        method = getattr(self.coordinator.device, method_name, None)
+        if not method:
             _LOGGER.error(
-                "Failed to set %s to %s: %s",
+                "Method %s not found on device for %s",
+                method_name,
                 self.entity_description.key,
-                option,
-                ex,
             )
+            return
+
+        # Convert option to device value if mapping exists
+        if self.entity_description.options_map:
+            value = self.entity_description.options_map.get(option, option)
+        else:
+            value = option
+
+        await self._try_command(
+            f"Setting {self.entity_description.key} of the miio device failed: %s",
+            method,
+            value,
+        )
+        await self.coordinator.async_request_refresh()
 
 
 class XiaomiMiioModeSelect(XiaomiMiioEntity, SelectEntity):
@@ -324,10 +315,13 @@ class XiaomiMiioModeSelect(XiaomiMiioEntity, SelectEntity):
         try:
             # Convert lowercase option back to enum (case-insensitive lookup)
             mode_enum = next(m for m in self._mode_enum if m.name.lower() == option.lower())
-            await self.hass.async_add_executor_job(self.coordinator.device.set_mode, mode_enum)
-            await self.coordinator.async_request_refresh()
-            _LOGGER.debug("Successfully set mode to %s", option)
         except StopIteration:
             _LOGGER.error("Invalid mode option: %s", option)
-        except Exception as ex:  # noqa: BLE001
-            _LOGGER.error("Failed to set mode to %s: %s", option, ex)
+            return
+
+        await self._try_command(
+            "Setting mode of the miio device failed: %s",
+            self.coordinator.device.set_mode,
+            mode_enum,
+        )
+        await self.coordinator.async_request_refresh()

@@ -106,24 +106,19 @@ class XiaomiMiioButton(XiaomiMiioEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         """Handle the button press."""
-        device = self.coordinator.device
         method_name = self.entity_description.press_fn
 
-        try:
-            method = getattr(device, method_name, None)
-            if method:
-                await self.hass.async_add_executor_job(method)
-                await self.coordinator.async_request_refresh()
-                _LOGGER.debug("Successfully pressed button %s", self.entity_description.key)
-            else:
-                _LOGGER.error(
-                    "Method %s not found on device for button %s",
-                    method_name,
-                    self.entity_description.key,
-                )
-        except Exception as ex:  # noqa: BLE001
+        method = getattr(self.coordinator.device, method_name, None)
+        if not method:
             _LOGGER.error(
-                "Failed to press button %s: %s",
+                "Method %s not found on device for button %s",
+                method_name,
                 self.entity_description.key,
-                ex,
             )
+            return
+
+        await self._try_command(
+            f"Pressing button {self.entity_description.key} failed: %s",
+            method,
+        )
+        await self.coordinator.async_request_refresh()

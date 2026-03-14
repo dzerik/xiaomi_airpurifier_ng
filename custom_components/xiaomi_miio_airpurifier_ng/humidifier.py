@@ -46,7 +46,6 @@ from .const import (
     FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5,
     FEATURE_FLAGS_AIRHUMIDIFIER_JSQS,
     FEATURE_FLAGS_AIRHUMIDIFIER_MJJSQ,
-    FEATURE_SET_WET_PROTECTION,
     HUMIDIFIER_MIOT,
     MODEL_AIRHUMIDIFIER_CA1,
     MODEL_AIRHUMIDIFIER_CA4,
@@ -61,6 +60,7 @@ from .const import (
     MODEL_AIRHUMIDIFIER_JSQS,
     MODEL_AIRHUMIDIFIER_MJJSQ,
     DeviceCategory,
+    ModelConfig,
     classify_model,
 )
 from .entity import XiaomiMiioEntity
@@ -72,6 +72,106 @@ _LOGGER = logging.getLogger(__name__)
 
 MIN_HUMIDITY = 30
 MAX_HUMIDITY = 80
+
+# Pre-compute mode lists from enums (replaces inline list comprehensions)
+_MODES_ZHIMI = [
+    mode.name.lower()
+    for mode in AirhumidifierOperationMode
+    if mode is not AirhumidifierOperationMode.Auto
+]
+_MODES_ZHIMI_CA_CB = [
+    mode.name.lower()
+    for mode in AirhumidifierOperationMode
+    if mode is not AirhumidifierOperationMode.Strong
+]
+_MODES_MIOT = [mode.name.lower() for mode in AirhumidifierMiotOperationMode]
+_MODES_MJJSQ_WITH_WET = [mode.name.lower() for mode in AirhumidifierMjjsqOperationMode]
+_MODES_MJJSQ_WITHOUT_WET = [
+    mode.name.lower()
+    for mode in AirhumidifierMjjsqOperationMode
+    if mode != AirhumidifierMjjsqOperationMode.WetAndProtect
+]
+_MODES_JSQS = [mode.name.lower() for mode in AirhumidifierJsqsOperationMode]
+_MODES_JSQ = [mode.name.lower() for mode in AirhumidifierJsqOperationMode]
+
+# Default config for unknown humidifier models
+_DEFAULT_HUMIDIFIER_CONFIG = ModelConfig(
+    features=FEATURE_FLAGS_AIRHUMIDIFIER,
+    attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER,
+    preset_modes=_MODES_ZHIMI,
+)
+
+# Model → config lookup (replaces if/elif chain)
+_HUMIDIFIER_MODEL_CONFIGS: dict[str, ModelConfig] = {
+    MODEL_AIRHUMIDIFIER_CA1: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA_AND_CB,
+        preset_modes=_MODES_ZHIMI_CA_CB,
+    ),
+    MODEL_AIRHUMIDIFIER_CB1: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA_AND_CB,
+        preset_modes=_MODES_ZHIMI_CA_CB,
+    ),
+    MODEL_AIRHUMIDIFIER_CB2: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA_AND_CB,
+        preset_modes=_MODES_ZHIMI_CA_CB,
+    ),
+    MODEL_AIRHUMIDIFIER_CA4: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_CA4,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA4,
+        preset_modes=_MODES_MIOT,
+    ),
+    MODEL_AIRHUMIDIFIER_JSQ1: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_JSQ1,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ1,
+        preset_modes=_MODES_MJJSQ_WITH_WET,
+    ),
+    MODEL_AIRHUMIDIFIER_MJJSQ: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_MJJSQ,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_MJJSQ,
+        preset_modes=_MODES_MJJSQ_WITHOUT_WET,
+    ),
+    MODEL_AIRHUMIDIFIER_JSQ: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_MJJSQ,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_MJJSQ,
+        preset_modes=_MODES_MJJSQ_WITHOUT_WET,
+    ),
+    MODEL_AIRHUMIDIFIER_JSQ3: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ5,
+        preset_modes=_MODES_JSQS,
+    ),
+    MODEL_AIRHUMIDIFIER_JSQ5: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ5,
+        preset_modes=_MODES_JSQS,
+    ),
+    MODEL_AIRHUMIDIFIER_JSQ2W: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_JSQS,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQS,
+        preset_modes=_MODES_JSQS,
+    ),
+    MODEL_AIRHUMIDIFIER_JSQS: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_JSQS,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQS,
+        preset_modes=_MODES_JSQS,
+    ),
+    MODEL_AIRHUMIDIFIER_JSQ001: ModelConfig(
+        features=FEATURE_FLAGS_AIRHUMIDIFIER_JSQ,
+        attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ,
+        preset_modes=_MODES_JSQ,
+    ),
+    **{
+        model: ModelConfig(
+            features=FEATURE_FLAGS_AIRHUMIDIFIER_CA4,
+            attributes=AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA4,
+            preset_modes=_MODES_MIOT,
+        )
+        for model in HUMIDIFIER_MIOT
+    },
+}
 
 
 async def async_setup_entry(
@@ -107,6 +207,7 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
         """Initialize the humidifier entity."""
         model = coordinator.model
 
+        # Protocol flags (used in async_set_mode dispatch)
         self._is_miot = model in HUMIDIFIER_MIOT
         self._is_mjjsq = model in [
             MODEL_AIRHUMIDIFIER_MJJSQ,
@@ -121,74 +222,11 @@ class XiaomiAirHumidifier(XiaomiMiioEntity, HumidifierEntity):
         ]
         self._is_jsq = model == MODEL_AIRHUMIDIFIER_JSQ001
 
-        if model in [
-            MODEL_AIRHUMIDIFIER_CA1,
-            MODEL_AIRHUMIDIFIER_CB1,
-            MODEL_AIRHUMIDIFIER_CB2,
-        ]:
-            self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA_AND_CB
-            self._attr_available_modes = [
-                mode.name.lower()
-                for mode in AirhumidifierOperationMode
-                if mode is not AirhumidifierOperationMode.Strong
-            ]
-        elif model == MODEL_AIRHUMIDIFIER_CA4:
-            self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_CA4
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA4
-            self._attr_available_modes = [
-                mode.name.lower() for mode in AirhumidifierMiotOperationMode
-            ]
-        elif model == MODEL_AIRHUMIDIFIER_JSQ1:
-            self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQ1
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ1
-            self._attr_available_modes = [
-                mode.name.lower()
-                for mode in AirhumidifierMjjsqOperationMode
-                if self._device_features & FEATURE_SET_WET_PROTECTION != 0
-                or mode != AirhumidifierMjjsqOperationMode.WetAndProtect
-            ]
-        elif model in [MODEL_AIRHUMIDIFIER_MJJSQ, MODEL_AIRHUMIDIFIER_JSQ]:
-            self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_MJJSQ
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_MJJSQ
-            self._attr_available_modes = [
-                mode.name.lower()
-                for mode in AirhumidifierMjjsqOperationMode
-                if self._device_features & FEATURE_SET_WET_PROTECTION != 0
-                or mode != AirhumidifierMjjsqOperationMode.WetAndProtect
-            ]
-        elif model in [MODEL_AIRHUMIDIFIER_JSQ3, MODEL_AIRHUMIDIFIER_JSQ5]:
-            self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ5
-            self._attr_available_modes = [
-                mode.name.lower() for mode in AirhumidifierJsqsOperationMode
-            ]
-        elif model in [MODEL_AIRHUMIDIFIER_JSQ2W, MODEL_AIRHUMIDIFIER_JSQS]:
-            self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQS
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQS
-            self._attr_available_modes = [
-                mode.name.lower() for mode in AirhumidifierJsqsOperationMode
-            ]
-        elif model == MODEL_AIRHUMIDIFIER_JSQ001:
-            self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_JSQ
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_JSQ
-            self._attr_available_modes = [
-                mode.name.lower() for mode in AirhumidifierJsqOperationMode
-            ]
-        elif self._is_miot:
-            self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER_CA4
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER_CA4
-            self._attr_available_modes = [
-                mode.name.lower() for mode in AirhumidifierMiotOperationMode
-            ]
-        else:
-            self._device_features = FEATURE_FLAGS_AIRHUMIDIFIER
-            self._available_attributes = AVAILABLE_ATTRIBUTES_AIRHUMIDIFIER
-            self._attr_available_modes = [
-                mode.name.lower()
-                for mode in AirhumidifierOperationMode
-                if mode is not AirhumidifierOperationMode.Auto
-            ]
+        # Lookup model config (replaces if/elif chain)
+        config = _HUMIDIFIER_MODEL_CONFIGS.get(model, _DEFAULT_HUMIDIFIER_CONFIG)
+        self._device_features = config.features
+        self._available_attributes = config.attributes
+        self._attr_available_modes = list(config.preset_modes)
 
         super().__init__(coordinator)
         self._state_attrs = {attribute: None for attribute in self._available_attributes}

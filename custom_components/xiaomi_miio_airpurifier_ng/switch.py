@@ -262,7 +262,6 @@ class XiaomiMiioSwitch(XiaomiMiioEntity, SwitchEntity):
 
     async def _async_set_state(self, state: bool) -> None:
         """Set the switch state."""
-        device = self.coordinator.device
         method_name = (
             self.entity_description.turn_on_fn if state else self.entity_description.turn_off_fn
         )
@@ -275,21 +274,18 @@ class XiaomiMiioSwitch(XiaomiMiioEntity, SwitchEntity):
             )
             return
 
-        try:
-            method = getattr(device, method_name, None)
-            if method:
-                await self.hass.async_add_executor_job(method, state)
-                await self.coordinator.async_request_refresh()
-            else:
-                _LOGGER.error(
-                    "Method %s not found on device for switch %s",
-                    method_name,
-                    self.entity_description.key,
-                )
-        except Exception as ex:  # noqa: BLE001
+        method = getattr(self.coordinator.device, method_name, None)
+        if not method:
             _LOGGER.error(
-                "Failed to set %s to %s: %s",
+                "Method %s not found on device for switch %s",
+                method_name,
                 self.entity_description.key,
-                state,
-                ex,
             )
+            return
+
+        await self._try_command(
+            f"Setting {self.entity_description.key} of the miio device failed: %s",
+            method,
+            state,
+        )
+        await self.coordinator.async_request_refresh()

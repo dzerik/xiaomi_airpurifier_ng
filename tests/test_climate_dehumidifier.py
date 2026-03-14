@@ -32,10 +32,10 @@ def _make_coordinator(model="nwt.derh.wdh318efw1", data=None):
     coordinator.config_entry.title = "Test Dehumidifier"
     coordinator.device = MagicMock()
     coordinator.async_request_refresh = AsyncMock()
-    coordinator._device_info = MagicMock()
-    coordinator._device_info.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator._device_info.firmware_version = "1.0.0"
-    coordinator._device_info.hardware_version = "ESP32"
+    coordinator.device_info_raw = MagicMock()
+    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
+    coordinator.device_info_raw.firmware_version = "1.0.0"
+    coordinator.device_info_raw.hardware_version = "ESP32"
     coordinator.available = True
     hass = MagicMock()
     hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))

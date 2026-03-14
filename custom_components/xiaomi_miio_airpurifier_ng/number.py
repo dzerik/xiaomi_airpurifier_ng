@@ -178,7 +178,6 @@ class XiaomiMiioNumber(XiaomiMiioEntity, NumberEntity):
 
     async def async_set_native_value(self, value: float) -> None:
         """Set the value."""
-        device = self.coordinator.device
         method_name = self.entity_description.set_fn
 
         if not method_name:
@@ -188,28 +187,20 @@ class XiaomiMiioNumber(XiaomiMiioEntity, NumberEntity):
             )
             return
 
-        try:
-            method = getattr(device, method_name, None)
-            if method:
-                # Always convert to int (Xiaomi devices expect int values)
-                set_value = int(value)
-                await self.hass.async_add_executor_job(method, set_value)
-                await self.coordinator.async_request_refresh()
-                _LOGGER.debug(
-                    "Successfully set %s to %s",
-                    self.entity_description.key,
-                    set_value,
-                )
-            else:
-                _LOGGER.error(
-                    "Method %s not found on device for %s",
-                    method_name,
-                    self.entity_description.key,
-                )
-        except Exception as ex:  # noqa: BLE001
+        method = getattr(self.coordinator.device, method_name, None)
+        if not method:
             _LOGGER.error(
-                "Failed to set %s to %s: %s",
+                "Method %s not found on device for %s",
+                method_name,
                 self.entity_description.key,
-                value,
-                ex,
             )
+            return
+
+        # Always convert to int (Xiaomi devices expect int values)
+        set_value = int(value)
+        await self._try_command(
+            f"Setting {self.entity_description.key} of the miio device failed: %s",
+            method,
+            set_value,
+        )
+        await self.coordinator.async_request_refresh()
