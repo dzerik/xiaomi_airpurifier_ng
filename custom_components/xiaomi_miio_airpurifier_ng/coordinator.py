@@ -213,8 +213,9 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Set up the coordinator.
 
         This method is called during async_config_entry_first_refresh.
+        Device info is fetched best-effort — failure does NOT block startup.
+        If unavailable, device info will be fetched lazily on first successful update.
         """
-        # Get device info to validate connection and detect model
         try:
             info = await self.hass.async_add_executor_job(self.device.info)
             self._device_info = info
@@ -226,14 +227,33 @@ class XiaomiMiioDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 info.firmware_version,
             )
         except DeviceException as ex:
-            _LOGGER.error("Failed to get device info: %s", ex)
-            raise UpdateFailed(f"Failed to connect to device: {ex}") from ex
+            _LOGGER.warning(
+                "Could not get device info for %s, will retry later: %s",
+                self.config_entry.data.get(CONF_HOST),
+                ex,
+            )
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the device."""
         try:
             status = await self.hass.async_add_executor_job(self._get_status)
             self._available = True
+
+            # Lazy fetch device info on first successful update if not yet available
+            if self._device_info is None:
+                try:
+                    info = await self.hass.async_add_executor_job(self.device.info)
+                    self._device_info = info
+                    if not self.model:
+                        self.model = info.model
+                    _LOGGER.debug(
+                        "Lazy-fetched device info: model=%s, firmware=%s",
+                        info.model,
+                        info.firmware_version,
+                    )
+                except DeviceException:
+                    pass  # Will retry on next update cycle
+
             return status
         except DeviceException as ex:
             self._available = False

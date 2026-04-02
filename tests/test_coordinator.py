@@ -96,6 +96,94 @@ async def test_async_setup_detects_model(hass: HomeAssistant) -> None:
     assert coordinator.model == "zhimi.airpurifier.ma4"
 
 
+async def test_async_setup_does_not_block_on_failure(hass: HomeAssistant) -> None:
+    """Test that _async_setup does NOT raise when device.info() fails.
+
+    This is critical for HA startup: if a device is offline, the integration
+    should still load and retry device info lazily.
+    """
+    entry = _create_config_entry()
+    entry.add_to_hass(hass)
+
+    mock_device = MagicMock()
+    mock_device.info.side_effect = DeviceException("Unable to discover the device")
+
+    coordinator = XiaomiMiioDataUpdateCoordinator(hass, entry, mock_device)
+
+    # Should NOT raise — just log a warning
+    await coordinator._async_setup()
+
+    assert coordinator._device_info is None
+    # Model from config entry should be preserved
+    assert coordinator.model == "zhimi.airpurifier.mc1"
+
+
+async def test_async_update_data_lazy_fetches_device_info(hass: HomeAssistant) -> None:
+    """Test that _async_update_data lazily fetches device info when not available."""
+    entry = _create_config_entry()
+    entry.add_to_hass(hass)
+
+    mock_device = MagicMock()
+    mock_status = MagicMock()
+    mock_status.power = "on"
+    mock_status.aqi = 10
+    mock_status.humidity = 50
+    mock_status.temperature = 22.0
+    mock_status.mode = None
+    mock_status.led = True
+    mock_status.buzzer = False
+    mock_status.child_lock = False
+    mock_device.status.return_value = mock_status
+
+    mock_info = MockDeviceInfo(
+        {
+            "model": "zhimi.airpurifier.mc1",
+            "mac": "AA:BB:CC:DD:EE:FF",
+            "firmware": "2.0.0",
+            "hardware": "ESP32",
+        }
+    )
+    mock_device.info.return_value = mock_info
+
+    coordinator = XiaomiAirPurifierCoordinator(hass, entry, mock_device)
+    # Simulate _async_setup failed — device_info is None
+    assert coordinator._device_info is None
+
+    data = await coordinator._async_update_data()
+
+    # Should have lazily fetched device info
+    assert coordinator._device_info is mock_info
+    assert data["power"] == "on"
+
+
+async def test_async_update_data_lazy_fetch_failure_ignored(hass: HomeAssistant) -> None:
+    """Test that lazy device info fetch failure doesn't break data update."""
+    entry = _create_config_entry()
+    entry.add_to_hass(hass)
+
+    mock_device = MagicMock()
+    mock_status = MagicMock()
+    mock_status.power = "on"
+    mock_status.aqi = 10
+    mock_status.humidity = 50
+    mock_status.temperature = 22.0
+    mock_status.mode = None
+    mock_status.led = True
+    mock_status.buzzer = False
+    mock_status.child_lock = False
+    mock_device.status.return_value = mock_status
+    mock_device.info.side_effect = DeviceException("Connection error")
+
+    coordinator = XiaomiAirPurifierCoordinator(hass, entry, mock_device)
+    assert coordinator._device_info is None
+
+    # Should succeed despite device.info() failure
+    data = await coordinator._async_update_data()
+
+    assert coordinator._device_info is None  # Still None
+    assert data["power"] == "on"  # Data still returned
+
+
 async def test_async_update_data_device_exception(hass: HomeAssistant) -> None:
     """Test that DeviceException raises UpdateFailed."""
     entry = _create_config_entry()
