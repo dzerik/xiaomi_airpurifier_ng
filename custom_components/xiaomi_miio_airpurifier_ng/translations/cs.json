@@ -17,18 +17,9 @@
     "step": {
       "user": {
         "title": "Konfigurace Xiaomi Air Purifier",
-        "description": "Zadejte údaje pro připojení k vašemu zařízení Xiaomi.",
+        "description": "Vyberte způsob nastavení zařízení. Přihlášení ke cloudu automaticky získá token.",
         "data": {
-          "host": "Hostitel",
-          "token": "Token",
-          "name": "Název (volitelný)",
-          "model": "Model (volitelný, automatická detekce)"
-        },
-        "data_description": {
-          "host": "IP adresa nebo název hostitele vašeho zařízení Xiaomi.",
-          "token": "32znakový token pro ověření zařízení. Můžete jej získat různými způsoby popsanými v dokumentaci.",
-          "name": "Přátelský název zařízení.",
-          "model": "Model zařízení. Ponechte prázdné pro automatickou detekci."
+          "setup_method": "Způsob nastavení"
         }
       },
       "reconfigure": {
@@ -49,16 +40,52 @@
         "data_description": {
           "token": "Nový 32znakový token pro ověření zařízení."
         }
+      },
+      "manual": {
+        "data": {
+          "host": "Hostitel",
+          "token": "Token",
+          "name": "Název (volitelný)",
+          "model": "Model (volitelný, automatická detekce)"
+        },
+        "data_description": {
+          "host": "IP adresa nebo název hostitele vašeho zařízení Xiaomi.",
+          "token": "32znakový token pro ověření zařízení. Můžete jej získat různými způsoby popsanými v dokumentaci.",
+          "name": "Přátelský název zařízení.",
+          "model": "Model zařízení. Ponechte prázdné pro automatickou detekci."
+        },
+        "title": "Ruční nastavení",
+        "description": "Zadejte údaje pro připojení zařízení Xiaomi."
+      },
+      "cloud": {
+        "title": "Přihlášení ke Xiaomi Cloud",
+        "description": "Zadejte přihlašovací údaje Xiaomi. Použijí se jednou k získání tokenů a neukládají se.",
+        "data": {
+          "cloud_username": "E-mail / Xiaomi ID",
+          "cloud_password": "Heslo",
+          "cloud_server": "Oblast serveru"
+        }
+      },
+      "select": {
+        "title": "Vybrat zařízení",
+        "description": "Vyberte zařízení, které chcete přidat.",
+        "data": {
+          "device": "Zařízení"
+        }
       }
     },
     "error": {
       "cannot_connect": "Nepodařilo se připojit k zařízení. Zkontrolujte prosím hostitele a token.",
-      "unknown": "Došlo k neočekávané chybě."
+      "unknown": "Došlo k neočekávané chybě.",
+      "cloud_login_error": "Přihlášení ke Xiaomi Cloud se nezdařilo. Zkontrolujte přihlašovací údaje.",
+      "cloud_no_devices": "V účtu Xiaomi nebyla nalezena podporovaná zařízení.",
+      "unsupported_model": "Tento model zařízení není podporován."
     },
     "abort": {
       "already_configured": "Toto zařízení je již nakonfigurováno.",
       "reconfigure_successful": "Konfigurace byla úspěšně aktualizována.",
-      "reauth_successful": "Opětovné ověření bylo úspěšné."
+      "reauth_successful": "Opětovné ověření bylo úspěšné.",
+      "wrong_device": "Připojené zařízení má jinou adresu MAC. Stávající konfigurace nebyla změněna."
     }
   },
   "entity": {
@@ -228,6 +255,12 @@
       },
       "gestures": {
         "name": "Ovládání gesty"
+      },
+      "clean_mode": {
+        "name": "Režim čištění"
+      },
+      "extra_features": {
+        "name": "Další funkce"
       }
     },
     "button": {
@@ -303,6 +336,26 @@
     "yaml_deprecation": {
       "title": "YAML konfigurace je zastaralá",
       "description": "YAML konfigurace pro {integration} ({platform}) je zastaralá a bude odstraněna v budoucí verzi. Použijte prosím uživatelské rozhraní pro konfiguraci této integrace v Nastavení > Zařízení a služby > Přidat integraci."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "Tento model zařízení není podporován."
+    },
+    "unsupported_command": {
+      "message": "Zařízení nepodporuje příkaz {command}."
+    },
+    "command_rejected": {
+      "message": "Zařízení příkaz odmítlo nebo vrátilo neplatnou odpověď."
+    },
+    "communication_error": {
+      "message": "Se zařízením se nepodařilo spojit."
+    },
+    "invalid_humidity": {
+      "message": "Vlhkost musí být mezi {minimum} a {maximum} procenty."
+    },
+    "invalid_value": {
+      "message": "Tento model nepodporuje zadanou hodnotu nebo volbu."
     }
   }
 }

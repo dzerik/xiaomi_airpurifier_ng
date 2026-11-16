@@ -18,7 +18,9 @@ from homeassistant.const import PERCENTAGE
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .const import DOMAIN
 from .coordinator import XiaomiMiioDataUpdateCoordinator
+from .device_profiles import get_device_profile
 from .entity import XiaomiMiioEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -143,7 +145,10 @@ async def async_setup_entry(
             if description.key in known_keys:
                 continue
             if description.exists_fn and coordinator.data:
-                if description.exists_fn(coordinator.data):
+                if (
+                    description.exists_fn(coordinator.data)
+                    and description.set_fn in get_device_profile(coordinator.model).commands
+                ):
                     known_keys.add(description.key)
                     new_entities.append(XiaomiMiioNumber(coordinator, description))
         if new_entities:
@@ -166,6 +171,16 @@ class XiaomiMiioNumber(XiaomiMiioEntity, NumberEntity):
         """Initialize the number entity."""
         super().__init__(coordinator, unique_id_suffix=description.key)
         self.entity_description = description
+        if description.key == "target_humidity" and self.profile.humidity:
+            self._attr_native_min_value = self.profile.humidity.minimum
+            self._attr_native_max_value = self.profile.humidity.maximum
+            self._attr_native_step = self.profile.humidity.step
+        elif description.key == "favorite_level":
+            self._attr_native_max_value = (
+                14 if self.profile.driver.__name__ == "AirPurifierMiot" else 17
+            )
+        if description.key == "delay_off_countdown":
+            self._attr_native_max_value = self.profile.delay_max_minutes
 
     @property
     def native_value(self) -> float | None:
@@ -173,34 +188,31 @@ class XiaomiMiioNumber(XiaomiMiioEntity, NumberEntity):
         if self.coordinator.data and self.entity_description.value_fn:
             value = self.entity_description.value_fn(self.coordinator.data)
             if value is not None:
-                return float(value)
+                return (
+                    float(value) / 60
+                    if self.entity_description.key == "delay_off_countdown"
+                    and self.profile.delay_unit_seconds
+                    else float(value)
+                )
         return None
 
     async def async_set_native_value(self, value: float) -> None:
-        """Set the value."""
-        method_name = self.entity_description.set_fn
+        """Validate model limits before selecting a shared device operation."""
+        from homeassistant.exceptions import ServiceValidationError
 
-        if not method_name:
-            _LOGGER.warning(
-                "No method defined for setting %s",
-                self.entity_description.key,
+        if not self.native_min_value <= value <= self.native_max_value or value != int(value):
+            raise ServiceValidationError(translation_domain=DOMAIN, translation_key="invalid_value")
+        if self.entity_description.key == "target_humidity":
+            await self.coordinator.async_set_humidity(int(value))
+        else:
+            if (value - self.native_min_value) % (self.native_step or 1):
+                raise ServiceValidationError(
+                    translation_domain=DOMAIN, translation_key="invalid_value"
+                )
+            encoded = (
+                int(value) * 60
+                if self.entity_description.key == "delay_off_countdown"
+                and self.profile.delay_unit_seconds
+                else int(value)
             )
-            return
-
-        method = getattr(self.coordinator.device, method_name, None)
-        if not method:
-            _LOGGER.error(
-                "Method %s not found on device for %s",
-                method_name,
-                self.entity_description.key,
-            )
-            return
-
-        # Always convert to int (Xiaomi devices expect int values)
-        set_value = int(value)
-        await self._try_command(
-            f"Setting {self.entity_description.key} of the miio device failed: %s",
-            method,
-            set_value,
-        )
-        await self.coordinator.async_request_refresh()
+            await self._async_command(self.entity_description.set_fn or "", encoded)

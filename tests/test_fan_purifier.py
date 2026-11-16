@@ -2,27 +2,15 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
+from homeassistant.exceptions import ServiceValidationError
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import (
-    FEATURE_FLAGS_AIRPURIFIER,
-    FEATURE_FLAGS_AIRPURIFIER_3,
-    FEATURE_FLAGS_AIRPURIFIER_AIRDOG,
-    FEATURE_FLAGS_AIRPURIFIER_PRO,
     MODEL_AIRPURIFIER_3,
     MODEL_AIRPURIFIER_AIRDOG_X3,
-    MODEL_AIRPURIFIER_AIRDOG_X5,
-    MODEL_AIRPURIFIER_AIRDOG_X7SM,
-    MODEL_AIRPURIFIER_PRO,
-    OPERATION_MODES_AIRPURIFIER,
-    OPERATION_MODES_AIRPURIFIER_3,
-    OPERATION_MODES_AIRPURIFIER_PRO,
 )
 from custom_components.xiaomi_miio_airpurifier_ng.fans.purifier import (
     LEGACY_PERCENT_PER_LEVEL,
-    LEGACY_SPEED_LEVELS,
     MIOT_PERCENT_PER_LEVEL,
     MIOT_SPEED_LEVELS,
     XiaomiAirPurifierFan,
@@ -30,72 +18,10 @@ from custom_components.xiaomi_miio_airpurifier_ng.fans.purifier import (
 
 
 def _make_coordinator(model="zhimi.airpurifier.mc1", data=None):
-    """Create a mock coordinator."""
-    coordinator = MagicMock()
-    coordinator.model = model
-    coordinator.data = data or {}
-    coordinator.config_entry = MagicMock()
-    coordinator.config_entry.entry_id = "test_entry_id"
-    coordinator.config_entry.title = "Test Device"
-    coordinator.device = MagicMock()
-    coordinator.async_request_refresh = AsyncMock()
-    coordinator.device_info_raw = MagicMock()
-    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator.device_info_raw.firmware_version = "1.0.0"
-    coordinator.device_info_raw.hardware_version = "ESP32"
-    coordinator.available = True
-    hass = MagicMock()
-    hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
-    coordinator.hass = hass
-    return coordinator
+    """Use real orchestration with a bounded driver mock."""
+    from tests.device_helpers import make_coordinator
 
-
-class TestInit:
-    """Tests for __init__ with different model types."""
-
-    def test_init_default_model(self):
-        """Default (legacy) model sets correct features."""
-        coord = _make_coordinator(model="zhimi.airpurifier.v2")
-        fan = XiaomiAirPurifierFan(coord)
-        assert fan._device_features == FEATURE_FLAGS_AIRPURIFIER
-        assert fan._preset_modes == list(OPERATION_MODES_AIRPURIFIER)
-        assert fan._is_miot is False
-        assert fan._is_airdog is False
-
-    def test_init_pro_model(self):
-        """Pro model sets correct features."""
-        coord = _make_coordinator(model=MODEL_AIRPURIFIER_PRO)
-        fan = XiaomiAirPurifierFan(coord)
-        assert fan._device_features == FEATURE_FLAGS_AIRPURIFIER_PRO
-        assert fan._preset_modes == list(OPERATION_MODES_AIRPURIFIER_PRO)
-
-    def test_init_miot_model(self):
-        """MIOT model (ma4) sets correct features and is_miot flag."""
-        coord = _make_coordinator(model=MODEL_AIRPURIFIER_3)
-        fan = XiaomiAirPurifierFan(coord)
-        assert fan._device_features == FEATURE_FLAGS_AIRPURIFIER_3
-        assert fan._preset_modes == list(OPERATION_MODES_AIRPURIFIER_3)
-        assert fan._is_miot is True
-
-    def test_init_airdog_x3(self):
-        """AirDog X3 sets correct features and is_airdog flag."""
-        coord = _make_coordinator(model=MODEL_AIRPURIFIER_AIRDOG_X3)
-        fan = XiaomiAirPurifierFan(coord)
-        assert fan._device_features == FEATURE_FLAGS_AIRPURIFIER_AIRDOG
-        assert fan._is_airdog is True
-        assert len(fan._preset_modes) > 0
-
-    def test_init_airdog_x5(self):
-        """AirDog X5 sets correct features."""
-        coord = _make_coordinator(model=MODEL_AIRPURIFIER_AIRDOG_X5)
-        fan = XiaomiAirPurifierFan(coord)
-        assert fan._is_airdog is True
-
-    def test_init_airdog_x7sm(self):
-        """AirDog X7SM sets correct features."""
-        coord = _make_coordinator(model=MODEL_AIRPURIFIER_AIRDOG_X7SM)
-        fan = XiaomiAirPurifierFan(coord)
-        assert fan._is_airdog is True
+    return make_coordinator(model=model, data=data)
 
 
 class TestPresetMode:
@@ -105,7 +31,7 @@ class TestPresetMode:
         """preset_modes returns the list from init."""
         coord = _make_coordinator(model=MODEL_AIRPURIFIER_3)
         fan = XiaomiAirPurifierFan(coord)
-        assert fan.preset_modes == list(OPERATION_MODES_AIRPURIFIER_3)
+        assert fan.preset_modes == ["Auto", "Silent"]
 
     def test_preset_mode_from_data(self):
         """preset_mode returns mode from coordinator data."""
@@ -172,10 +98,10 @@ class TestSpeedCount:
         assert fan.speed_count == MIOT_SPEED_LEVELS
 
     def test_speed_count_legacy(self):
-        """Legacy returns 16 speed levels."""
+        """Legacy returns 18 speed levels."""
         coord = _make_coordinator(model="zhimi.airpurifier.v2")
         fan = XiaomiAirPurifierFan(coord)
-        assert fan.speed_count == LEGACY_SPEED_LEVELS
+        assert fan.speed_count == 18
 
 
 class TestSetPresetMode:
@@ -197,7 +123,7 @@ class TestSetPresetMode:
         fan = XiaomiAirPurifierFan(coord)
         fan.hass = coord.hass
         await fan.async_set_preset_mode("Auto")
-        coord.device.set_mode.assert_called_once()
+        coord.device.set_mode_and_speed.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_set_preset_mode_legacy(self):
@@ -214,7 +140,8 @@ class TestSetPresetMode:
         coord = _make_coordinator(model="zhimi.airpurifier.v2")
         fan = XiaomiAirPurifierFan(coord)
         fan.hass = coord.hass
-        await fan.async_set_preset_mode("InvalidMode")
+        with pytest.raises(ServiceValidationError):
+            await fan.async_set_preset_mode("InvalidMode")
         coord.device.set_mode.assert_not_called()
 
 

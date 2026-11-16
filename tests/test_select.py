@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
+from homeassistant.exceptions import ServiceValidationError
+from miio.integrations.airpurifier.dmaker.airfresh_t2017 import DisplayOrientation
+from miio.integrations.airpurifier.zhimi.airpurifier import LedBrightness
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import (
     MODEL_AIRHUMIDIFIER_CA1,
@@ -25,24 +26,10 @@ from custom_components.xiaomi_miio_airpurifier_ng.select import (
 
 
 def _make_coordinator(model="zhimi.airpurifier.mc1", data=None):
-    """Create a mock coordinator."""
-    coordinator = MagicMock()
-    coordinator.model = model
-    coordinator.data = data or {}
-    coordinator.config_entry = MagicMock()
-    coordinator.config_entry.entry_id = "test_entry_id"
-    coordinator.config_entry.title = "Test Device"
-    coordinator.device = MagicMock()
-    coordinator.async_request_refresh = AsyncMock()
-    coordinator.device_info_raw = MagicMock()
-    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator.device_info_raw.firmware_version = "1.0.0"
-    coordinator.device_info_raw.hardware_version = "ESP32"
-    coordinator.available = True
-    hass = MagicMock()
-    hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
-    coordinator.hass = hass
-    return coordinator
+    """Use real orchestration with a bounded driver mock."""
+    from tests.device_helpers import make_coordinator
+
+    return make_coordinator(model=model, data=data)
 
 
 def _get_description(key: str) -> XiaomiMiioSelectEntityDescription:
@@ -142,7 +129,9 @@ class TestXiaomiMiioSelect:
         select = XiaomiMiioSelect(coord, desc)
         select.hass = coord.hass
         await select.async_select_option("dim")
-        coord.device.set_led_brightness.assert_called_once_with(1)  # LED_BRIGHTNESS_MAP["dim"]
+        coord.device.set_led_brightness.assert_called_once_with(
+            LedBrightness.Dim
+        )  # LED_BRIGHTNESS_MAP["dim"]
         coord.async_request_refresh.assert_awaited()
 
     @pytest.mark.asyncio
@@ -153,7 +142,7 @@ class TestXiaomiMiioSelect:
         select = XiaomiMiioSelect(coord, desc)
         select.hass = coord.hass
         await select.async_select_option("off")
-        coord.device.set_led_brightness.assert_called_once_with(2)
+        coord.device.set_led_brightness.assert_called_once_with(LedBrightness.Off)
 
     @pytest.mark.asyncio
     async def test_select_option_no_method_name(self):
@@ -167,7 +156,8 @@ class TestXiaomiMiioSelect:
         coord = _make_coordinator()
         select = XiaomiMiioSelect(coord, desc)
         select.hass = coord.hass
-        await select.async_select_option("a")
+        with pytest.raises(ServiceValidationError):
+            await select.async_select_option("a")
         # Should not raise
 
     @pytest.mark.asyncio
@@ -179,18 +169,23 @@ class TestXiaomiMiioSelect:
         delattr(coord.device, "set_led_brightness")
         select = XiaomiMiioSelect(coord, desc)
         select.hass = coord.hass
-        await select.async_select_option("bright")
+        with pytest.raises(ServiceValidationError):
+            await select.async_select_option("bright")
         # Should not raise
 
     @pytest.mark.asyncio
     async def test_select_option_without_options_map(self):
         """Option passed directly when no options_map."""
         desc = _get_description("display_orientation")
-        coord = _make_coordinator(data={"display_orientation": "forward"})
+        coord = _make_coordinator(
+            model="dmaker.airfresh.t2017", data={"display_orientation": "forward"}
+        )
         select = XiaomiMiioSelect(coord, desc)
         select.hass = coord.hass
         await select.async_select_option("left")
-        coord.device.set_display_orientation.assert_called_once_with("left")
+        coord.device.set_display_orientation.assert_called_once_with(
+            DisplayOrientation.LandscapeLeft
+        )
 
 
 class TestXiaomiMiioModeSelect:
@@ -233,19 +228,6 @@ class TestXiaomiMiioModeSelect:
         select = XiaomiMiioModeSelect(coord)
         assert select._mode_enum is not None
 
-    def test_init_unknown_model(self):
-        """Unknown model gets no mode enum."""
-        coord = _make_coordinator(model="unknown.model", data={"mode": "Auto"})
-        select = XiaomiMiioModeSelect(coord)
-        assert select._mode_enum is None
-        assert select._attr_options == []
-
-    def test_init_no_model(self):
-        """No model returns None enum."""
-        coord = _make_coordinator(model=None, data={"mode": "Auto"})
-        select = XiaomiMiioModeSelect(coord)
-        assert select._mode_enum is None
-
     def test_current_option(self):
         """Returns current mode from data."""
         coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_JSQS, data={"mode": "Auto"})
@@ -276,14 +258,6 @@ class TestXiaomiMiioModeSelect:
         coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_JSQS, data={"mode": "Auto"})
         select = XiaomiMiioModeSelect(coord)
         select.hass = coord.hass
-        await select.async_select_option("NonexistentMode")
-        coord.device.set_mode.assert_not_called()
-
-    @pytest.mark.asyncio
-    async def test_select_option_no_enum(self):
-        """No-op when mode_enum is None."""
-        coord = _make_coordinator(model="unknown.model", data={"mode": "Auto"})
-        select = XiaomiMiioModeSelect(coord)
-        select.hass = coord.hass
-        await select.async_select_option("Auto")
+        with pytest.raises(ServiceValidationError):
+            await select.async_select_option("NonexistentMode")
         coord.device.set_mode.assert_not_called()

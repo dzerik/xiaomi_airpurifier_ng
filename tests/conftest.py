@@ -10,8 +10,6 @@ from homeassistant.const import CONF_HOST, CONF_TOKEN
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import CONF_MODEL
 
-pytest_plugins = "pytest_homeassistant_custom_component"
-
 
 @pytest.fixture(autouse=True)
 def auto_enable_custom_integrations(enable_custom_integrations):
@@ -69,7 +67,7 @@ class MockDeviceInfo:
 
 
 @pytest.fixture
-def mock_device(mock_device_info: dict) -> Generator[MagicMock, None, None]:
+def mock_device(mock_device_info: dict) -> Generator[MagicMock]:
     """Return a mocked Device."""
     with patch("custom_components.xiaomi_miio_airpurifier_ng.config_flow.Device") as mock:
         device = mock.return_value
@@ -78,7 +76,7 @@ def mock_device(mock_device_info: dict) -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_setup_entry() -> Generator[AsyncMock, None, None]:
+def mock_setup_entry() -> Generator[AsyncMock]:
     """Override async_setup_entry."""
     with patch(
         "custom_components.xiaomi_miio_airpurifier_ng.async_setup_entry",
@@ -88,7 +86,7 @@ def mock_setup_entry() -> Generator[AsyncMock, None, None]:
 
 
 @pytest.fixture
-def mock_air_purifier() -> Generator[MagicMock, None, None]:
+def mock_air_purifier() -> Generator[MagicMock]:
     """Return a mocked AirPurifier device."""
     with patch("custom_components.xiaomi_miio_airpurifier_ng.coordinator.AirPurifier") as mock:
         device = mock.return_value
@@ -112,7 +110,7 @@ def mock_air_purifier() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture
-def mock_air_purifier_miot() -> Generator[MagicMock, None, None]:
+def mock_air_purifier_miot() -> Generator[MagicMock]:
     """Return a mocked AirPurifierMiot device."""
     with patch("custom_components.xiaomi_miio_airpurifier_ng.coordinator.AirPurifierMiot") as mock:
         device = mock.return_value

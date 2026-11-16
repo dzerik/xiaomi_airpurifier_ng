@@ -14,7 +14,7 @@
 
 - Home Assistant **2026.3.4+**, Python **3.14.2+**.
 - Итоговый релиз **4.0.0**; manifest и pyproject всегда имеют одинаковую версию.
-- Транспорт: стабильный **python-miio==0.5.12**, **construct==2.10.70** после проверки протокола.
+- Транспорт: python-miio 0.5.12 в test lock; manifest использует **python-miio>=0.5.12,<0.6.0**, **construct>=2.10.68,<2.11.0** по требованиям Hassfest. Codec проверяется на construct 2.10.68 и 2.10.70.
 - Entity unique_id сохраняются; device registry не раздваивается при позднем info.
 - Команды и polling одного устройства разделяют один замок; refresh выполняется вне замка.
 - Неподдерживаемые значения отклоняются до сетевого вызова; ошибки устройства видны вызывающему коду.
@@ -58,7 +58,7 @@
 
 **Interfaces:** `tests.ha_helpers.MockConfigEntry` выбирает установленный fixture backend. Скрипт `bump_version.py VERSION` обновляет manifest и pyproject одной операцией; `check_project.py` проверяет их равенство, минимальную платформу и runtime requirements.
 
-- [ ] Добавить контракт метаданных и тест bump на временной копии файлов; исходные версии репозитория в тесте не менять.
+- [x] Добавить контракт метаданных и тест bump на временной копии файлов; исходные версии репозитория в тесте не менять.
 
 ```python
 def test_runtime_requirements_match_manifest():
@@ -67,9 +67,9 @@ def test_runtime_requirements_match_manifest():
     assert set(manifest["requirements"]) <= set(requirements)
 ```
 
-- [ ] Запустить `pytest tests/test_project_metadata.py -v` в существующем audit env; зафиксировать отсутствие common requirements как красный результат.
-- [ ] Вынести общие runtime requirements; текущие тесты используют `pytest-homeassistant==2026.11.2`, минимальные — `pytest-homeassistant-custom-component==0.13.320`. Не фиксировать поверх них несовместимые pytest/asyncio/cov. Общий допустимый cov — `pytest-cov>=7,<8`; lock-файлы фиксируют конкретный результат каждого resolver.
-- [ ] Заменить импорты MockConfigEntry через один модуль:
+- [x] Запустить `pytest tests/test_project_metadata.py -v` в существующем audit env; зафиксировать отсутствие common requirements как красный результат.
+- [x] Вынести общие runtime requirements; текущие тесты используют `pytest-homeassistant==2026.11.2`, минимальные — `pytest-homeassistant-custom-component==0.13.320`. Не фиксировать поверх них несовместимые pytest/asyncio/cov. Общий допустимый cov — `pytest-cov>=7,<8`; lock-файлы фиксируют конкретный результат каждого resolver.
+- [x] Заменить импорты MockConfigEntry через один модуль:
 
 ```python
 try:
@@ -80,13 +80,13 @@ except ModuleNotFoundError as exc:
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 ```
 
-- [ ] Убрать повторную конфигурацию pytest из `pytest.ini`; в pyproject задать `addopts = "-p no:respx"`. Настроить plugin/enable_custom_integrations без двойной регистрации. Использовать Python 3.14.2+, Ruff 0.17.5, pre-commit 4.7.0 и одну конфигурацию линтинга. CI не устанавливает проект через подавляемый `pip install -e .`.
-- [ ] Проверить обновлённый construct на настоящем miIO codec: собрать ответ с тестовыми token/device_id/payload, разобрать его и сравнить исходный payload. Использовать тестовые константы и codec API установленной версии, без доступа к устройству.
-- [ ] Создать отдельные окружения и lock-файлы:
+- [x] Убрать повторную конфигурацию pytest из `pytest.ini`; в pyproject задать `addopts = "-p no:respx"`. Настроить plugin/enable_custom_integrations без двойной регистрации. Использовать Python 3.14.2+, Ruff 0.17.5, pre-commit 4.7.0 и одну конфигурацию линтинга. CI не устанавливает проект через подавляемый `pip install -e .`.
+- [x] Проверить обновлённый construct на настоящем miIO codec: собрать ответ с тестовыми token/device_id/payload, разобрать его и сравнить исходный payload. Использовать тестовые константы и codec API установленной версии, без доступа к устройству.
+- [x] Создать отдельные окружения и lock-файлы:
 
 ```bash
-uv pip compile --python 3.14 requirements_test.txt -o requirements_test_lock.txt
-uv pip compile --python 3.14 requirements_test_min.txt -o requirements_test_min_lock.txt
+uv pip compile --python-version 3.14.2 requirements_test.txt -o requirements_test_lock.txt
+uv pip compile --python-version 3.14.2 requirements_test_min.txt -o requirements_test_min_lock.txt
 uv venv --python 3.14 /tmp/xiaomi-ha-current
 uv pip sync --python /tmp/xiaomi-ha-current/bin/python requirements_test_lock.txt
 uv venv --python 3.14 /tmp/xiaomi-ha-min
@@ -103,7 +103,7 @@ uv pip sync --python /tmp/xiaomi-ha-min/bin/python requirements_test_min_lock.tx
 
 **Interfaces:** реализовать объявленные выше `DeviceProfile`, `HumidityControl`, `SpeedKind`, `UnsupportedModelError`, `get_device_profile`, `create_device`. Сохранить `_create_device` как совместимый внутренний вход, делегирующий factory профиля.
 
-- [ ] Добавить проверки полноты реестра, правильного реального класса драйвера и отсутствия произвольного fallback:
+- [x] Добавить проверки полноты реестра, правильного реального класса драйвера и отсутствия произвольного fallback:
 
 ```python
 @pytest.mark.parametrize("model", SUPPORTED_MODELS)
@@ -118,11 +118,11 @@ def test_unknown_model_is_rejected():
         create_device("192.0.2.1", "0" * 32, "unknown.model")
 ```
 
-- [ ] Запустить `pytest tests/test_device_profiles.py -v`; убедиться в красном результате до создания нового модуля.
-- [ ] Перенести текущие явные группы factory и UI ModelConfig в профили семейств; перечислить исключения известных моделей. Mapping-псевдонимы разрешать только явно, сохранять `_JSQS_MAPPING` как именованную проверяемую mapping.
-- [ ] Реализовать factory через `profile.driver(ip=host, token=token, model=model, **profile.device_options)`. Классификацию и платформы связать с профилем; избежать циклического импорта const → profiles → const, переместив реализацию классификации в profiles и оставив совместимый lazy-wrapper, если старые потребители ещё используют const.
-- [ ] Публичные платформы читают features/attributes/mode enum из профиля. Удалить освободившиеся ModelConfig-таблицы только после поиска всех ссылок Serena.
-- [ ] Выполнить `pytest tests/test_device_profiles.py tests/test_init.py tests/test_classify_model.py -q`; старые тесты, закреплявшие generic fallback, заменить проверками ожидаемого отказа.
+- [x] Запустить `pytest tests/test_device_profiles.py -v`; убедиться в красном результате до создания нового модуля.
+- [x] Перенести текущие явные группы factory и UI ModelConfig в профили семейств; перечислить исключения известных моделей. Mapping-псевдонимы разрешать только явно, сохранять `_JSQS_MAPPING` как именованную проверяемую mapping.
+- [x] Реализовать factory через `profile.driver(ip=host, token=token, model=model, **profile.device_options)`. Классификацию и платформы связать с профилем; избежать циклического импорта const → profiles → const, переместив реализацию классификации в profiles и оставив совместимый lazy-wrapper, если старые потребители ещё используют const.
+- [x] Публичные платформы читают features/attributes/mode enum из профиля. Удалить освободившиеся ModelConfig-таблицы только после поиска всех ссылок Serena.
+- [x] Выполнить `pytest tests/test_device_profiles.py tests/test_init.py tests/test_classify_model.py -q`; старые тесты, закреплявшие generic fallback, заменить проверками ожидаемого отказа.
 
 ### Task 3: Команды, ответы, оптимистическое состояние и сериализация I/O
 
@@ -130,7 +130,7 @@ def test_unknown_model_is_rejected():
 
 **Interfaces:** реализовать `DeviceCommand`, `validate_command_result`, `async_execute_command(s)` и `_async_command` из общего раздела. `DeviceException` преобразуется в HomeAssistantError; отсутствие команды/возможности — ServiceValidationError.
 
-- [ ] Написать контракт результатов:
+- [x] Написать контракт результатов:
 
 ```python
 @pytest.mark.parametrize("response", [["ok"], [{"did": "power", "code": 0}]])
@@ -143,9 +143,9 @@ def test_failed_response(response):
         validate_command_result(response)
 ```
 
-- [ ] Добавить проверки, использующие `threading.Event` для блокировки fake network call: вторая команда и polling не входят в fake transport до завершения первой; отмена coroutine не освобождает доступ к ещё работающему executor; исключение освобождает замок. В async-тестах ожидание threading.Event выполнять через executor, чтобы не блокировать event loop.
-- [ ] Запустить новые тесты и получить красный результат.
-- [ ] Реализовать один замок I/O и единый нормализатор. При отмене shield-ить и дождаться активной executor future до освобождения замка, затем повторно поднять CancelledError. Между командами batch соблюдать `delay_after` под замком. Refresh запрашивать после `async with`.
+- [x] Добавить проверки, использующие `threading.Event` для блокировки fake network call: вторая команда и polling не входят в fake transport до завершения первой; отмена coroutine не освобождает доступ к ещё работающему executor; исключение освобождает замок. В async-тестах ожидание threading.Event выполнять через executor, чтобы не блокировать event loop.
+- [x] Запустить новые тесты и получить красный результат.
+- [x] Реализовать один замок I/O и единый нормализатор. При отмене shield-ить и дождаться активной executor future до освобождения замка, затем повторно поднять CancelledError. Между командами batch соблюдать `delay_after` под замком. Refresh запрашивать после `async with`.
 
 ```python
 def validate_command_result(result: Any) -> None:
@@ -159,8 +159,8 @@ def validate_command_result(result: Any) -> None:
     raise HomeAssistantError("Device rejected the command")
 ```
 
-- [ ] После принятой команды on/off публиковать новую копию coordinator.data через `async_set_updated_data`, не мутировать словарь без уведомления слушателей. При отказе не публиковать оптимистический успех. Все setters возвращают ошибку вызывающему коду.
-- [ ] Прогнать `pytest tests/test_device_commands.py tests/test_entity.py tests/test_coordinator.py -q` и полный набор. Переписать старые ожидания `False` на ожидаемые исключения.
+- [x] После принятой команды on/off публиковать новую копию coordinator.data через `async_set_updated_data`, не мутировать словарь без уведомления слушателей. При отказе не публиковать оптимистический успех. Все setters возвращают ошибку вызывающему коду.
+- [x] Прогнать `pytest tests/test_device_commands.py tests/test_entity.py tests/test_coordinator.py -q` и полный набор. Переписать старые ожидания `False` на ожидаемые исключения.
 
 ### Task 4: Контракты Fan/Humidifier/Climate и дополнительных контролов
 
@@ -168,10 +168,10 @@ def validate_command_result(result: Any) -> None:
 
 **Interfaces:** профиль задаёт поддерживаемые команды и enum; `coordinator.async_set_humidity(value)` используется основной сущностью и number. Поле `speed` остаётся исходным диагностическим значением; нормализованный процент хранить отдельно как `speed_percentage`.
 
-- [ ] Перенести воспроизведения из `/tmp/xiaomi-audit-probes.py` в постоянные контрактные тесты с настоящими Device/Status. Подменять `send`/`set_property`, не заменять реальные setters неограниченным MagicMock.
+- [x] Перенести воспроизведения из `/tmp/xiaomi-audit-probes.py` в постоянные контрактные тесты с настоящими Device/Status. Подменять `send`/`set_property`, не заменять реальные setters неограниченным MagicMock.
 
 ```python
-@pytest.mark.parametrize("level, expected", [(1, 33), (2, 67), (3, 100)])
+@pytest.mark.parametrize("level, expected", [(1, 33), (2, 66), (3, 100)])
 def test_three_speed_levels(hass, level, expected):
     model = "dmaker.fan.1c"
     entry = MockConfigEntry(
@@ -190,12 +190,12 @@ def test_three_speed_levels(hass, level, expected):
 
 Импорты: Mock из unittest.mock, FanStatus1C из miio.integrations.fan.dmaker.fan_miot, MockConfigEntry из tests.ha_helpers, остальные классы из профилей/coordinator/fans.standing. Аналогично проверить Legacy FanStatus(speed=850, direct_speed=35) → 35%, выключенное устройство → 0%.
 
-- [ ] До исправлений получить красные результаты: реальные setters LED/PTC/orientation принимают правильные enum, JSQ001 не вызывает отсутствующий метод, осушитель не получает 30/70/80, `set_percentage(0)` вызывает off, `turn_on(percentage=75)` включает и задаёт скорость.
-- [ ] Реализовать преобразования по SpeedKind и стандартным утилитам HA; проверить границы 0/1/33/34/66/67/99/100. У purifier выбрать поддерживаемый setter и Fan/Favorite, не применять неподдерживаемый fan_level.
-- [ ] Удалить ручные Level-presets, согласовать preset_mode/preset_modes с реальными enum. Для ручной скорости применить соответствующий Direct/Normal/Fan/Favorite режим там, где драйвер его предоставляет; у legacy протокола использовать direct/natural setters.
-- [ ] Реализовать общую влажность: проверка диапазона, округление осушителя до шага 10 и batch переключения Auto/установки target. Для JSQ001 не создавать number, а public setter отклоняет команду ServiceValidationError.
-- [ ] Дополнительные контролы создаются по capabilities профиля и данным. Late discovery остаётся идемпотентным; enum преобразуются профилем конкретного драйвера. Неправильные option/number значения отклоняются до executor.
-- [ ] Запустить `pytest tests/test_device_contracts.py tests/test_fan_*.py tests/test_humidifier.py tests/test_climate_dehumidifier.py tests/test_select.py tests/test_number.py tests/test_switch.py tests/test_button.py -q`, затем полный набор.
+- [x] До исправлений получить красные результаты: реальные setters LED/PTC/orientation принимают правильные enum, JSQ001 не вызывает отсутствующий метод, осушитель не получает 30/70/80, `set_percentage(0)` вызывает off, `turn_on(percentage=75)` включает и задаёт скорость.
+- [x] Реализовать преобразования по SpeedKind и стандартным утилитам HA; проверить границы 0/1/33/34/66/67/99/100. У purifier выбрать поддерживаемый setter и Fan/Favorite, не применять неподдерживаемый fan_level.
+- [x] Удалить ручные Level-presets, согласовать preset_mode/preset_modes с реальными enum. Для ручной скорости применить соответствующий Direct/Normal/Fan/Favorite режим там, где драйвер его предоставляет; у legacy протокола использовать direct/natural setters.
+- [x] Реализовать общую влажность: проверка диапазона, округление осушителя до шага 10 и batch переключения Auto/установки target. Для JSQ001 не создавать number, а public setter отклоняет команду ServiceValidationError.
+- [x] Дополнительные контролы создаются по capabilities профиля и данным. Late discovery остаётся идемпотентным; enum преобразуются профилем конкретного драйвера. Неправильные option/number значения отклоняются до executor.
+- [x] Запустить `pytest tests/test_device_contracts.py tests/test_fan_*.py tests/test_humidifier.py tests/test_climate_dehumidifier.py tests/test_select.py tests/test_number.py tests/test_switch.py tests/test_button.py -q`, затем полный набор.
 
 ### Task 5: Валидация конфигурации и стабильность реестра устройств
 
@@ -203,7 +203,7 @@ def test_three_speed_levels(hass, level, expected):
 
 **Interfaces:** локальная функция `normalize_mac(value: str) -> str` применяется ко всем flows/идентификаторам. Config entry unique_id и entity unique_id не перезаписываются при обычной перезагрузке.
 
-- [ ] Добавить точные проверки нормализации и reconfigure с другим MAC:
+- [x] Добавить точные проверки нормализации и reconfigure с другим MAC:
 
 ```python
 @pytest.mark.parametrize("mac", ["AA:BB:CC:DD:EE:FF", "aa-bb-cc-dd-ee-ff", "AABBCCDDEEFF"])
@@ -213,11 +213,11 @@ def test_normalized_identity(mac):
 
 В интеграционном flow-тесте сохранить исходный entry.data, вернуть из device.info другой MAC, выполнить reconfigure и проверить отказ и неизменность entry.data. Повторить для reauth.
 
-- [ ] Добавить тесты неизвестной autodetected/manual/cloud модели и пустого supported cloud списка; entry не создаётся. Добавить тест reconfigure без выбранной модели, использующий обнаруженную поддерживаемую модель.
-- [ ] Получить красный результат; затем валидировать профиль до создания entry, убрать fallback всех облачных устройств и сравнивать MAC до update/reload.
-- [ ] Добавить registry-тест: сначала info отсутствует, после успешного polling появляется MAC и новый sensor; device registry содержит прежнее единственное устройство, entity unique_id совпадают до/после reload.
-- [ ] В device_info использовать стабильный entry.unique_id и существующие registry aliases; обновлять firmware/hardware/model существующего DeviceEntry после late info. В этом пути не создавать новое устройство независимо от сущностей.
-- [ ] Выполнить `pytest tests/test_device_identity.py tests/test_config_flow.py tests/test_entity.py tests/test_init.py -q` и полный набор.
+- [x] Добавить тесты неизвестной autodetected/manual/cloud модели и пустого supported cloud списка; entry не создаётся. Добавить тест reconfigure без выбранной модели, использующий обнаруженную поддерживаемую модель.
+- [x] Получить красный результат; затем валидировать профиль до создания entry, убрать fallback всех облачных устройств и сравнивать MAC до update/reload.
+- [x] Добавить registry-тест: сначала info отсутствует, после успешного polling появляется MAC и новый sensor; device registry содержит прежнее единственное устройство, entity unique_id совпадают до/после reload.
+- [x] В device_info использовать стабильный entry.unique_id и существующие registry aliases; обновлять firmware/hardware/model существующего DeviceEntry после late info. В этом пути не создавать новое устройство независимо от сущностей.
+- [x] Выполнить `pytest tests/test_device_identity.py tests/test_config_flow.py tests/test_entity.py tests/test_init.py -q` и полный набор.
 
 ### Task 6: Документация, переводы, release и итоговое review
 
@@ -225,7 +225,7 @@ def test_normalized_identity(mac):
 
 **Interfaces:** новые ошибки имеют translation_key и одинаковые placeholders во всех переводах; итоговый `scripts/check_project.py` возвращает ненулевой exit code при рассогласованной версии, runtime dependency или metadata.
 
-- [ ] Добавить проверку ключей и placeholders всех языков:
+- [x] Добавить проверку ключей и placeholders всех языков:
 
 ```python
 def leaf_keys(value, path=()):
@@ -240,9 +240,9 @@ def test_all_translations_have_source_keys():
         assert leaf_keys(json.loads(translation.read_text())) == expected, translation.name
 ```
 
-- [ ] Запустить тест и подтвердить существующие пропуски. Затем заполнить отсутствующие строки полноценными переводами, добавить ошибки команд/unsupported_model/wrong_device и проверить placeholders.
-- [ ] Обновить README: HA2026.3.4+/Python3.14.2+, установка и тестовые команды, переход Level-presets → percentages, реальные ограничения влажности и новая семантика отказов. В quality_scale отмечать done только подтверждённые пункты; обновить устаревшие пути/описания локального CLAUDE.md.
-- [ ] Повысить версию штатным новым скриптом и проверить:
+- [x] Запустить тест и подтвердить существующие пропуски. Затем заполнить отсутствующие строки полноценными переводами, добавить ошибки команд/unsupported_model/wrong_device и проверить placeholders.
+- [x] Обновить README: HA2026.3.4+/Python3.14.2+, установка и тестовые команды, переход Level-presets → percentages, реальные ограничения влажности и новая семантика отказов. В quality_scale отмечать done только подтверждённые пункты; обновить устаревшие пути/описания локального CLAUDE.md.
+- [x] Повысить версию штатным новым скриптом и проверить:
 
 ```bash
 python scripts/bump_version.py 4.0.0
@@ -254,9 +254,9 @@ python scripts/check_project.py
 git diff --check
 ```
 
-- [ ] Выполнить доступные HACS/Hassfest-проверки. Если внешний checker недоступен локально, явно зафиксировать это и оставить обязательный workflow; не заявлять прохождение неисполненной проверки.
-- [ ] Использовать `requesting-code-review` для независимой проверки всего changeset относительно checkpoint, устранить подтверждённые замечания и повторить затронутые проверки. Делегация разрешена только этим применимым skill либо явным выбором пользователя.
-- [ ] Сверить все восемь критериев приёмки spec с тестами и выводом команд. Зафиксировать конечный changeset одним коммитом `feat: согласовать профили устройств и управление для Home Assistant 2026` вместе с версией 4.0.0. Не включать `.hypothesis/`, секреты, подпись агента или Co-Authored-By.
+- [x] Выполнить доступные HACS/Hassfest-проверки. Если внешний checker недоступен локально, явно зафиксировать это и оставить обязательный workflow; не заявлять прохождение неисполненной проверки.
+- [x] Использовать `requesting-code-review` для независимой проверки всего changeset относительно checkpoint, устранить подтверждённые замечания и повторить затронутые проверки. Делегация разрешена только этим применимым skill либо явным выбором пользователя.
+- [x] Сверить все восемь критериев приёмки spec с тестами и выводом команд. Зафиксировать конечный changeset одним коммитом `feat: согласовать профили устройств и управление для Home Assistant 2026` вместе с версией 4.0.0. Не включать `.hypothesis/`, секреты, подпись агента или Co-Authored-By.
 
 ## Execution Handoff
 

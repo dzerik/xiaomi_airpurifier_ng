@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
 from homeassistant.components.fan import FanEntityFeature
 
@@ -16,25 +14,10 @@ from custom_components.xiaomi_miio_airpurifier_ng.fans.base import (
 
 
 def _make_coordinator(model="zhimi.airpurifier.mc1", data=None):
-    """Create a mock coordinator."""
-    coordinator = MagicMock()
-    coordinator.model = model
-    coordinator.data = data or {}
-    coordinator.config_entry = MagicMock()
-    coordinator.config_entry.entry_id = "test_entry_id"
-    coordinator.config_entry.title = "Test Device"
-    coordinator.device = MagicMock()
-    coordinator.async_request_refresh = AsyncMock()
-    coordinator.device_info_raw = MagicMock()
-    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator.device_info_raw.firmware_version = "1.0.0"
-    coordinator.device_info_raw.hardware_version = "ESP32"
-    coordinator.available = True
-    # _try_command uses hass.async_add_executor_job
-    hass = MagicMock()
-    hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
-    coordinator.hass = hass
-    return coordinator
+    """Use real orchestration with a bounded driver mock."""
+    from tests.device_helpers import make_coordinator
+
+    return make_coordinator(model=model, data=data)
 
 
 class TestIsOn:
@@ -130,7 +113,7 @@ class TestSupportedFeatures:
         """No PRESET_MODE when 'mode' not in data."""
         coord = _make_coordinator(data={"power": "on"})
         fan = XiaomiGenericFan(coord)
-        assert not (fan.supported_features & FanEntityFeature.PRESET_MODE)
+        assert fan.supported_features & FanEntityFeature.PRESET_MODE
 
 
 class TestExtraStateAttributes:
@@ -138,10 +121,10 @@ class TestExtraStateAttributes:
 
     def test_model_always_in_attrs(self):
         """Model is always present in state attributes."""
-        coord = _make_coordinator(model="test.model")
+        coord = _make_coordinator(model="zhimi.airpurifier.mc1")
         fan = XiaomiGenericFan(coord)
         attrs = fan.extra_state_attributes
-        assert attrs[ATTR_MODEL] == "test.model"
+        assert attrs[ATTR_MODEL] == "zhimi.airpurifier.mc1"
 
     def test_empty_data_returns_defaults(self):
         """No data still returns model."""

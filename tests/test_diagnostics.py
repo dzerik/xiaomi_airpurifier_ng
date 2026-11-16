@@ -7,12 +7,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from homeassistant.const import CONF_HOST, CONF_TOKEN
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import CONF_MODEL, DOMAIN
 from custom_components.xiaomi_miio_airpurifier_ng.diagnostics import (
     async_get_config_entry_diagnostics,
 )
+from tests.ha_helpers import MockConfigEntry
 
 
 @pytest.fixture

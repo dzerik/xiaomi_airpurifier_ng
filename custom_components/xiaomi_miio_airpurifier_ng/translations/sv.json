@@ -17,18 +17,9 @@
     "step": {
       "user": {
         "title": "Konfigurera Xiaomi Air Purifier",
-        "description": "Ange anslutningsuppgifter för din Xiaomi-enhet.",
+        "description": "Välj hur enheten ska ställas in. Molninloggning hämtar enhetens token automatiskt.",
         "data": {
-          "host": "Värd",
-          "token": "Token",
-          "name": "Namn (valfritt)",
-          "model": "Modell (valfritt, identifieras automatiskt)"
-        },
-        "data_description": {
-          "host": "IP-adressen eller värdnamnet för din Xiaomi-enhet.",
-          "token": "Den 32 tecken långa token för enhetsautentisering. Du kan erhålla denna med olika metoder som beskrivs i dokumentationen.",
-          "name": "Ett vänligt namn för enheten.",
-          "model": "Enhetsmodellen. Lämna tomt för automatisk identifiering."
+          "setup_method": "Inställningsmetod"
         }
       },
       "reconfigure": {
@@ -49,16 +40,52 @@
         "data_description": {
           "token": "Den nya 32 tecken långa token för enhetsautentisering."
         }
+      },
+      "manual": {
+        "data": {
+          "host": "Värd",
+          "token": "Token",
+          "name": "Namn (valfritt)",
+          "model": "Modell (valfritt, identifieras automatiskt)"
+        },
+        "data_description": {
+          "host": "IP-adressen eller värdnamnet för din Xiaomi-enhet.",
+          "token": "Den 32 tecken långa token för enhetsautentisering. Du kan erhålla denna med olika metoder som beskrivs i dokumentationen.",
+          "name": "Ett vänligt namn för enheten.",
+          "model": "Enhetsmodellen. Lämna tomt för automatisk identifiering."
+        },
+        "title": "Manuell inställning",
+        "description": "Ange anslutningsuppgifterna för Xiaomi-enheten."
+      },
+      "cloud": {
+        "title": "Inloggning till Xiaomi Cloud",
+        "description": "Ange dina Xiaomi-inloggningsuppgifter. De används en gång för att hämta enhetstoken och sparas inte.",
+        "data": {
+          "cloud_username": "E-post / Xiaomi-ID",
+          "cloud_password": "Lösenord",
+          "cloud_server": "Serverregion"
+        }
+      },
+      "select": {
+        "title": "Välj enhet",
+        "description": "Välj enheten du vill lägga till.",
+        "data": {
+          "device": "Enhet"
+        }
       }
     },
     "error": {
       "cannot_connect": "Det gick inte att ansluta till enheten. Kontrollera värd och token.",
-      "unknown": "Ett oväntat fel inträffade."
+      "unknown": "Ett oväntat fel inträffade.",
+      "cloud_login_error": "Det gick inte att logga in på Xiaomi Cloud. Kontrollera dina inloggningsuppgifter.",
+      "cloud_no_devices": "Inga enheter som stöds hittades på ditt Xiaomi-konto.",
+      "unsupported_model": "Den här enhetsmodellen stöds inte."
     },
     "abort": {
       "already_configured": "Denna enhet är redan konfigurerad.",
       "reconfigure_successful": "Konfigurationen har uppdaterats.",
-      "reauth_successful": "Omautentiseringen lyckades."
+      "reauth_successful": "Omautentiseringen lyckades.",
+      "wrong_device": "Den anslutna enheten har en annan MAC-adress. Den befintliga konfigurationen har inte ändrats."
     }
   },
   "entity": {
@@ -228,6 +255,12 @@
       },
       "gestures": {
         "name": "Geststyrning"
+      },
+      "clean_mode": {
+        "name": "Rengöringsläge"
+      },
+      "extra_features": {
+        "name": "Extra funktioner"
       }
     },
     "button": {
@@ -303,6 +336,26 @@
     "yaml_deprecation": {
       "title": "YAML-konfiguration föråldrad",
       "description": "YAML-konfiguration för {integration} ({platform}) är föråldrad och kommer att tas bort i en framtida version. Använd gränssnittet för att konfigurera denna integration via Inställningar > Enheter och tjänster > Lägg till integration."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "Den här enhetsmodellen stöds inte."
+    },
+    "unsupported_command": {
+      "message": "Enheten stöder inte kommandot {command}."
+    },
+    "command_rejected": {
+      "message": "Enheten avvisade kommandot eller gav ett ogiltigt svar."
+    },
+    "communication_error": {
+      "message": "Det gick inte att kommunicera med enheten."
+    },
+    "invalid_humidity": {
+      "message": "Luftfuktigheten måste vara mellan {minimum} och {maximum} procent."
+    },
+    "invalid_value": {
+      "message": "Det här värdet eller alternativet stöds inte av modellen."
     }
   }
 }

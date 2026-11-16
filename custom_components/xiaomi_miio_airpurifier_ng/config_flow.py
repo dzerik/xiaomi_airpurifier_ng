@@ -7,12 +7,14 @@ from typing import Any
 
 import voluptuous as vol
 from homeassistant.config_entries import (
+    ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
     OptionsFlow,
     OptionsFlowWithConfigEntry,
 )
 from homeassistant.const import CONF_HOST, CONF_NAME, CONF_TOKEN
+from homeassistant.data_entry_flow import AbortFlow
 from homeassistant.helpers.selector import (
     NumberSelector,
     NumberSelectorConfig,
@@ -34,6 +36,8 @@ from .const import (
     DOMAIN,
     SUPPORTED_MODELS,
 )
+from .device_profiles import UnsupportedModelError, get_device_profile
+from .identity import known_macs, normalize_mac
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -130,11 +134,7 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
                     supported = {
                         k: v for k, v in devices.items() if v.get("model") in SUPPORTED_MODELS
                     }
-                    if not supported:
-                        # Show all devices if none match our supported list
-                        self._cloud_devices = devices
-                    else:
-                        self._cloud_devices = supported
+                    self._cloud_devices = supported
 
                     if not self._cloud_devices:
                         errors["base"] = "cloud_no_devices"
@@ -178,6 +178,8 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
             # Validate connection
             try:
                 info = await self._async_try_connect(self._host, self._token, self._model)
+            except UnsupportedModelError:
+                errors["base"] = "unsupported_model"
             except DeviceException:
                 _LOGGER.warning(
                     "Cloud device %s (%s) not reachable locally, saving anyway",
@@ -193,9 +195,7 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
                 # Set unique ID
                 mac = device_info.get("mac") or (info and info.get("mac"))
                 if mac:
-                    mac_clean = mac.replace(":", "").replace("-", "").lower()
-                    await self.async_set_unique_id(mac_clean)
-                    self._abort_if_unique_id_configured(updates={CONF_HOST: self._host})
+                    await self._async_set_device_unique_id(mac)
                 else:
                     await self.async_set_unique_id(f"{DOMAIN}_{self._host}")
                     self._abort_if_unique_id_configured()
@@ -243,6 +243,8 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
             # Validate connection
             try:
                 device_info = await self._async_try_connect(self._host, self._token, self._model)
+            except UnsupportedModelError:
+                errors["base"] = "unsupported_model"
             except DeviceException as ex:
                 _LOGGER.error("Cannot connect to device: %s", ex)
                 errors["base"] = "cannot_connect"
@@ -253,8 +255,7 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
                 # Set unique ID based on MAC address if available
                 mac = device_info.get("mac")
                 if mac:
-                    await self.async_set_unique_id(mac.replace(":", "").lower())
-                    self._abort_if_unique_id_configured(updates={CONF_HOST: self._host})
+                    await self._async_set_device_unique_id(mac)
                 else:
                     await self.async_set_unique_id(f"{DOMAIN}_{self._host}")
                     self._abort_if_unique_id_configured()
@@ -332,13 +333,16 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
             token = user_input[CONF_TOKEN]
 
             try:
-                await self._async_try_connect(self._host, token, self._model)
+                info = await self._async_try_connect(self._host, token, self._model)
+            except UnsupportedModelError:
+                errors["base"] = "unsupported_model"
             except DeviceException:
                 errors["base"] = "cannot_connect"
             except Exception:  # noqa: BLE001
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
             else:
+                self._validate_identity(self._get_reauth_entry(), info)
                 return self.async_update_reload_and_abort(
                     self._get_reauth_entry(),
                     data_updates={CONF_TOKEN: token},
@@ -370,13 +374,17 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
             model = user_input.get(CONF_MODEL)
 
             try:
-                await self._async_try_connect(host, token, model)
+                info = await self._async_try_connect(host, token, model)
+            except UnsupportedModelError:
+                errors["base"] = "unsupported_model"
             except DeviceException:
                 errors["base"] = "cannot_connect"
             except Exception:  # noqa: BLE001
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
             else:
+                self._validate_identity(entry, info)
+                model = model or info["model"]
                 return self.async_update_reload_and_abort(
                     entry,
                     data_updates={
@@ -412,16 +420,38 @@ class XiaomiMiioConfigFlow(ConfigFlow, domain=DOMAIN):
         self, host: str, token: str, model: str | None = None
     ) -> dict[str, Any]:
         """Try to connect to the device and return device info."""
+        if model:
+            get_device_profile(model)
         device = Device(ip=host, token=token, model=model)
 
         info = await self.hass.async_add_executor_job(device.info)
 
+        get_device_profile(info.model)
         return {
             "model": info.model,
             "mac": info.mac_address,
             "firmware": info.firmware_version,
             "hardware": info.hardware_version,
         }
+
+    def _validate_identity(self, entry: ConfigEntry, info: dict[str, Any]) -> None:
+        """Reject a different device before updating any stored connection data."""
+        expected = known_macs(self.hass, entry)
+        try:
+            mac = normalize_mac(info.get("mac") or "")
+        except ValueError:
+            raise AbortFlow("wrong_device") from None
+        if expected and mac not in expected:
+            raise AbortFlow("wrong_device")
+
+    async def _async_set_device_unique_id(self, mac: str) -> None:
+        """Match normalized legacy ids as well as canonical ids on new entries."""
+        normalized = normalize_mac(mac)
+        await self.async_set_unique_id(normalized)
+        for entry in self._async_current_entries():
+            if normalized in known_macs(self.hass, entry):
+                raise AbortFlow("already_configured")
+        self._abort_if_unique_id_configured()
 
     async def _async_cloud_login(
         self, username: str, password: str, server: str

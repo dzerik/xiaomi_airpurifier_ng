@@ -72,21 +72,21 @@ BUTTON_DESCRIPTIONS: tuple[XiaomiMiioButtonEntityDescription, ...] = (
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    """Set up Xiaomi Miio buttons from a config entry."""
-    coordinator: XiaomiMiioDataUpdateCoordinator = entry.runtime_data
+    """Create only maintenance commands implemented by this model."""
+    from .device_profiles import get_device_profile
 
-    entities: list[XiaomiMiioButton] = []
-
-    # Create buttons based on device model
-    model = coordinator.model
+    coordinator = entry.runtime_data
+    profile = get_device_profile(coordinator.model)
+    entities = []
+    seen = set()
     for description in BUTTON_DESCRIPTIONS:
-        if description.exists_fn is None or description.exists_fn(model):
+        command = description.press_fn
+        target = profile.command_aliases.get(command, command)
+        if command in profile.commands and target not in seen:
+            seen.add(target)
             entities.append(XiaomiMiioButton(coordinator, description))
-
     async_add_entities(entities)
 
 
@@ -105,20 +105,5 @@ class XiaomiMiioButton(XiaomiMiioEntity, ButtonEntity):
         self.entity_description = description
 
     async def async_press(self) -> None:
-        """Handle the button press."""
-        method_name = self.entity_description.press_fn
-
-        method = getattr(self.coordinator.device, method_name, None)
-        if not method:
-            _LOGGER.error(
-                "Method %s not found on device for button %s",
-                method_name,
-                self.entity_description.key,
-            )
-            return
-
-        await self._try_command(
-            f"Pressing button {self.entity_description.key} failed: %s",
-            method,
-        )
-        await self.coordinator.async_request_refresh()
+        """Execute a supported maintenance command."""
+        await self._async_command(self.entity_description.press_fn)

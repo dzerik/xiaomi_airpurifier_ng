@@ -78,12 +78,14 @@
       "cannot_connect": "Failed to connect to the device. Please check the host and token.",
       "cloud_login_error": "Could not login to Xiaomi Cloud. Please check your credentials.",
       "cloud_no_devices": "No supported devices found in your Xiaomi account.",
-      "unknown": "An unexpected error occurred."
+      "unknown": "An unexpected error occurred.",
+      "unsupported_model": "This device model is not supported."
     },
     "abort": {
       "already_configured": "This device is already configured.",
       "reconfigure_successful": "Configuration updated successfully.",
-      "reauth_successful": "Reauthentication successful."
+      "reauth_successful": "Reauthentication successful.",
+      "wrong_device": "The connected device has a different MAC address. The existing configuration was not changed."
     }
   },
   "entity": {
@@ -334,6 +336,26 @@
     "yaml_deprecation": {
       "title": "YAML Configuration Deprecated",
       "description": "YAML configuration for {integration} ({platform}) is deprecated and will be removed in a future version. Please use the UI to configure this integration by going to Settings > Devices & Services > Add Integration."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "This device model is not supported."
+    },
+    "unsupported_command": {
+      "message": "The device does not support the command {command}."
+    },
+    "command_rejected": {
+      "message": "The device rejected the command or returned an invalid response."
+    },
+    "communication_error": {
+      "message": "Could not communicate with the device."
+    },
+    "invalid_humidity": {
+      "message": "Humidity must be between {minimum} and {maximum} percent."
+    },
+    "invalid_value": {
+      "message": "This value or option is not supported by this model."
     }
   }
 }

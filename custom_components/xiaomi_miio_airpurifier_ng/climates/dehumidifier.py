@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
@@ -19,8 +18,8 @@ from miio.airdehumidifier import (
 from ..const import (
     ATTR_MODEL,
     AVAILABLE_ATTRIBUTES_AIRDEHUMIDIFIER,
+    DOMAIN,
     FEATURE_FLAGS_AIRDEHUMIDIFIER,
-    FEATURE_SET_TARGET_HUMIDITY,
 )
 from ..entity import XiaomiMiioEntity
 
@@ -86,7 +85,7 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
                         features |= ClimateEntityFeature.TARGET_HUMIDITY
                     if mode != AirdehumidifierOperationMode.DryCloth:
                         features |= ClimateEntityFeature.FAN_MODE
-                except (ValueError, KeyError):
+                except ValueError, KeyError:
                     pass
 
         return features
@@ -147,62 +146,29 @@ class XiaomiAirDehumidifierClimate(XiaomiMiioEntity, ClimateEntity):
             await self._async_device_off()
 
     async def async_set_humidity(self, humidity: int) -> None:
-        """Set new target humidity."""
-        if not self._check_feature(FEATURE_SET_TARGET_HUMIDITY, "set_target_humidity"):
-            return
-
-        # Switch to Auto mode if not already (device only accepts humidity in Auto mode)
-        if self.preset_mode != AirdehumidifierOperationMode.Auto.name:
-            result = await self._try_command(
-                "Setting preset mode of the miio device failed: %s",
-                self.coordinator.device.set_mode,
-                AirdehumidifierOperationMode.Auto,
-            )
-            if not result:
-                return
-            # Wait for device to apply mode change before setting humidity
-            await asyncio.sleep(1)
-
-        # Round to nearest 10
-        humidity = round(humidity / 10) * 10
-        await self._try_command(
-            "Setting the target humidity of the miio device failed: %s",
-            self.coordinator.device.set_target_humidity,
-            humidity,
-        )
-        await self.coordinator.async_request_refresh()
+        """Use the same mode prerequisite and range as the number control."""
+        await self.coordinator.async_set_humidity(humidity)
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
-        """Set new preset mode."""
-        _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
-        try:
-            mode = AirdehumidifierOperationMode[preset_mode]
-            await self._try_command(
-                "Setting preset mode of the miio device failed: %s",
-                self.coordinator.device.set_mode,
-                mode,
-            )
-            await self.coordinator.async_request_refresh()
-        except KeyError:
-            _LOGGER.error("Invalid preset mode: %s", preset_mode)
+        """Validate the exposed mode before using the shared command path."""
+        from homeassistant.exceptions import ServiceValidationError
+
+        allowed = self.preset_modes or []
+        if preset_mode not in allowed:
+            raise ServiceValidationError(translation_domain=DOMAIN, translation_key="invalid_value")
+        await self._async_command("set_mode", AirdehumidifierOperationMode[preset_mode])
 
     async def async_set_fan_mode(self, fan_mode: str) -> None:
-        """Set new fan mode."""
-        # Fan mode cannot be changed in DryCloth mode
-        if self.preset_mode == AirdehumidifierOperationMode.DryCloth.name:
-            return
+        """Validate the exposed mode before using the shared command path."""
+        from homeassistant.exceptions import ServiceValidationError
 
-        _LOGGER.debug("Setting the fan mode to: %s", fan_mode)
-        try:
-            speed = AirdehumidifierFanSpeed[fan_mode]
-            await self._try_command(
-                "Setting fan mode of the miio device failed: %s",
-                self.coordinator.device.set_fan_speed,
-                speed,
-            )
-            await self.coordinator.async_request_refresh()
-        except KeyError:
-            _LOGGER.error("Invalid fan mode: %s", fan_mode)
+        allowed = self.fan_modes or []
+        if (
+            fan_mode not in allowed
+            or self.preset_mode == AirdehumidifierOperationMode.DryCloth.name
+        ):
+            raise ServiceValidationError(translation_domain=DOMAIN, translation_key="invalid_value")
+        await self._async_command("set_fan_speed", AirdehumidifierFanSpeed[fan_mode])
 
     async def async_turn_on(self) -> None:
         """Turn the device on."""

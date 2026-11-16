@@ -4,14 +4,10 @@ from __future__ import annotations
 
 import logging
 from enum import Enum
-from functools import partial
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from miio import DeviceException
-
-from .const import DOMAIN, SUCCESS
 
 if TYPE_CHECKING:
     from .coordinator import XiaomiMiioDataUpdateCoordinator
@@ -37,6 +33,9 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
             unique_id_suffix: Optional suffix for unique_id (e.g., "_aqi" for sensors).
         """
         super().__init__(coordinator)
+        from .device_profiles import get_device_profile
+
+        self.profile = get_device_profile(coordinator.model)
 
         # Instance-level mutable attributes (NOT class-level to avoid shared state)
         # Only set defaults if not already initialized by subclass __init__
@@ -60,23 +59,9 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
         coordinator = self.coordinator
         entry = coordinator.config_entry
 
-        # Get device identifiers
-        identifiers: set[tuple[str, str]] = set()
+        from .identity import device_identifiers
 
-        # Use MAC address as primary identifier if available (cached from _async_setup)
-        info = coordinator.device_info_raw
-        if info and info.mac_address:
-            mac = info.mac_address.replace(":", "").lower()
-            identifiers.add((DOMAIN, mac))
-
-        # Fall back to entry_id if no MAC
-        if not identifiers:
-            _LOGGER.warning(
-                "MAC address not available for %s, using entry_id as identifier. "
-                "Device identity may not persist across reconfigurations",
-                coordinator.model,
-            )
-            identifiers.add((DOMAIN, entry.entry_id))
+        identifiers = device_identifiers(coordinator.hass, entry, coordinator.device_info_raw)
 
         # Determine model name for display
         model = coordinator.model or "Unknown Model"
@@ -188,15 +173,9 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
             return value.value
         return value
 
-    async def _try_command(self, mask_error: str, func: Any, *args: Any, **kwargs: Any) -> bool:
-        """Call a miio device command handling error messages."""
-        try:
-            result = await self.hass.async_add_executor_job(partial(func, *args, **kwargs))
-            _LOGGER.debug("Response received from miio device: %s", result)
-            return result == SUCCESS
-        except DeviceException as exc:
-            _LOGGER.error(mask_error, exc)
-            return False
+    async def _async_command(self, name: str, *args: Any) -> None:
+        """Use the coordinator's shared serialization and error contract."""
+        await self.coordinator.async_execute_command(name, *args)
 
     @property
     def is_on(self) -> bool | None:
@@ -227,26 +206,12 @@ class XiaomiMiioEntity(CoordinatorEntity["XiaomiMiioDataUpdateCoordinator"]):
         return self._state_attrs
 
     async def _async_device_on(self) -> None:
-        """Turn the device on with optimistic state update."""
-        result = await self._try_command(
-            "Turning the miio device on failed: %s",
-            self.coordinator.device.on,
-        )
-        if result and self.coordinator.data is not None:
-            self.coordinator.data["power"] = "on"
-            self.async_write_ha_state()
-        await self.coordinator.async_request_refresh()
+        """Apply power through the shared command and state-update path."""
+        await self._async_command("on")
 
     async def _async_device_off(self) -> None:
-        """Turn the device off with optimistic state update."""
-        result = await self._try_command(
-            "Turning the miio device off failed: %s",
-            self.coordinator.device.off,
-        )
-        if result and self.coordinator.data is not None:
-            self.coordinator.data["power"] = "off"
-            self.async_write_ha_state()
-        await self.coordinator.async_request_refresh()
+        """Apply power through the shared command and state-update path."""
+        await self._async_command("off")
 
     @property
     def available(self) -> bool:

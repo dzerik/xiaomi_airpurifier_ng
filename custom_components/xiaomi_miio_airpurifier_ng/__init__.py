@@ -8,85 +8,10 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
-from miio import (
-    AirDogX3,
-    AirFresh,
-    AirFreshA1,
-    AirFreshT2017,
-    AirHumidifier,
-    AirHumidifierJsq,
-    AirHumidifierJsqs,
-    AirHumidifierMiot,
-    AirHumidifierMjjsq,
-    AirPurifier,
-    AirPurifierMiot,
-    Device,
-    DeviceException,
-    Fan,
-    Fan1C,
-    FanLeshow,
-    FanMiot,
-    FanP5,
-)
+from homeassistant.exceptions import ConfigEntryError, ConfigEntryNotReady
+from miio import Device, DeviceException
 
-from .const import (
-    CONF_MODEL,
-    HUMIDIFIER_MIOT,
-    MODEL_AIRDEHUMIDIFIER_V1,
-    MODEL_AIRFRESH_A1,
-    MODEL_AIRFRESH_T2017,
-    MODEL_AIRFRESH_VA2,
-    MODEL_AIRFRESH_VA4,
-    MODEL_AIRHUMIDIFIER_CA1,
-    MODEL_AIRHUMIDIFIER_CB1,
-    MODEL_AIRHUMIDIFIER_CB2,
-    MODEL_AIRHUMIDIFIER_JSQ,
-    MODEL_AIRHUMIDIFIER_JSQ001,
-    MODEL_AIRHUMIDIFIER_JSQ1,
-    MODEL_AIRHUMIDIFIER_JSQ2W,
-    MODEL_AIRHUMIDIFIER_JSQ3,
-    MODEL_AIRHUMIDIFIER_JSQ5,
-    MODEL_AIRHUMIDIFIER_JSQS,
-    MODEL_AIRHUMIDIFIER_MJJSQ,
-    MODEL_AIRHUMIDIFIER_V1,
-    MODEL_AIRPURIFIER_2H,
-    MODEL_AIRPURIFIER_2S,
-    MODEL_AIRPURIFIER_AIRDOG_X3,
-    MODEL_AIRPURIFIER_AIRDOG_X5,
-    MODEL_AIRPURIFIER_AIRDOG_X7SM,
-    MODEL_AIRPURIFIER_M1,
-    MODEL_AIRPURIFIER_M2,
-    MODEL_AIRPURIFIER_MA1,
-    MODEL_AIRPURIFIER_MA2,
-    MODEL_AIRPURIFIER_PRO,
-    MODEL_AIRPURIFIER_PRO_V7,
-    MODEL_AIRPURIFIER_SA1,
-    MODEL_AIRPURIFIER_SA2,
-    MODEL_AIRPURIFIER_V1,
-    MODEL_AIRPURIFIER_V2,
-    MODEL_AIRPURIFIER_V3,
-    MODEL_AIRPURIFIER_V5,
-    MODEL_FAN_1C,
-    MODEL_FAN_LESHOW_SS4,
-    MODEL_FAN_P5,
-    MODEL_FAN_P8,
-    MODEL_FAN_P9,
-    MODEL_FAN_P10,
-    MODEL_FAN_P11,
-    MODEL_FAN_P15,
-    MODEL_FAN_P18,
-    MODEL_FAN_P33,
-    MODEL_FAN_SA1,
-    MODEL_FAN_V2,
-    MODEL_FAN_V3,
-    MODEL_FAN_ZA1,
-    MODEL_FAN_ZA3,
-    MODEL_FAN_ZA4,
-    PURIFIER_MIOT,
-    DeviceCategory,
-    classify_model,
-)
+from .const import CONF_MODEL, DeviceCategory, classify_model
 from .const import (
     DOMAIN as DOMAIN,
 )
@@ -98,6 +23,7 @@ from .coordinator import (
     XiaomiFanCoordinator,
     XiaomiMiioDataUpdateCoordinator,
 )
+from .device_profiles import UnsupportedModelError
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -129,6 +55,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: XiaomiMiioConfigEntry) -
     # Create the appropriate device instance based on model
     try:
         device = await hass.async_add_executor_job(_create_device, host, token, model)
+    except UnsupportedModelError as ex:
+        raise ConfigEntryError(
+            translation_domain=DOMAIN, translation_key="unsupported_model"
+        ) from ex
     except DeviceException as ex:
         raise ConfigEntryNotReady(f"Unable to connect to device: {ex}") from ex
 
@@ -152,120 +82,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: XiaomiMiioConfigEntry) 
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
-_JSQS_MAPPING = {
-    "power": {"siid": 2, "piid": 1},
-    "fault": {"siid": 2, "piid": 2},
-    "mode": {"siid": 2, "piid": 5},
-    "target_humidity": {"siid": 2, "piid": 6},
-    "relative_humidity": {"siid": 3, "piid": 1},
-    "temperature": {"siid": 3, "piid": 7},
-    "buzzer": {"siid": 5, "piid": 1},
-    "led_light": {"siid": 6, "piid": 1},
-    "water_shortage_fault": {"siid": 7, "piid": 1},
-    "tank_filed": {"siid": 7, "piid": 2},
-    "overwet_protect": {"siid": 7, "piid": 3},
-}
-
-
 def _create_device(host: str, token: str, model: str | None) -> Device:
-    """Create the appropriate device instance based on model."""
-    # Air Purifier models
-    if model in PURIFIER_MIOT:
-        return AirPurifierMiot(ip=host, token=token, model=model)
-    if model in (
-        MODEL_AIRPURIFIER_V1,
-        MODEL_AIRPURIFIER_V2,
-        MODEL_AIRPURIFIER_V3,
-        MODEL_AIRPURIFIER_V5,
-        MODEL_AIRPURIFIER_PRO,
-        MODEL_AIRPURIFIER_PRO_V7,
-        MODEL_AIRPURIFIER_M1,
-        MODEL_AIRPURIFIER_M2,
-        MODEL_AIRPURIFIER_MA1,
-        MODEL_AIRPURIFIER_MA2,
-        MODEL_AIRPURIFIER_SA1,
-        MODEL_AIRPURIFIER_SA2,
-        MODEL_AIRPURIFIER_2S,
-        MODEL_AIRPURIFIER_2H,
-    ):
-        return AirPurifier(ip=host, token=token, model=model)
+    """Create a device only from its explicit protocol profile."""
+    from .device_profiles import create_device
 
-    # AirDog models
-    if model in (
-        MODEL_AIRPURIFIER_AIRDOG_X3,
-        MODEL_AIRPURIFIER_AIRDOG_X5,
-        MODEL_AIRPURIFIER_AIRDOG_X7SM,
-    ):
-        return AirDogX3(ip=host, token=token, model=model)
-
-    # Air Humidifier models
-    if model in HUMIDIFIER_MIOT:
-        return AirHumidifierMiot(ip=host, token=token, model=model)
-    if model in (
-        MODEL_AIRHUMIDIFIER_V1,
-        MODEL_AIRHUMIDIFIER_CA1,
-        MODEL_AIRHUMIDIFIER_CB1,
-        MODEL_AIRHUMIDIFIER_CB2,
-    ):
-        return AirHumidifier(ip=host, token=token, model=model)
-    if model in (
-        MODEL_AIRHUMIDIFIER_MJJSQ,
-        MODEL_AIRHUMIDIFIER_JSQ,
-        MODEL_AIRHUMIDIFIER_JSQ1,
-    ):
-        return AirHumidifierMjjsq(ip=host, token=token, model=model)
-    if model in (
-        MODEL_AIRHUMIDIFIER_JSQ2W,
-        MODEL_AIRHUMIDIFIER_JSQ3,
-        MODEL_AIRHUMIDIFIER_JSQ5,
-        MODEL_AIRHUMIDIFIER_JSQS,
-    ):
-        return AirHumidifierJsqs(ip=host, token=token, model=model, mapping=_JSQS_MAPPING)
-    if model == MODEL_AIRHUMIDIFIER_JSQ001:
-        return AirHumidifierJsq(ip=host, token=token, model=model)
-
-    # Air Fresh models
-    if model == MODEL_AIRFRESH_A1:
-        return AirFreshA1(ip=host, token=token, model=model)
-    if model in (MODEL_AIRFRESH_VA2, MODEL_AIRFRESH_VA4):
-        return AirFresh(ip=host, token=token, model=model)
-    if model == MODEL_AIRFRESH_T2017:
-        return AirFreshT2017(ip=host, token=token, model=model)
-
-    # Fan models
-    if model in (MODEL_FAN_1C, MODEL_FAN_P8):
-        return Fan1C(ip=host, token=token, model=model)
-    if model == MODEL_FAN_P5:
-        return FanP5(ip=host, token=token, model=model)
-    if model in (
-        MODEL_FAN_P9,
-        MODEL_FAN_P10,
-        MODEL_FAN_P11,
-        MODEL_FAN_P15,
-        MODEL_FAN_P18,
-        MODEL_FAN_P33,
-    ):
-        return FanMiot(ip=host, token=token, model=model)
-    if model == MODEL_FAN_LESHOW_SS4:
-        return FanLeshow(ip=host, token=token, model=model)
-    if model in (
-        MODEL_FAN_V2,
-        MODEL_FAN_V3,
-        MODEL_FAN_SA1,
-        MODEL_FAN_ZA1,
-        MODEL_FAN_ZA3,
-        MODEL_FAN_ZA4,
-    ):
-        return Fan(ip=host, token=token, model=model)
-
-    # Air Dehumidifier
-    if model == MODEL_AIRDEHUMIDIFIER_V1:
-        from miio import AirDehumidifier
-
-        return AirDehumidifier(ip=host, token=token, model=model)
-
-    # Default: Try generic device, let it auto-detect
-    return Device(ip=host, token=token, model=model)
+    return create_device(host, token, model)
 
 
 _COORDINATOR_MAP = {

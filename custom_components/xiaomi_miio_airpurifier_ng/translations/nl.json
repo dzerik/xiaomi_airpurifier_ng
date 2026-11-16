@@ -17,18 +17,9 @@
     "step": {
       "user": {
         "title": "Xiaomi Air Purifier configureren",
-        "description": "Voer de verbindingsgegevens van je Xiaomi-apparaat in.",
+        "description": "Kies hoe u het apparaat wilt instellen. Aanmelden bij de cloud haalt het token automatisch op.",
         "data": {
-          "host": "Host",
-          "token": "Token",
-          "name": "Naam (optioneel)",
-          "model": "Model (optioneel, automatisch gedetecteerd)"
-        },
-        "data_description": {
-          "host": "Het IP-adres of de hostnaam van je Xiaomi-apparaat.",
-          "token": "Het 32-tekens token voor apparaatauthenticatie. Je kunt dit verkrijgen via de methoden beschreven in de documentatie.",
-          "name": "Een beschrijvende naam voor het apparaat.",
-          "model": "Het apparaatmodel. Laat leeg voor automatische detectie."
+          "setup_method": "Instelmethode"
         }
       },
       "reconfigure": {
@@ -49,16 +40,52 @@
         "data_description": {
           "token": "Het nieuwe 32-tekens token voor apparaatauthenticatie."
         }
+      },
+      "manual": {
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "name": "Naam (optioneel)",
+          "model": "Model (optioneel, automatisch gedetecteerd)"
+        },
+        "data_description": {
+          "host": "Het IP-adres of de hostnaam van je Xiaomi-apparaat.",
+          "token": "Het 32-tekens token voor apparaatauthenticatie. Je kunt dit verkrijgen via de methoden beschreven in de documentatie.",
+          "name": "Een beschrijvende naam voor het apparaat.",
+          "model": "Het apparaatmodel. Laat leeg voor automatische detectie."
+        },
+        "title": "Handmatig instellen",
+        "description": "Voer de verbindingsgegevens van uw Xiaomi-apparaat in."
+      },
+      "cloud": {
+        "title": "Aanmelden bij Xiaomi Cloud",
+        "description": "Voer uw Xiaomi-inloggegevens in. Ze worden eenmaal gebruikt om tokens op te halen en worden niet opgeslagen.",
+        "data": {
+          "cloud_username": "E-mail / Xiaomi-ID",
+          "cloud_password": "Wachtwoord",
+          "cloud_server": "Serverregio"
+        }
+      },
+      "select": {
+        "title": "Apparaat selecteren",
+        "description": "Kies het apparaat dat u wilt toevoegen.",
+        "data": {
+          "device": "Apparaat"
+        }
       }
     },
     "error": {
       "cannot_connect": "Kan geen verbinding maken met het apparaat. Controleer de host en het token.",
-      "unknown": "Er is een onverwachte fout opgetreden."
+      "unknown": "Er is een onverwachte fout opgetreden.",
+      "cloud_login_error": "Aanmelden bij Xiaomi Cloud mislukt. Controleer uw inloggegevens.",
+      "cloud_no_devices": "Geen ondersteunde apparaten gevonden in uw Xiaomi-account.",
+      "unsupported_model": "Dit apparaatmodel wordt niet ondersteund."
     },
     "abort": {
       "already_configured": "Dit apparaat is al geconfigureerd.",
       "reconfigure_successful": "Configuratie succesvol bijgewerkt.",
-      "reauth_successful": "Herauthenticatie geslaagd."
+      "reauth_successful": "Herauthenticatie geslaagd.",
+      "wrong_device": "Het verbonden apparaat heeft een ander MAC-adres. De bestaande configuratie is niet gewijzigd."
     }
   },
   "entity": {
@@ -228,6 +255,12 @@
       },
       "gestures": {
         "name": "Gebarenbediening"
+      },
+      "clean_mode": {
+        "name": "Reinigingsmodus"
+      },
+      "extra_features": {
+        "name": "Extra functies"
       }
     },
     "button": {
@@ -303,6 +336,26 @@
     "yaml_deprecation": {
       "title": "YAML-configuratie verouderd",
       "description": "YAML-configuratie voor {integration} ({platform}) is verouderd en wordt in een toekomstige versie verwijderd. Gebruik de gebruikersinterface om deze integratie te configureren via Instellingen > Apparaten en services > Integratie toevoegen."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "Dit apparaatmodel wordt niet ondersteund."
+    },
+    "unsupported_command": {
+      "message": "Het apparaat ondersteunt de opdracht {command} niet."
+    },
+    "command_rejected": {
+      "message": "Het apparaat heeft de opdracht geweigerd of een ongeldig antwoord gegeven."
+    },
+    "communication_error": {
+      "message": "Kan niet communiceren met het apparaat."
+    },
+    "invalid_humidity": {
+      "message": "De luchtvochtigheid moet tussen {minimum} en {maximum} procent liggen."
+    },
+    "invalid_value": {
+      "message": "Deze waarde of optie wordt niet ondersteund door dit model."
     }
   }
 }

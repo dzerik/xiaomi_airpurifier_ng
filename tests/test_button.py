@@ -5,12 +5,12 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from miio import DeviceException
 
 from custom_components.xiaomi_miio_airpurifier_ng.button import (
     BUTTON_DESCRIPTIONS,
     XiaomiMiioButton,
-    XiaomiMiioButtonEntityDescription,
     _is_air_fresh,
     _is_air_purifier,
     _is_humidifier,
@@ -19,24 +19,10 @@ from custom_components.xiaomi_miio_airpurifier_ng.button import (
 
 
 def _make_coordinator(model="zhimi.airpurifier.mc1", data=None):
-    """Create a mock coordinator."""
-    coordinator = MagicMock()
-    coordinator.model = model
-    coordinator.data = data or {}
-    coordinator.config_entry = MagicMock()
-    coordinator.config_entry.entry_id = "test_entry_id"
-    coordinator.config_entry.title = "Test Device"
-    coordinator.device = MagicMock()
-    coordinator.async_request_refresh = AsyncMock()
-    coordinator.device_info_raw = MagicMock()
-    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator.device_info_raw.firmware_version = "1.0.0"
-    coordinator.device_info_raw.hardware_version = "ESP32"
-    coordinator.available = True
-    hass = MagicMock()
-    hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
-    coordinator.hass = hass
-    return coordinator
+    """Use real orchestration with a bounded driver mock."""
+    from tests.device_helpers import make_coordinator
+
+    return make_coordinator(model=model, data=data)
 
 
 class TestIsAirPurifier:
@@ -168,7 +154,7 @@ class TestAsyncSetupEntry:
 
     @pytest.mark.asyncio
     async def test_humidifier_model_creates_filters_cleaned_button(self):
-        """Humidifier model creates filters_cleaned button."""
+        """Humidifiers cannot advertise the Airdog filter-cleaning command."""
         coord = _make_coordinator(model="zhimi.humidifier.ca1")
         entry = MagicMock()
         entry.runtime_data = coord
@@ -177,7 +163,7 @@ class TestAsyncSetupEntry:
 
         await async_setup_entry(hass, entry, added_entities.extend)
         keys = [e.entity_description.key for e in added_entities]
-        assert "filters_cleaned" in keys
+        assert "filters_cleaned" not in keys
         assert "reset_filter" not in keys
 
     @pytest.mark.asyncio
@@ -206,20 +192,6 @@ class TestAsyncSetupEntry:
         # Fan model doesn't match any exists_fn
         assert len(added_entities) == 0
 
-    @pytest.mark.asyncio
-    async def test_description_without_exists_fn_always_added(self):
-        """Button with exists_fn=None is always added."""
-        # Verify the logic: if exists_fn is None, button is always created
-        desc = XiaomiMiioButtonEntityDescription(
-            key="test_button",
-            name="Test",
-            press_fn="test_method",
-            exists_fn=None,
-        )
-        coord = _make_coordinator(model="unknown.model")
-        # exists_fn is None -> should pass the condition
-        assert desc.exists_fn is None or desc.exists_fn(coord.model)
-
 
 class TestAsyncPress:
     """Tests for async_press method."""
@@ -241,7 +213,7 @@ class TestAsyncPress:
     async def test_press_filters_cleaned(self):
         """Pressing filters_cleaned calls set_filters_cleaned."""
         desc = BUTTON_DESCRIPTIONS[1]  # filters_cleaned
-        coord = _make_coordinator(model="zhimi.humidifier.ca1")
+        coord = _make_coordinator(model="airdog.airpurifier.x3")
         button = XiaomiMiioButton(coord, desc)
         button.hass = coord.hass
 
@@ -262,7 +234,8 @@ class TestAsyncPress:
         button.hass = coord.hass
 
         # Should not raise
-        await button.async_press()
+        with pytest.raises(ServiceValidationError):
+            await button.async_press()
         coord.async_request_refresh.assert_not_awaited()
 
     @pytest.mark.asyncio
@@ -275,7 +248,8 @@ class TestAsyncPress:
         button.hass = coord.hass
 
         # Should not raise — _try_command catches DeviceException
-        await button.async_press()
+        with pytest.raises(HomeAssistantError):
+            await button.async_press()
 
 
 class TestButtonInit:

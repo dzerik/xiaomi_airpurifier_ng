@@ -17,18 +17,9 @@
     "step": {
       "user": {
         "title": "Konfiguracja Xiaomi Air Purifier",
-        "description": "Wprowadź dane połączenia dla urządzenia Xiaomi.",
+        "description": "Wybierz sposób konfiguracji. Logowanie do chmury automatycznie pobiera token urządzenia.",
         "data": {
-          "host": "Host",
-          "token": "Token",
-          "name": "Nazwa (opcjonalnie)",
-          "model": "Model (opcjonalnie, wykrywany automatycznie)"
-        },
-        "data_description": {
-          "host": "Adres IP lub nazwa hosta urządzenia Xiaomi.",
-          "token": "32-znakowy token do uwierzytelniania urządzenia. Możesz go uzyskać różnymi sposobami opisanymi w dokumentacji.",
-          "name": "Przyjazna nazwa urządzenia.",
-          "model": "Model urządzenia. Pozostaw puste, aby wykryć automatycznie."
+          "setup_method": "Sposób konfiguracji"
         }
       },
       "reconfigure": {
@@ -49,16 +40,52 @@
         "data_description": {
           "token": "Nowy 32-znakowy token do uwierzytelniania urządzenia."
         }
+      },
+      "manual": {
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "name": "Nazwa (opcjonalnie)",
+          "model": "Model (opcjonalnie, wykrywany automatycznie)"
+        },
+        "data_description": {
+          "host": "Adres IP lub nazwa hosta urządzenia Xiaomi.",
+          "token": "32-znakowy token do uwierzytelniania urządzenia. Możesz go uzyskać różnymi sposobami opisanymi w dokumentacji.",
+          "name": "Przyjazna nazwa urządzenia.",
+          "model": "Model urządzenia. Pozostaw puste, aby wykryć automatycznie."
+        },
+        "title": "Konfiguracja ręczna",
+        "description": "Wprowadź dane połączenia urządzenia Xiaomi."
+      },
+      "cloud": {
+        "title": "Logowanie do Xiaomi Cloud",
+        "description": "Wprowadź dane logowania Xiaomi. Służą jednorazowo do pobrania tokenów i nie są zapisywane.",
+        "data": {
+          "cloud_username": "E-mail / ID Xiaomi",
+          "cloud_password": "Hasło",
+          "cloud_server": "Region serwera"
+        }
+      },
+      "select": {
+        "title": "Wybierz urządzenie",
+        "description": "Wybierz urządzenie do dodania.",
+        "data": {
+          "device": "Urządzenie"
+        }
       }
     },
     "error": {
       "cannot_connect": "Nie udało się połączyć z urządzeniem. Sprawdź host i token.",
-      "unknown": "Wystąpił nieoczekiwany błąd."
+      "unknown": "Wystąpił nieoczekiwany błąd.",
+      "cloud_login_error": "Nie udało się zalogować do Xiaomi Cloud. Sprawdź dane logowania.",
+      "cloud_no_devices": "Na koncie Xiaomi nie znaleziono obsługiwanych urządzeń.",
+      "unsupported_model": "Ten model urządzenia nie jest obsługiwany."
     },
     "abort": {
       "already_configured": "To urządzenie jest już skonfigurowane.",
       "reconfigure_successful": "Konfiguracja została pomyślnie zaktualizowana.",
-      "reauth_successful": "Ponowne uwierzytelnianie zakończone pomyślnie."
+      "reauth_successful": "Ponowne uwierzytelnianie zakończone pomyślnie.",
+      "wrong_device": "Podłączone urządzenie ma inny adres MAC. Istniejąca konfiguracja nie została zmieniona."
     }
   },
   "entity": {
@@ -228,6 +255,12 @@
       },
       "gestures": {
         "name": "Sterowanie gestami"
+      },
+      "clean_mode": {
+        "name": "Tryb czyszczenia"
+      },
+      "extra_features": {
+        "name": "Dodatkowe funkcje"
       }
     },
     "button": {
@@ -303,6 +336,26 @@
     "yaml_deprecation": {
       "title": "Konfiguracja YAML jest przestarzała",
       "description": "Konfiguracja YAML dla {integration} ({platform}) jest przestarzała i zostanie usunięta w przyszłej wersji. Użyj interfejsu użytkownika, aby skonfigurować tę integrację: Ustawienia > Urządzenia i usługi > Dodaj integrację."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "Ten model urządzenia nie jest obsługiwany."
+    },
+    "unsupported_command": {
+      "message": "Urządzenie nie obsługuje polecenia {command}."
+    },
+    "command_rejected": {
+      "message": "Urządzenie odrzuciło polecenie lub zwróciło nieprawidłową odpowiedź."
+    },
+    "communication_error": {
+      "message": "Nie udało się połączyć z urządzeniem."
+    },
+    "invalid_humidity": {
+      "message": "Wilgotność musi wynosić od {minimum} do {maximum} procent."
+    },
+    "invalid_value": {
+      "message": "Ten model nie obsługuje tej wartości lub opcji."
     }
   }
 }

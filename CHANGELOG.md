@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-11-17
+
+### Breaking Changes
+- Require Home Assistant 2026.3.4+ and Python 3.14.2+.
+- Replace manual Level presets with standard fan percentages; stop advertising panning as blade reversal.
+- Reject unsupported models and invalid control values. Device refusals now fail HA actions visibly.
+
+### Fixed
+- Centralize model drivers, enum types, capabilities, speed ranges, and humidity prerequisites.
+- Serialize polling and dependent commands, including executor cancellation; validate miIO and MIoT acknowledgements.
+- Correct legacy RPM/percentage handling, 1C levels, purifier/Airdog/AirFresh commands, zero-speed power, and turn-on parameters.
+- Share humidity rules between primary entities and numbers; enforce JSQS/dehumidifier limits and JSQ001 capabilities.
+- Validate reconfigure/reauth MAC identities; preserve entity IDs and update registry metadata after late discovery.
+- Synchronize all 14 translations and add exception translations.
+
+### Development
+- Use HA-compatible runtime constraints; lock python-miio 0.5.12 and test construct 2.10.68/2.10.70 in reproducible HA environments.
+- Unify Ruff 0.17.5, update CI actions, and add atomic version bump plus metadata validation scripts.
+- Preserve AGENTS.md as requested; current development commands are in README.
+
 ## [3.1.0] - 2026-03-09
 
 ### Added

@@ -13,22 +13,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import (
-    HUMIDIFIER_MIOT,
-    MODEL_AIRHUMIDIFIER_CA1,
-    MODEL_AIRHUMIDIFIER_CA4,
-    MODEL_AIRHUMIDIFIER_CB1,
-    MODEL_AIRHUMIDIFIER_CB2,
-    MODEL_AIRHUMIDIFIER_JSQ,
-    MODEL_AIRHUMIDIFIER_JSQ001,
-    MODEL_AIRHUMIDIFIER_JSQ1,
-    MODEL_AIRHUMIDIFIER_JSQ2W,
-    MODEL_AIRHUMIDIFIER_JSQ3,
-    MODEL_AIRHUMIDIFIER_JSQ5,
-    MODEL_AIRHUMIDIFIER_JSQS,
-    MODEL_AIRHUMIDIFIER_MJJSQ,
-)
+from .const import DOMAIN
 from .coordinator import XiaomiMiioDataUpdateCoordinator
+from .device_profiles import get_device_profile
 from .entity import XiaomiMiioEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -107,7 +94,7 @@ def _get_led_brightness_option(value: Any) -> str | None:
     try:
         numeric = int(value)
         return {0: "bright", 1: "dim", 2: "off"}.get(numeric)
-    except (ValueError, TypeError):
+    except ValueError, TypeError:
         return None
 
 
@@ -140,7 +127,10 @@ async def async_setup_entry(
             if description.key in known_keys:
                 continue
             if description.exists_fn and coordinator.data:
-                if description.exists_fn(coordinator.data):
+                if (
+                    description.exists_fn(coordinator.data)
+                    and description.set_fn in get_device_profile(coordinator.model).commands
+                ):
                     known_keys.add(description.key)
                     new_entities.append(XiaomiMiioSelect(coordinator, description))
 
@@ -175,153 +165,97 @@ class XiaomiMiioSelect(XiaomiMiioEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        """Return the current option."""
-        if self.coordinator.data and self.entity_description.value_fn:
-            return self.entity_description.value_fn(self.coordinator.data)
-        return None
+        """Decode the actual driver's enum, including reversed LED scales."""
+        key = self.entity_description.key
+        value = (self.coordinator.data or {}).get(key)
+        enum = self.profile.select_enums.get(key)
+        if value is None or enum is None:
+            return None
+        if isinstance(value, enum):
+            selected = value
+        else:
+            raw = str(value).rsplit(".", 1)[-1]
+            selected = next(
+                (
+                    item
+                    for item in enum
+                    if item.name.lower() == raw.lower() or str(item.value) == raw
+                ),
+                None,
+            )
+        if selected is None:
+            return None
+        if key == "led_brightness":
+            return {
+                "Bright": "bright",
+                "High": "bright",
+                "Dim": "dim",
+                "Low": "dim",
+                "Off": "off",
+            }.get(selected.name)
+        if key == "display_orientation":
+            return {"Portrait": "forward", "LandscapeLeft": "left", "LandscapeRight": "right"}.get(
+                selected.name
+            )
+        return selected.name.lower()
 
     async def async_select_option(self, option: str) -> None:
-        """Change the selected option."""
-        method_name = self.entity_description.set_fn
+        """Encode options into the enum required by this driver."""
+        from homeassistant.exceptions import ServiceValidationError
 
-        if not method_name:
-            _LOGGER.warning(
-                "No method defined for setting %s",
-                self.entity_description.key,
-            )
-            return
-
-        method = getattr(self.coordinator.device, method_name, None)
-        if not method:
-            _LOGGER.error(
-                "Method %s not found on device for %s",
-                method_name,
-                self.entity_description.key,
-            )
-            return
-
-        # Convert option to device value if mapping exists
-        if self.entity_description.options_map:
-            value = self.entity_description.options_map.get(option, option)
-        else:
-            value = option
-
-        await self._try_command(
-            f"Setting {self.entity_description.key} of the miio device failed: %s",
-            method,
-            value,
-        )
-        await self.coordinator.async_request_refresh()
+        key = self.entity_description.key
+        enum = self.profile.select_enums.get(key)
+        if option not in self.options or enum is None:
+            raise ServiceValidationError(translation_domain=DOMAIN, translation_key="invalid_value")
+        aliases = {
+            "led_brightness": {
+                "bright": ("Bright", "High"),
+                "dim": ("Dim", "Low"),
+                "off": ("Off",),
+            },
+            "display_orientation": {
+                "forward": ("Portrait",),
+                "left": ("LandscapeLeft",),
+                "right": ("LandscapeRight",),
+            },
+        }
+        names = aliases.get(key, {}).get(option, (option.title(),))
+        selected = next((enum[name] for name in names if name in enum.__members__), None)
+        if selected is None:
+            raise ServiceValidationError(translation_domain=DOMAIN, translation_key="invalid_value")
+        await self._async_command(self.entity_description.set_fn or "", selected)
 
 
 class XiaomiMiioModeSelect(XiaomiMiioEntity, SelectEntity):
-    """Representation of a Xiaomi Miio mode select entity.
-
-    This entity provides a select for operation mode with device-specific options.
-    """
+    """Optional humidifier mode control using the same profile as its main entity."""
 
     _attr_translation_key = "mode"
     _attr_icon = "mdi:tune"
 
-    def __init__(
-        self,
-        coordinator: XiaomiMiioDataUpdateCoordinator,
-    ) -> None:
-        """Initialize the mode select entity."""
+    def __init__(self, coordinator: XiaomiMiioDataUpdateCoordinator) -> None:
         super().__init__(coordinator, unique_id_suffix="mode_select")
-        self._attr_name = "Mode"
         self._mode_enum = self._get_mode_enum()
         self._attr_options = self._get_mode_options()
 
     def _get_mode_enum(self) -> type[Enum] | None:
-        """Get the appropriate OperationMode enum for this device."""
-        model = self.coordinator.model
-        if not model:
-            return None
+        from .const import DeviceCategory
 
-        # Humidifier models
-        if model in [
-            MODEL_AIRHUMIDIFIER_JSQ2W,
-            MODEL_AIRHUMIDIFIER_JSQ3,
-            MODEL_AIRHUMIDIFIER_JSQ5,
-            MODEL_AIRHUMIDIFIER_JSQS,
-        ]:
-            from miio.integrations.humidifier.deerma.airhumidifier_jsqs import (
-                OperationMode as JsqsOperationMode,
-            )
-
-            return JsqsOperationMode
-        if model in [
-            MODEL_AIRHUMIDIFIER_MJJSQ,
-            MODEL_AIRHUMIDIFIER_JSQ,
-            MODEL_AIRHUMIDIFIER_JSQ1,
-        ]:
-            from miio.integrations.humidifier.deerma.airhumidifier_mjjsq import (
-                OperationMode as MjjsqOperationMode,
-            )
-
-            return MjjsqOperationMode
-        if model == MODEL_AIRHUMIDIFIER_JSQ001:
-            from miio.integrations.humidifier.shuii.airhumidifier_jsq import (
-                OperationMode as JsqOperationMode,
-            )
-
-            return JsqOperationMode
-        if model == MODEL_AIRHUMIDIFIER_CA4 or model in HUMIDIFIER_MIOT:
-            from miio.integrations.humidifier.zhimi.airhumidifier_miot import (
-                OperationMode as MiotOperationMode,
-            )
-
-            return MiotOperationMode
-        if model in [
-            MODEL_AIRHUMIDIFIER_CA1,
-            MODEL_AIRHUMIDIFIER_CB1,
-            MODEL_AIRHUMIDIFIER_CB2,
-        ]:
-            from miio.integrations.humidifier.zhimi.airhumidifier import (
-                OperationMode as ZhimiOperationMode,
-            )
-
-            return ZhimiOperationMode
-        if model.startswith("zhimi.humidifier."):
-            from miio.integrations.humidifier.zhimi.airhumidifier import (
-                OperationMode as ZhimiOperationMode,
-            )
-
-            return ZhimiOperationMode
-
-        return None
+        return (
+            self.profile.mode_enum if self.profile.category is DeviceCategory.HUMIDIFIER else None
+        )
 
     def _get_mode_options(self) -> list[str]:
-        """Get available mode options for this device."""
-        if self._mode_enum:
-            return [mode.name.lower() for mode in self._mode_enum]
-        return []
+        return [name.lower() for name in self.profile.preset_modes] if self._mode_enum else []
 
     @property
     def current_option(self) -> str | None:
-        """Return the current mode."""
-        if self.coordinator.data:
-            mode = self.coordinator.data.get("mode")
-            return mode.lower() if mode else None
-        return None
+        mode = (self.coordinator.data or {}).get("mode")
+        return mode.lower() if isinstance(mode, str) and mode.lower() in self.options else None
 
     async def async_select_option(self, option: str) -> None:
-        """Change the selected mode."""
-        if not self._mode_enum:
-            _LOGGER.error("No mode enum available for model %s", self.coordinator.model)
-            return
+        from homeassistant.exceptions import ServiceValidationError
 
-        try:
-            # Convert lowercase option back to enum (case-insensitive lookup)
-            mode_enum = next(m for m in self._mode_enum if m.name.lower() == option.lower())
-        except StopIteration:
-            _LOGGER.error("Invalid mode option: %s", option)
-            return
-
-        await self._try_command(
-            "Setting mode of the miio device failed: %s",
-            self.coordinator.device.set_mode,
-            mode_enum,
-        )
-        await self.coordinator.async_request_refresh()
+        if option not in self.options or self._mode_enum is None:
+            raise ServiceValidationError(translation_domain=DOMAIN, translation_key="invalid_value")
+        selected = next(mode for mode in self._mode_enum if mode.name.lower() == option)
+        await self._async_command("set_mode", selected)

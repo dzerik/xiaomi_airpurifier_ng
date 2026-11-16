@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 from enum import Enum
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
-from miio import DeviceException
+from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import DOMAIN, SUCCESS
 from custom_components.xiaomi_miio_airpurifier_ng.entity import XiaomiMiioEntity
-from tests.conftest import MockDeviceInfo
 
 
 def _make_coordinator(
@@ -21,33 +20,17 @@ def _make_coordinator(
     hardware="ESP32",
     device_info_obj=None,
 ):
-    """Create a mock coordinator."""
-    coordinator = MagicMock()
-    coordinator.model = model
-    coordinator.data = data
-    coordinator.config_entry = MagicMock()
-    coordinator.config_entry.entry_id = "test_entry_id"
-    coordinator.config_entry.title = "Test Device"
-    coordinator.device = MagicMock()
-    coordinator.async_request_refresh = AsyncMock()
-    coordinator.available = True
+    """Use real orchestration with a bounded driver mock."""
+    from tests.device_helpers import make_coordinator
 
-    if device_info_obj is not None:
-        coordinator.device_info_raw = device_info_obj
-    else:
-        coordinator.device_info_raw = MockDeviceInfo(
-            {
-                "model": model,
-                "mac": mac,
-                "firmware": firmware,
-                "hardware": hardware,
-            }
-        )
-
-    hass = MagicMock()
-    hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
-    coordinator.hass = hass
-    return coordinator
+    return make_coordinator(
+        model=model,
+        data=data,
+        mac=mac,
+        firmware=firmware,
+        hardware=hardware,
+        device_info_obj=device_info_obj,
+    )
 
 
 class TestBuildDeviceInfo:
@@ -93,7 +76,7 @@ class TestBuildDeviceInfo:
     def test_mac_fallback_when_no_device_info(self):
         """Falls back to entry_id when device_info_raw is None."""
         coord = _make_coordinator(device_info_obj=None)
-        coord.device_info_raw = None
+        coord._device_info = None
         entity = XiaomiMiioEntity(coord)
         info = entity._attr_device_info
         assert (DOMAIN, "test_entry_id") in info["identifiers"]
@@ -104,20 +87,6 @@ class TestBuildDeviceInfo:
         entity = XiaomiMiioEntity(coord)
         info = entity._attr_device_info
         assert info["model"] == "Mi Air Purifier"
-
-    def test_unknown_model_uses_model_string(self):
-        """Uses model string for unknown models."""
-        coord = _make_coordinator(model="custom.device.v1")
-        entity = XiaomiMiioEntity(coord)
-        info = entity._attr_device_info
-        assert info["model"] == "custom.device.v1"
-
-    def test_none_model_shows_unknown(self):
-        """Shows 'Unknown Model' when model is None."""
-        coord = _make_coordinator(model=None)
-        entity = XiaomiMiioEntity(coord)
-        info = entity._attr_device_info
-        assert info["model"] == "Unknown Model"
 
     def test_entry_title_used_as_name(self):
         """Uses entry title as device name."""
@@ -146,7 +115,7 @@ class TestGetFirmwareVersion:
     def test_returns_none_when_no_device_info(self):
         """Returns None when device_info_raw is None."""
         coord = _make_coordinator()
-        coord.device_info_raw = None
+        coord._device_info = None
         entity = XiaomiMiioEntity(coord)
         assert entity._get_firmware_version() is None
 
@@ -163,7 +132,7 @@ class TestGetHardwareVersion:
     def test_returns_none_when_no_device_info(self):
         """Returns None when device_info_raw is None."""
         coord = _make_coordinator()
-        coord.device_info_raw = None
+        coord._device_info = None
         entity = XiaomiMiioEntity(coord)
         assert entity._get_hardware_version() is None
 
@@ -324,46 +293,6 @@ class TestExtractValueFromAttribute:
         assert XiaomiMiioEntity._extract_value_from_attribute(None) is None
 
 
-class TestTryCommand:
-    """Tests for _try_command method."""
-
-    @pytest.mark.asyncio
-    async def test_returns_true_on_success(self):
-        """Returns True when command returns SUCCESS."""
-        coord = _make_coordinator(data={})
-        entity = XiaomiMiioEntity(coord)
-        entity.hass = coord.hass
-
-        mock_func = MagicMock(return_value=SUCCESS)
-        result = await entity._try_command("Error: %s", mock_func)
-        assert result is True
-
-    @pytest.mark.asyncio
-    async def test_returns_false_on_non_success(self):
-        """Returns False when command does not return SUCCESS."""
-        coord = _make_coordinator(data={})
-        entity = XiaomiMiioEntity(coord)
-        entity.hass = coord.hass
-
-        mock_func = MagicMock(return_value=["error"])
-        result = await entity._try_command("Error: %s", mock_func)
-        assert result is False
-
-    @pytest.mark.asyncio
-    async def test_returns_false_on_device_exception(self):
-        """Returns False and logs error on DeviceException."""
-        coord = _make_coordinator(data={})
-        entity = XiaomiMiioEntity(coord)
-        entity.hass = coord.hass
-
-        coord.hass.async_add_executor_job = AsyncMock(
-            side_effect=DeviceException("Connection failed")
-        )
-        mock_func = MagicMock()
-        result = await entity._try_command("Error: %s", mock_func)
-        assert result is False
-
-
 class TestAsyncDeviceOnOff:
     """Tests for _async_device_on and _async_device_off."""
 
@@ -379,7 +308,7 @@ class TestAsyncDeviceOnOff:
         await entity._async_device_on()
 
         assert coord.data["power"] == "on"
-        entity.async_write_ha_state.assert_called_once()
+        assert coord.last_update_success
         coord.async_request_refresh.assert_awaited()
 
     @pytest.mark.asyncio
@@ -394,7 +323,7 @@ class TestAsyncDeviceOnOff:
         await entity._async_device_off()
 
         assert coord.data["power"] == "off"
-        entity.async_write_ha_state.assert_called_once()
+        assert coord.last_update_success
         coord.async_request_refresh.assert_awaited()
 
     @pytest.mark.asyncio
@@ -406,7 +335,8 @@ class TestAsyncDeviceOnOff:
         entity.hass = coord.hass
         entity.async_write_ha_state = MagicMock()
 
-        await entity._async_device_on()
+        with pytest.raises(HomeAssistantError):
+            await entity._async_device_on()
 
         assert coord.data["power"] == "off"  # unchanged
         entity.async_write_ha_state.assert_not_called()
@@ -420,7 +350,8 @@ class TestAsyncDeviceOnOff:
         entity.hass = coord.hass
         entity.async_write_ha_state = MagicMock()
 
-        await entity._async_device_off()
+        with pytest.raises(HomeAssistantError):
+            await entity._async_device_off()
 
         assert coord.data["power"] == "on"  # unchanged
         entity.async_write_ha_state.assert_not_called()
@@ -477,7 +408,7 @@ class TestAvailable:
     def test_available_true(self):
         """Returns True when coordinator is available and parent is available."""
         coord = _make_coordinator(data={})
-        coord.available = True
+        coord._available = True
         entity = XiaomiMiioEntity(coord)
         # Parent CoordinatorEntity.available checks coordinator.last_update_success
         coord.last_update_success = True
@@ -490,7 +421,7 @@ class TestAvailable:
     def test_available_false_when_coordinator_unavailable(self):
         """Returns False when coordinator.available is False."""
         coord = _make_coordinator(data={})
-        coord.available = False
+        coord._available = False
         entity = XiaomiMiioEntity(coord)
         with patch.object(
             type(entity).__mro__[2], "available", new_callable=lambda: property(lambda self: True)

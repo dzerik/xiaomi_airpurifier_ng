@@ -2,29 +2,12 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
-from homeassistant.components.humidifier import HumidifierDeviceClass, HumidifierEntityFeature
+from homeassistant.exceptions import ServiceValidationError
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import (
-    FEATURE_FLAGS_AIRHUMIDIFIER,
-    FEATURE_FLAGS_AIRHUMIDIFIER_CA4,
-    FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB,
-    FEATURE_FLAGS_AIRHUMIDIFIER_JSQ,
-    FEATURE_FLAGS_AIRHUMIDIFIER_JSQ1,
-    FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5,
-    FEATURE_FLAGS_AIRHUMIDIFIER_JSQS,
-    FEATURE_FLAGS_AIRHUMIDIFIER_MJJSQ,
-    MODEL_AIRHUMIDIFIER_CA1,
     MODEL_AIRHUMIDIFIER_CA4,
-    MODEL_AIRHUMIDIFIER_CB1,
-    MODEL_AIRHUMIDIFIER_CB2,
     MODEL_AIRHUMIDIFIER_JSQ001,
-    MODEL_AIRHUMIDIFIER_JSQ1,
-    MODEL_AIRHUMIDIFIER_JSQ2W,
-    MODEL_AIRHUMIDIFIER_JSQ3,
-    MODEL_AIRHUMIDIFIER_JSQ5,
     MODEL_AIRHUMIDIFIER_JSQS,
     MODEL_AIRHUMIDIFIER_MJJSQ,
     MODEL_AIRHUMIDIFIER_V1,
@@ -35,135 +18,10 @@ from custom_components.xiaomi_miio_airpurifier_ng.humidifier import (
 
 
 def _make_coordinator(model="zhimi.humidifier.v1", data=None):
-    """Create a mock coordinator."""
-    coordinator = MagicMock()
-    coordinator.model = model
-    coordinator.data = data or {}
-    coordinator.config_entry = MagicMock()
-    coordinator.config_entry.entry_id = "test_entry_id"
-    coordinator.config_entry.title = "Test Humidifier"
-    coordinator.device = MagicMock()
-    coordinator.async_request_refresh = AsyncMock()
-    coordinator.device_info_raw = MagicMock()
-    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator.device_info_raw.firmware_version = "1.0.0"
-    coordinator.device_info_raw.hardware_version = "ESP32"
-    coordinator.available = True
-    hass = MagicMock()
-    hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
-    coordinator.hass = hass
-    return coordinator
+    """Use real orchestration with a bounded driver mock."""
+    from tests.device_helpers import make_coordinator
 
-
-class TestInit:
-    """Tests for __init__ with different humidifier models."""
-
-    def test_device_class(self):
-        """Device class is HUMIDIFIER."""
-        coord = _make_coordinator()
-        entity = XiaomiAirHumidifier(coord)
-        assert entity.device_class == HumidifierDeviceClass.HUMIDIFIER
-
-    def test_supported_features(self):
-        """Supports MODES."""
-        coord = _make_coordinator()
-        entity = XiaomiAirHumidifier(coord)
-        assert entity.supported_features & HumidifierEntityFeature.MODES
-
-    def test_min_max_humidity(self):
-        """Min/max humidity are set."""
-        coord = _make_coordinator()
-        entity = XiaomiAirHumidifier(coord)
-        assert entity.min_humidity == 30
-        assert entity.max_humidity == 80
-
-    def test_init_default_model(self):
-        """Default humidifier (v1) sets correct features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_V1)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER
-        assert entity._is_miot is False
-        assert entity._is_mjjsq is False
-        assert entity._is_jsqs is False
-        assert entity._is_jsq is False
-
-    def test_init_ca1_model(self):
-        """CA1 model sets CA_AND_CB features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_CA1)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB
-
-    def test_init_cb1_model(self):
-        """CB1 model sets CA_AND_CB features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_CB1)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB
-
-    def test_init_cb2_model(self):
-        """CB2 model sets CA_AND_CB features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_CB2)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_CA_AND_CB
-
-    def test_init_ca4_model(self):
-        """CA4 model sets MIOT features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_CA4)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_CA4
-        assert entity._is_miot is True
-
-    def test_init_mjjsq_model(self):
-        """MJJSQ model sets correct features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_MJJSQ)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_MJJSQ
-        assert entity._is_mjjsq is True
-
-    def test_init_jsq1_model(self):
-        """JSQ1 model sets correct features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_JSQ1)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_JSQ1
-        assert entity._is_mjjsq is True
-
-    def test_init_jsq2w_model(self):
-        """JSQ2W model is JSQS type."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_JSQ2W)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_JSQS
-        assert entity._is_jsqs is True
-
-    def test_init_jsq3_model(self):
-        """JSQ3 model is JSQ5 type."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_JSQ3)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5
-
-    def test_init_jsq5_model(self):
-        """JSQ5 model sets correct features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_JSQ5)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_JSQ5
-
-    def test_init_jsqs_model(self):
-        """JSQS model sets correct features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_JSQS)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_JSQS
-        assert entity._is_jsqs is True
-
-    def test_init_jsq001_model(self):
-        """JSQ001 model (shuii) sets correct features."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_JSQ001)
-        entity = XiaomiAirHumidifier(coord)
-        assert entity._device_features == FEATURE_FLAGS_AIRHUMIDIFIER_JSQ
-        assert entity._is_jsq is True
-
-    def test_available_modes_not_empty(self):
-        """Available modes are populated."""
-        coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_CA4)
-        entity = XiaomiAirHumidifier(coord)
-        assert len(entity.available_modes) > 0
+    return make_coordinator(model=model, data=data)
 
 
 class TestProperties:
@@ -279,7 +137,7 @@ class TestSetHumidity:
         entity = XiaomiAirHumidifier(coord)
         entity.hass = coord.hass
         await entity.async_set_humidity(55)
-        coord.device.set_target_humidity.assert_called_once_with(55)
+        coord.device.set_target_humidity.assert_called_once_with(60)
 
     @pytest.mark.asyncio
     async def test_set_humidity_refreshes(self):
@@ -348,7 +206,8 @@ class TestSetMode:
         coord = _make_coordinator(model=MODEL_AIRHUMIDIFIER_CA4)
         entity = XiaomiAirHumidifier(coord)
         entity.hass = coord.hass
-        await entity.async_set_mode("NonexistentMode")
+        with pytest.raises(ServiceValidationError):
+            await entity.async_set_mode("NonexistentMode")
         coord.device.set_mode.assert_not_called()
 
     @pytest.mark.asyncio

@@ -1,9 +1,9 @@
 # Xiaomi Air Purifier NG
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-[![HA Version](https://img.shields.io/badge/Home%20Assistant-2024.8.0%2B-blue.svg)](https://www.home-assistant.io/)
+[![HA Version](https://img.shields.io/badge/Home%20Assistant-2026.3.4%2B-blue.svg)](https://www.home-assistant.io/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](CHANGELOG.md)
 
 [README на русском](README_RU.md)
 
@@ -186,6 +186,51 @@ logger:
 
 ---
 
+## Upgrading to 4.0.0
+
+Home Assistant 2026.3.4+ and Python 3.14.2+ are required. Existing entity `unique_id` values are preserved. Reconfiguration and reauthentication verify the device MAC before saving connection details.
+
+- Replace manual `Level 1`–`Level 4` presets in automations with `fan.set_percentage`. Actual automatic modes remain presets. Three-speed 1C levels map to 33/66/100% using HA utilities.
+- `percentage: 0` turns the device off. `fan.turn_on` with `percentage` or `preset_mode` powers it on and applies that setting. A preset takes precedence when both are supplied.
+- Motor RPM remains diagnostic data; the fan percentage uses the active speed setting.
+- Panning is not blade reversal: `fan.set_direction` is no longer advertised. Oscillation and supported angle controls remain available.
+- Device rejections and unsupported values raise HA action errors. Review error handling in your automations.
+
+### Humidity limits
+
+Ranges and prerequisite modes depend on the model: JSQS 40–80%, MIoT 30–80%, Mjjsq 0–99%, legacy 30–80% in steps of 10. Dehumidifiers accept 40/50/60%; in-range requests round to the nearest 10 (ties round to the even decade). JSQ001 supports power and modes without a target humidity setter. The main entity and auxiliary number use identical validation and select Auto/Humidity first when required.
+
+### Verification and troubleshooting
+
+Local polling defaults to 30 seconds and can be changed in Options. If a device is unavailable, check its local IP, token, and network reachability from HA. Unknown models require an explicit supported profile. Cloud setup can save a supported device while it is temporarily unreachable locally; HA retries during setup.
+
+Tests exercise real drivers and packet codecs with network traffic substituted. Physical device validation is a separate step. Remove the integration through Settings → Devices & Services; its entities and dependent automations will then become unavailable.
+
+### Development
+
+```bash
+uv venv --python 3.14.2 .venv
+uv pip sync --python .venv/bin/python requirements_test_lock.txt
+.venv/bin/python scripts/check_project.py
+.venv/bin/python -m pytest tests/ -q
+.venv/bin/ruff check custom_components/ tests/ scripts/
+.venv/bin/ruff format --check custom_components/ tests/ scripts/
+```
+
+Use a separate environment with `requirements_test_min_lock.txt` for HA 2026.3.4. The current matrix also tests HA 2026.11.2. Bump versions with `python scripts/bump_version.py MAJOR.MINOR.PATCH`, which synchronizes manifest and pyproject. These commands supersede the old environment examples in the preserved AGENTS.md.
+
+Example manual speed action:
+
+```yaml
+action: fan.set_percentage
+target:
+  entity_id: fan.xiaomi_air_purifier
+data:
+  percentage: 66
+```
+
+---
+
 ## Breaking Changes in 3.0.0
 
 ### Humidifiers moved to `humidifier` platform
@@ -210,9 +255,9 @@ Humidifiers are no longer registered as `fan` entities. Entity IDs have changed:
 
 ## Requirements
 
-- Home Assistant 2024.8.0 or newer
-- Python 3.11+
-- `python-miio` >= 0.5.12, < 1.0.0
+- Home Assistant 2026.3.4 or newer
+- Python 3.14.2+
+- `python-miio>=0.5.12,<0.6.0`, `construct>=2.10.68,<2.11.0`
 
 ---
 

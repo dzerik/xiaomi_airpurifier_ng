@@ -14,6 +14,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import XiaomiMiioDataUpdateCoordinator
+from .device_profiles import get_device_profile
 from .entity import XiaomiMiioEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -221,7 +222,10 @@ async def async_setup_entry(
             if description.key in known_keys:
                 continue
             if description.exists_fn and coordinator.data:
-                if description.exists_fn(coordinator.data):
+                if (
+                    description.exists_fn(coordinator.data)
+                    and description.turn_on_fn in get_device_profile(coordinator.model).commands
+                ):
                     known_keys.add(description.key)
                     new_entities.append(XiaomiMiioSwitch(coordinator, description))
         if new_entities:
@@ -261,31 +265,6 @@ class XiaomiMiioSwitch(XiaomiMiioEntity, SwitchEntity):
         await self._async_set_state(False)
 
     async def _async_set_state(self, state: bool) -> None:
-        """Set the switch state."""
-        method_name = (
-            self.entity_description.turn_on_fn if state else self.entity_description.turn_off_fn
-        )
-
-        if not method_name:
-            _LOGGER.warning(
-                "No method defined for %s switch %s",
-                "on" if state else "off",
-                self.entity_description.key,
-            )
-            return
-
-        method = getattr(self.coordinator.device, method_name, None)
-        if not method:
-            _LOGGER.error(
-                "Method %s not found on device for switch %s",
-                method_name,
-                self.entity_description.key,
-            )
-            return
-
-        await self._try_command(
-            f"Setting {self.entity_description.key} of the miio device failed: %s",
-            method,
-            state,
-        )
-        await self.coordinator.async_request_refresh()
+        """Report unsupported operations rather than silently succeeding."""
+        name = self.entity_description.turn_on_fn if state else self.entity_description.turn_off_fn
+        await self._async_command(name or "", state)

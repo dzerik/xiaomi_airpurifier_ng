@@ -13,7 +13,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Get version from manifest
         id: manifest
@@ -38,11 +38,7 @@ jobs:
           zip -r ../../xiaomi_miio_airpurifier_ng.zip .
 
       - name: Upload release asset
-        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./xiaomi_miio_airpurifier_ng.zip
-          asset_name: xiaomi_miio_airpurifier_ng.zip
-          asset_content_type: application/zip
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" xiaomi_miio_airpurifier_ng.zip --repo "$GITHUB_REPOSITORY" --clobber

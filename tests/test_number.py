@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from miio import DeviceException
 
 from custom_components.xiaomi_miio_airpurifier_ng.number import (
@@ -14,25 +15,11 @@ from custom_components.xiaomi_miio_airpurifier_ng.number import (
 )
 
 
-def _make_coordinator(data=None):
-    """Create a mock coordinator."""
-    coordinator = MagicMock()
-    coordinator.model = "zhimi.airpurifier.mc1"
-    coordinator.data = data or {}
-    coordinator.config_entry = MagicMock()
-    coordinator.config_entry.entry_id = "test_entry_id"
-    coordinator.config_entry.title = "Test Device"
-    coordinator.device = MagicMock()
-    coordinator.async_request_refresh = AsyncMock()
-    coordinator.device_info_raw = MagicMock()
-    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator.device_info_raw.firmware_version = "1.0.0"
-    coordinator.device_info_raw.hardware_version = "ESP32"
-    coordinator.available = True
-    hass = MagicMock()
-    hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
-    coordinator.hass = hass
-    return coordinator
+def _make_coordinator(data=None, model="zhimi.airpurifier.mc1"):
+    """Use real orchestration with a bounded driver mock."""
+    from tests.device_helpers import make_coordinator
+
+    return make_coordinator(model=model, data=data)
 
 
 def _get_description(key: str) -> XiaomiMiioNumberEntityDescription:
@@ -122,7 +109,7 @@ class TestSetNativeValue:
     async def test_set_fan_level(self):
         """Sets fan_level as int."""
         desc = _get_description("fan_level")
-        coord = _make_coordinator(data={"fan_level": 1})
+        coord = _make_coordinator(model="zhimi.airpurifier.ma4", data={"fan_level": 1})
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
         await number.async_set_native_value(3.0)
@@ -132,7 +119,7 @@ class TestSetNativeValue:
     async def test_set_volume(self):
         """Sets volume as int."""
         desc = _get_description("volume")
-        coord = _make_coordinator(data={"volume": 50})
+        coord = _make_coordinator(model="zhimi.airpurifier.v3", data={"volume": 50})
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
         await number.async_set_native_value(75.0)
@@ -142,7 +129,7 @@ class TestSetNativeValue:
     async def test_set_target_humidity(self):
         """Sets target_humidity as int."""
         desc = _get_description("target_humidity")
-        coord = _make_coordinator(data={"target_humidity": 50})
+        coord = _make_coordinator(model="zhimi.humidifier.ca4", data={"target_humidity": 50})
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
         await number.async_set_native_value(60.0)
@@ -152,7 +139,7 @@ class TestSetNativeValue:
     async def test_set_angle(self):
         """Sets angle as int."""
         desc = _get_description("angle")
-        coord = _make_coordinator(data={"angle": 60})
+        coord = _make_coordinator(model="zhimi.fan.v2", data={"angle": 60})
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
         await number.async_set_native_value(90.0)
@@ -162,7 +149,7 @@ class TestSetNativeValue:
     async def test_set_delay_off(self):
         """Sets delay_off as int."""
         desc = _get_description("delay_off_countdown")
-        coord = _make_coordinator(data={"delay_off_countdown": 0})
+        coord = _make_coordinator(model="dmaker.fan.p5", data={"delay_off_countdown": 0})
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
         await number.async_set_native_value(120.0)
@@ -175,8 +162,9 @@ class TestSetNativeValue:
         coord = _make_coordinator(data={"favorite_level": 5})
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
-        await number.async_set_native_value(7.9)
-        coord.device.set_favorite_level.assert_called_once_with(7)
+        with pytest.raises(ServiceValidationError):
+            await number.async_set_native_value(7.9)
+        coord.device.set_favorite_level.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_set_value_no_method_name(self):
@@ -191,7 +179,8 @@ class TestSetNativeValue:
         coord = _make_coordinator()
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
-        await number.async_set_native_value(5.0)
+        with pytest.raises(ServiceValidationError):
+            await number.async_set_native_value(5.0)
         # Should not raise
 
     @pytest.mark.asyncio
@@ -202,7 +191,8 @@ class TestSetNativeValue:
         delattr(coord.device, "set_favorite_level")
         number = XiaomiMiioNumber(coord, desc)
         number.hass = coord.hass
-        await number.async_set_native_value(10.0)
+        with pytest.raises(ServiceValidationError):
+            await number.async_set_native_value(10.0)
         # Should not raise
 
     @pytest.mark.asyncio
@@ -214,7 +204,8 @@ class TestSetNativeValue:
         number.hass = coord.hass
         coord.hass.async_add_executor_job = AsyncMock(side_effect=DeviceException("Device error"))
         # Should not raise — _try_command catches DeviceException
-        await number.async_set_native_value(10.0)
+        with pytest.raises(HomeAssistantError):
+            await number.async_set_native_value(10.0)
 
 
 class TestNumberDescriptions:

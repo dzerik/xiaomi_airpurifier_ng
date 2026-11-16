@@ -467,7 +467,7 @@ async def test_reauth_flow(
     mock_config_entry_data: dict,
 ) -> None:
     """Test reauthentication flow."""
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
+    from tests.ha_helpers import MockConfigEntry
 
     entry = MockConfigEntry(
         domain=DOMAIN,
@@ -502,7 +502,7 @@ async def test_reauth_flow_cannot_connect(
     mock_config_entry_data: dict,
 ) -> None:
     """Test reauthentication flow with connection error."""
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
+    from tests.ha_helpers import MockConfigEntry
 
     entry = MockConfigEntry(
         domain=DOMAIN,

@@ -11,7 +11,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from miio import DeviceException
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.xiaomi_miio_airpurifier_ng.const import CONF_MODEL, DOMAIN
 from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
@@ -22,6 +21,7 @@ from custom_components.xiaomi_miio_airpurifier_ng.coordinator import (
     XiaomiMiioDataUpdateCoordinator,
 )
 from tests.conftest import MockDeviceInfo
+from tests.ha_helpers import MockConfigEntry
 
 
 def _create_config_entry() -> MockConfigEntry:

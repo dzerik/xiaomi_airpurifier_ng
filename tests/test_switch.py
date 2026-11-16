@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
+from homeassistant.exceptions import ServiceValidationError
 
 from custom_components.xiaomi_miio_airpurifier_ng.switch import (
     SWITCH_DESCRIPTIONS,
@@ -13,25 +12,11 @@ from custom_components.xiaomi_miio_airpurifier_ng.switch import (
 )
 
 
-def _make_coordinator(data=None):
-    """Create a mock coordinator."""
-    coordinator = MagicMock()
-    coordinator.model = "zhimi.airpurifier.mc1"
-    coordinator.data = data or {}
-    coordinator.config_entry = MagicMock()
-    coordinator.config_entry.entry_id = "test_entry_id"
-    coordinator.config_entry.title = "Test Device"
-    coordinator.device = MagicMock()
-    coordinator.async_request_refresh = AsyncMock()
-    coordinator.device_info_raw = MagicMock()
-    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator.device_info_raw.firmware_version = "1.0.0"
-    coordinator.device_info_raw.hardware_version = "ESP32"
-    coordinator.available = True
-    hass = MagicMock()
-    hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
-    coordinator.hass = hass
-    return coordinator
+def _make_coordinator(data=None, model="zhimi.airpurifier.mc1"):
+    """Use real orchestration with a bounded driver mock."""
+    from tests.device_helpers import make_coordinator
+
+    return make_coordinator(model=model, data=data)
 
 
 def _get_description(key: str) -> XiaomiMiioSwitchEntityDescription:
@@ -131,7 +116,7 @@ class TestTurnOnOff:
     async def test_turn_on_ptc(self):
         """Turn on PTC calls set_ptc(True)."""
         desc = _get_description("ptc")
-        coord = _make_coordinator(data={"ptc": False})
+        coord = _make_coordinator(model="zhimi.airfresh.va2", data={"ptc": False})
         switch = XiaomiMiioSwitch(coord, desc)
         switch.hass = coord.hass
         await switch.async_turn_on()
@@ -141,7 +126,7 @@ class TestTurnOnOff:
     async def test_turn_on_led_light(self):
         """Turn on LED light calls set_light(True)."""
         desc = _get_description("led_light")
-        coord = _make_coordinator(data={"led_light": False})
+        coord = _make_coordinator(model="deerma.humidifier.jsq2w", data={"led_light": False})
         switch = XiaomiMiioSwitch(coord, desc)
         switch.hass = coord.hass
         await switch.async_turn_on()
@@ -151,7 +136,7 @@ class TestTurnOnOff:
     async def test_turn_on_overwet_protect(self):
         """Turn on overwet protect calls set_overwet_protect(True)."""
         desc = _get_description("overwet_protect")
-        coord = _make_coordinator(data={"overwet_protect": False})
+        coord = _make_coordinator(model="deerma.humidifier.jsq2w", data={"overwet_protect": False})
         switch = XiaomiMiioSwitch(coord, desc)
         switch.hass = coord.hass
         await switch.async_turn_on()
@@ -172,7 +157,8 @@ class TestMethodNotFound:
         switch = XiaomiMiioSwitch(coord, desc)
         switch.hass = coord.hass
         # Should not raise, just log
-        await switch.async_turn_on()
+        with pytest.raises(ServiceValidationError):
+            await switch.async_turn_on()
 
     @pytest.mark.asyncio
     async def test_no_method_name(self):
@@ -186,7 +172,8 @@ class TestMethodNotFound:
         coord = _make_coordinator(data={"test": False})
         switch = XiaomiMiioSwitch(coord, desc)
         switch.hass = coord.hass
-        await switch.async_turn_on()
+        with pytest.raises(ServiceValidationError):
+            await switch.async_turn_on()
         # Should not raise
 
 

@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
 from homeassistant.components.climate import ClimateEntityFeature
 from homeassistant.components.climate.const import HVACMode
+from homeassistant.exceptions import ServiceValidationError
 from miio.airdehumidifier import (
     FanSpeed as AirdehumidifierFanSpeed,
 )
@@ -23,24 +22,10 @@ from custom_components.xiaomi_miio_airpurifier_ng.const import (
 
 
 def _make_coordinator(model="nwt.derh.wdh318efw1", data=None):
-    """Create a mock coordinator."""
-    coordinator = MagicMock()
-    coordinator.model = model
-    coordinator.data = data or {}
-    coordinator.config_entry = MagicMock()
-    coordinator.config_entry.entry_id = "test_entry_id"
-    coordinator.config_entry.title = "Test Dehumidifier"
-    coordinator.device = MagicMock()
-    coordinator.async_request_refresh = AsyncMock()
-    coordinator.device_info_raw = MagicMock()
-    coordinator.device_info_raw.mac_address = "AA:BB:CC:DD:EE:FF"
-    coordinator.device_info_raw.firmware_version = "1.0.0"
-    coordinator.device_info_raw.hardware_version = "ESP32"
-    coordinator.available = True
-    hass = MagicMock()
-    hass.async_add_executor_job = AsyncMock(side_effect=lambda func, *args: func(*args))
-    coordinator.hass = hass
-    return coordinator
+    """Use real orchestration with a bounded driver mock."""
+    from tests.device_helpers import make_coordinator
+
+    return make_coordinator(model=model, data=data)
 
 
 class TestInit:
@@ -301,7 +286,8 @@ class TestSetPresetMode:
         coord = _make_coordinator()
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
-        await entity.async_set_preset_mode("InvalidMode")
+        with pytest.raises(ServiceValidationError):
+            await entity.async_set_preset_mode("InvalidMode")
         coord.device.set_mode.assert_not_called()
 
 
@@ -323,7 +309,8 @@ class TestSetFanMode:
         coord = _make_coordinator(data={"power": "on", "mode": "DryCloth"})
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
-        await entity.async_set_fan_mode("Low")
+        with pytest.raises(ServiceValidationError):
+            await entity.async_set_fan_mode("Low")
         coord.device.set_fan_speed.assert_not_called()
 
     @pytest.mark.asyncio
@@ -332,7 +319,8 @@ class TestSetFanMode:
         coord = _make_coordinator(data={"power": "on", "mode": "Auto"})
         entity = XiaomiAirDehumidifierClimate(coord)
         entity.hass = coord.hass
-        await entity.async_set_fan_mode("InvalidFanMode")
+        with pytest.raises(ServiceValidationError):
+            await entity.async_set_fan_mode("InvalidFanMode")
         coord.device.set_fan_speed.assert_not_called()
 
 

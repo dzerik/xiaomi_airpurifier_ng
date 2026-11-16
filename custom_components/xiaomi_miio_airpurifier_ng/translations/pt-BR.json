@@ -17,18 +17,9 @@
     "step": {
       "user": {
         "title": "Configurar Xiaomi Air Purifier",
-        "description": "Insira os detalhes de conexão do seu dispositivo Xiaomi.",
+        "description": "Escolha como configurar o dispositivo. O acesso à nuvem obtém o token automaticamente.",
         "data": {
-          "host": "Host",
-          "token": "Token",
-          "name": "Nome (opcional)",
-          "model": "Modelo (opcional, detectado automaticamente)"
-        },
-        "data_description": {
-          "host": "O endereço IP ou nome do host do seu dispositivo Xiaomi.",
-          "token": "O token de 32 caracteres para autenticação do dispositivo. Você pode obtê-lo usando os métodos descritos na documentação.",
-          "name": "Um nome amigável para o dispositivo.",
-          "model": "O modelo do dispositivo. Deixe vazio para detecção automática."
+          "setup_method": "Método de configuração"
         }
       },
       "reconfigure": {
@@ -49,16 +40,52 @@
         "data_description": {
           "token": "O novo token de 32 caracteres para autenticação do dispositivo."
         }
+      },
+      "manual": {
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "name": "Nome (opcional)",
+          "model": "Modelo (opcional, detectado automaticamente)"
+        },
+        "data_description": {
+          "host": "O endereço IP ou nome do host do seu dispositivo Xiaomi.",
+          "token": "O token de 32 caracteres para autenticação do dispositivo. Você pode obtê-lo usando os métodos descritos na documentação.",
+          "name": "Um nome amigável para o dispositivo.",
+          "model": "O modelo do dispositivo. Deixe vazio para detecção automática."
+        },
+        "title": "Configuração manual",
+        "description": "Informe os dados de conexão do dispositivo Xiaomi."
+      },
+      "cloud": {
+        "title": "Entrar no Xiaomi Cloud",
+        "description": "Informe suas credenciais Xiaomi. Elas são usadas uma vez para obter os tokens e não são armazenadas.",
+        "data": {
+          "cloud_username": "E-mail / ID Xiaomi",
+          "cloud_password": "Senha",
+          "cloud_server": "Região do servidor"
+        }
+      },
+      "select": {
+        "title": "Selecionar dispositivo",
+        "description": "Escolha o dispositivo que deseja adicionar.",
+        "data": {
+          "device": "Dispositivo"
+        }
       }
     },
     "error": {
       "cannot_connect": "Falha ao conectar ao dispositivo. Verifique o host e o token.",
-      "unknown": "Ocorreu um erro inesperado."
+      "unknown": "Ocorreu um erro inesperado.",
+      "cloud_login_error": "Não foi possível entrar no Xiaomi Cloud. Verifique suas credenciais.",
+      "cloud_no_devices": "Nenhum dispositivo compatível encontrado na sua conta Xiaomi.",
+      "unsupported_model": "Este modelo de dispositivo não é compatível."
     },
     "abort": {
       "already_configured": "Este dispositivo já está configurado.",
       "reconfigure_successful": "Configuração atualizada com sucesso.",
-      "reauth_successful": "Reautenticação realizada com sucesso."
+      "reauth_successful": "Reautenticação realizada com sucesso.",
+      "wrong_device": "O dispositivo conectado tem outro endereço MAC. A configuração existente não foi alterada."
     }
   },
   "entity": {
@@ -228,6 +255,12 @@
       },
       "gestures": {
         "name": "Controle por gestos"
+      },
+      "clean_mode": {
+        "name": "Modo de limpeza"
+      },
+      "extra_features": {
+        "name": "Recursos adicionais"
       }
     },
     "button": {
@@ -303,6 +336,26 @@
     "yaml_deprecation": {
       "title": "Configuração YAML descontinuada",
       "description": "A configuração YAML para {integration} ({platform}) está descontinuada e será removida em uma versão futura. Use a interface do usuário para configurar esta integração acessando Configurações > Dispositivos e serviços > Adicionar integração."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "Este modelo de dispositivo não é compatível."
+    },
+    "unsupported_command": {
+      "message": "O dispositivo não suporta o comando {command}."
+    },
+    "command_rejected": {
+      "message": "O dispositivo rejeitou o comando ou retornou uma resposta inválida."
+    },
+    "communication_error": {
+      "message": "Não foi possível se comunicar com o dispositivo."
+    },
+    "invalid_humidity": {
+      "message": "A umidade deve estar entre {minimum} e {maximum} por cento."
+    },
+    "invalid_value": {
+      "message": "Este modelo não suporta esse valor ou opção."
     }
   }
 }

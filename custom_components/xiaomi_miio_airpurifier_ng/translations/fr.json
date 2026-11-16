@@ -17,18 +17,9 @@
     "step": {
       "user": {
         "title": "Configurer Xiaomi Air Purifier",
-        "description": "Entrez les informations de connexion de votre appareil Xiaomi.",
+        "description": "Choisissez la méthode de configuration. La connexion au cloud récupère automatiquement le jeton de l’appareil.",
         "data": {
-          "host": "Hôte",
-          "token": "Token",
-          "name": "Nom (optionnel)",
-          "model": "Modèle (optionnel, détection automatique)"
-        },
-        "data_description": {
-          "host": "L'adresse IP ou le nom d'hôte de votre appareil Xiaomi.",
-          "token": "Le token de 32 caractères pour l'authentification de l'appareil. Vous pouvez l'obtenir en utilisant les différentes méthodes décrites dans la documentation.",
-          "name": "Un nom convivial pour l'appareil.",
-          "model": "Le modèle de l'appareil. Laissez vide pour la détection automatique."
+          "setup_method": "Méthode de configuration"
         }
       },
       "reconfigure": {
@@ -49,16 +40,52 @@
         "data_description": {
           "token": "Le nouveau token de 32 caractères pour l'authentification de l'appareil."
         }
+      },
+      "manual": {
+        "data": {
+          "host": "Hôte",
+          "token": "Token",
+          "name": "Nom (optionnel)",
+          "model": "Modèle (optionnel, détection automatique)"
+        },
+        "data_description": {
+          "host": "L'adresse IP ou le nom d'hôte de votre appareil Xiaomi.",
+          "token": "Le token de 32 caractères pour l'authentification de l'appareil. Vous pouvez l'obtenir en utilisant les différentes méthodes décrites dans la documentation.",
+          "name": "Un nom convivial pour l'appareil.",
+          "model": "Le modèle de l'appareil. Laissez vide pour la détection automatique."
+        },
+        "title": "Configuration manuelle",
+        "description": "Saisissez les paramètres de connexion de l’appareil Xiaomi."
+      },
+      "cloud": {
+        "title": "Connexion à Xiaomi Cloud",
+        "description": "Saisissez vos identifiants Xiaomi. Ils servent une seule fois à obtenir les jetons et ne sont pas enregistrés.",
+        "data": {
+          "cloud_username": "E-mail / identifiant Xiaomi",
+          "cloud_password": "Mot de passe",
+          "cloud_server": "Région du serveur"
+        }
+      },
+      "select": {
+        "title": "Sélectionner un appareil",
+        "description": "Choisissez l’appareil à ajouter.",
+        "data": {
+          "device": "Appareil"
+        }
       }
     },
     "error": {
       "cannot_connect": "Impossible de se connecter à l'appareil. Veuillez vérifier l'hôte et le token.",
-      "unknown": "Une erreur inattendue s'est produite."
+      "unknown": "Une erreur inattendue s'est produite.",
+      "cloud_login_error": "Échec de la connexion à Xiaomi Cloud. Vérifiez vos identifiants.",
+      "cloud_no_devices": "Aucun appareil compatible trouvé dans votre compte Xiaomi.",
+      "unsupported_model": "Ce modèle d’appareil n’est pas pris en charge."
     },
     "abort": {
       "already_configured": "Cet appareil est déjà configuré.",
       "reconfigure_successful": "Configuration mise à jour avec succès.",
-      "reauth_successful": "Réauthentification réussie."
+      "reauth_successful": "Réauthentification réussie.",
+      "wrong_device": "L’appareil connecté possède une autre adresse MAC. La configuration existante n’a pas été modifiée."
     }
   },
   "entity": {
@@ -228,6 +255,12 @@
       },
       "gestures": {
         "name": "Contrôle gestuel"
+      },
+      "clean_mode": {
+        "name": "Mode nettoyage"
+      },
+      "extra_features": {
+        "name": "Fonctions supplémentaires"
       }
     },
     "button": {
@@ -303,6 +336,26 @@
     "yaml_deprecation": {
       "title": "Configuration YAML obsolète",
       "description": "La configuration YAML pour {integration} ({platform}) est obsolète et sera supprimée dans une future version. Veuillez utiliser l'interface utilisateur pour configurer cette intégration en allant dans Paramètres > Appareils & Services > Ajouter une intégration."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "Ce modèle d’appareil n’est pas pris en charge."
+    },
+    "unsupported_command": {
+      "message": "L’appareil ne prend pas en charge la commande {command}."
+    },
+    "command_rejected": {
+      "message": "L’appareil a refusé la commande ou renvoyé une réponse non valide."
+    },
+    "communication_error": {
+      "message": "Impossible de communiquer avec l’appareil."
+    },
+    "invalid_humidity": {
+      "message": "L’humidité doit être comprise entre {minimum} et {maximum} pour cent."
+    },
+    "invalid_value": {
+      "message": "Cette valeur ou option n’est pas prise en charge par ce modèle."
     }
   }
 }

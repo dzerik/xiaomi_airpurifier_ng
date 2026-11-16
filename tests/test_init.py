@@ -8,7 +8,6 @@ import pytest
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_HOST, CONF_TOKEN
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.xiaomi_miio_airpurifier_ng import (
     _create_coordinator,
@@ -41,6 +40,7 @@ from custom_components.xiaomi_miio_airpurifier_ng.const import (
     MODEL_FAN_P9,
     MODEL_FAN_V2,
 )
+from tests.ha_helpers import MockConfigEntry
 
 
 @pytest.fixture
@@ -404,20 +404,22 @@ class TestCreateDevice:
         assert isinstance(device, AirDehumidifier)
 
     def test_unknown_model_creates_generic_device(self):
-        """Unknown model falls back to generic Device."""
-        device = _create_device(
-            "192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", "unknown.model.v1"
+        """Unsupported hardware is rejected before a generic driver is created."""
+        from custom_components.xiaomi_miio_airpurifier_ng.device_profiles import (
+            UnsupportedModelError,
         )
-        from miio import Device
 
-        assert isinstance(device, Device)
+        with pytest.raises(UnsupportedModelError):
+            _create_device("192.0.2.1", "0" * 32, "unknown.model.v1")
 
     def test_none_model_creates_generic_device(self):
-        """None model falls back to generic Device."""
-        device = _create_device("192.168.1.1", "aaaabbbbccccddddaaaabbbbccccdddd", None)
-        from miio import Device
+        """Unsupported hardware is rejected before a generic driver is created."""
+        from custom_components.xiaomi_miio_airpurifier_ng.device_profiles import (
+            UnsupportedModelError,
+        )
 
-        assert isinstance(device, Device)
+        with pytest.raises(UnsupportedModelError):
+            _create_device("192.0.2.1", "0" * 32, None)
 
 
 # ---------------------------------------------------------------------------

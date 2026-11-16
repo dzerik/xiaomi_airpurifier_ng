@@ -78,8 +78,8 @@ class TestClassifyModelPurifier:
         assert classify_model(model) == DeviceCategory.PURIFIER
 
     def test_unknown_zhimi_airpurifier_returns_purifier(self) -> None:
-        """Неизвестная модель с префиксом zhimi.airpurifier все равно PURIFIER."""
-        assert classify_model("zhimi.airpurifier.future99") == DeviceCategory.PURIFIER
+        """An unknown model cannot acquire capabilities from a matching prefix."""
+        assert classify_model("zhimi.airpurifier.future99") == DeviceCategory.UNKNOWN
 
 
 class TestClassifyModelHumidifier:
@@ -113,8 +113,8 @@ class TestClassifyModelHumidifier:
         assert classify_model(MODEL_AIRHUMIDIFIER_JSQ001) == DeviceCategory.HUMIDIFIER
 
     def test_unknown_deerma_humidifier_returns_humidifier(self) -> None:
-        """Неизвестная модель с префиксом deerma.humidifier все равно HUMIDIFIER."""
-        assert classify_model("deerma.humidifier.newmodel") == DeviceCategory.HUMIDIFIER
+        """An unknown model cannot acquire capabilities from a matching prefix."""
+        assert classify_model("deerma.humidifier.newmodel") == DeviceCategory.UNKNOWN
 
 
 class TestClassifyModelAirFresh:
@@ -173,8 +173,8 @@ class TestClassifyModelDehumidifier:
         assert classify_model(MODEL_AIRDEHUMIDIFIER_V1) == DeviceCategory.DEHUMIDIFIER
 
     def test_unknown_nwt_derh_returns_dehumidifier(self) -> None:
-        """Неизвестная модель с префиксом nwt.derh все равно DEHUMIDIFIER."""
-        assert classify_model("nwt.derh.newmodel") == DeviceCategory.DEHUMIDIFIER
+        """An unknown model cannot acquire capabilities from a matching prefix."""
+        assert classify_model("nwt.derh.newmodel") == DeviceCategory.UNKNOWN
 
 
 class TestClassifyModelUnknown:
@@ -193,9 +193,8 @@ class TestClassifyModelUnknown:
         assert classify_model("unknown.device.model") == DeviceCategory.UNKNOWN
 
     def test_partial_prefix_with_startswith_still_matches(self) -> None:
-        """Модель с расширенным префиксом zhimi.airpurifier все равно PURIFIER (startswith)."""
-        # classify_model использует startswith, поэтому "zhimi.airpurifierX" тоже подходит
-        assert classify_model("zhimi.airpurifierX.v1") == DeviceCategory.PURIFIER
+        """An unknown model cannot acquire capabilities from a matching prefix."""
+        assert classify_model("zhimi.airpurifierX.v1") == DeviceCategory.UNKNOWN
 
     def test_different_vendor_prefix_does_not_match(self) -> None:
         """Модель с другим вендором не классифицируется ошибочно."""

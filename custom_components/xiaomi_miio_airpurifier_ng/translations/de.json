@@ -17,18 +17,9 @@
     "step": {
       "user": {
         "title": "Xiaomi Air Purifier konfigurieren",
-        "description": "Geben Sie die Verbindungsdaten für Ihr Xiaomi-Gerät ein.",
+        "description": "Wählen Sie die Einrichtungsmethode. Die Cloud-Anmeldung ruft den Gerätetoken automatisch ab.",
         "data": {
-          "host": "Host",
-          "token": "Token",
-          "name": "Name (optional)",
-          "model": "Modell (optional, automatisch erkannt)"
-        },
-        "data_description": {
-          "host": "Die IP-Adresse oder der Hostname Ihres Xiaomi-Geräts.",
-          "token": "Der 32-stellige Token zur Geräteauthentifizierung. Sie können diesen mit verschiedenen in der Dokumentation beschriebenen Methoden erhalten.",
-          "name": "Ein Anzeigename für das Gerät.",
-          "model": "Das Gerätemodell. Leer lassen für automatische Erkennung."
+          "setup_method": "Einrichtungsmethode"
         }
       },
       "reconfigure": {
@@ -49,16 +40,52 @@
         "data_description": {
           "token": "Der neue 32-stellige Token zur Geräteauthentifizierung."
         }
+      },
+      "manual": {
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "name": "Name (optional)",
+          "model": "Modell (optional, automatisch erkannt)"
+        },
+        "data_description": {
+          "host": "Die IP-Adresse oder der Hostname Ihres Xiaomi-Geräts.",
+          "token": "Der 32-stellige Token zur Geräteauthentifizierung. Sie können diesen mit verschiedenen in der Dokumentation beschriebenen Methoden erhalten.",
+          "name": "Ein Anzeigename für das Gerät.",
+          "model": "Das Gerätemodell. Leer lassen für automatische Erkennung."
+        },
+        "title": "Manuelle Einrichtung",
+        "description": "Geben Sie die Verbindungsdaten Ihres Xiaomi-Geräts ein."
+      },
+      "cloud": {
+        "title": "Xiaomi Cloud-Anmeldung",
+        "description": "Geben Sie Ihre Xiaomi-Zugangsdaten ein. Sie werden einmal zum Abrufen der Gerätetoken verwendet und nicht gespeichert.",
+        "data": {
+          "cloud_username": "E-Mail / Xiaomi-ID",
+          "cloud_password": "Passwort",
+          "cloud_server": "Serverregion"
+        }
+      },
+      "select": {
+        "title": "Gerät auswählen",
+        "description": "Wählen Sie das Gerät aus, das Sie hinzufügen möchten.",
+        "data": {
+          "device": "Gerät"
+        }
       }
     },
     "error": {
       "cannot_connect": "Verbindung zum Gerät fehlgeschlagen. Bitte überprüfen Sie Host und Token.",
-      "unknown": "Ein unerwarteter Fehler ist aufgetreten."
+      "unknown": "Ein unerwarteter Fehler ist aufgetreten.",
+      "cloud_login_error": "Anmeldung bei Xiaomi Cloud fehlgeschlagen. Prüfen Sie Ihre Zugangsdaten.",
+      "cloud_no_devices": "Keine unterstützten Geräte in Ihrem Xiaomi-Konto gefunden.",
+      "unsupported_model": "Dieses Gerätemodell wird nicht unterstützt."
     },
     "abort": {
       "already_configured": "Dieses Gerät ist bereits konfiguriert.",
       "reconfigure_successful": "Konfiguration erfolgreich aktualisiert.",
-      "reauth_successful": "Erneute Authentifizierung erfolgreich."
+      "reauth_successful": "Erneute Authentifizierung erfolgreich.",
+      "wrong_device": "Das verbundene Gerät hat eine andere MAC-Adresse. Die vorhandene Konfiguration wurde nicht geändert."
     }
   },
   "entity": {
@@ -228,6 +255,12 @@
       },
       "gestures": {
         "name": "Gestensteuerung"
+      },
+      "clean_mode": {
+        "name": "Reinigungsmodus"
+      },
+      "extra_features": {
+        "name": "Zusatzfunktionen"
       }
     },
     "button": {
@@ -303,6 +336,26 @@
     "yaml_deprecation": {
       "title": "YAML-Konfiguration veraltet",
       "description": "Die YAML-Konfiguration für {integration} ({platform}) ist veraltet und wird in einer zukünftigen Version entfernt. Bitte verwenden Sie die Benutzeroberfläche zur Konfiguration dieser Integration unter Einstellungen > Geräte & Dienste > Integration hinzufügen."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "Dieses Gerätemodell wird nicht unterstützt."
+    },
+    "unsupported_command": {
+      "message": "Das Gerät unterstützt den Befehl {command} nicht."
+    },
+    "command_rejected": {
+      "message": "Das Gerät hat den Befehl abgelehnt oder eine ungültige Antwort zurückgegeben."
+    },
+    "communication_error": {
+      "message": "Kommunikation mit dem Gerät fehlgeschlagen."
+    },
+    "invalid_humidity": {
+      "message": "Die Luftfeuchtigkeit muss zwischen {minimum} und {maximum} Prozent liegen."
+    },
+    "invalid_value": {
+      "message": "Dieser Wert oder diese Option wird von diesem Modell nicht unterstützt."
     }
   }
 }

@@ -200,6 +200,7 @@ SUPPORTED_MODELS: Final = (
     + SUPPORTED_MODELS_AIRHUMIDIFIER
     + SUPPORTED_MODELS_AIRFRESH
     + SUPPORTED_MODELS_FAN
+    + [MODEL_AIRDEHUMIDIFIER_V1]
 )
 
 # Speed mode
@@ -933,35 +934,10 @@ class ModelConfig:
 
 
 def classify_model(model: str | None) -> DeviceCategory:
-    """Classify a device model string into a DeviceCategory.
+    """Return the category of a supported protocol profile."""
+    from .device_profiles import UnsupportedModelError, get_device_profile
 
-    Single source of truth for model→category mapping, used by
-    _create_coordinator() and fan.py:async_setup_entry().
-    """
-    if not model:
+    try:
+        return get_device_profile(model).category
+    except UnsupportedModelError:
         return DeviceCategory.UNKNOWN
-    if (
-        model in PURIFIER_MIOT
-        or model.startswith("zhimi.airpurifier")
-        or model.startswith("zhimi.airp.")
-        or model.startswith("airdog.airpurifier")
-    ):
-        return DeviceCategory.PURIFIER
-    if (
-        model in HUMIDIFIER_MIOT
-        or model.startswith("zhimi.humidifier")
-        or model.startswith("deerma.humidifier")
-        or model.startswith("shuii.humidifier")
-    ):
-        return DeviceCategory.HUMIDIFIER
-    if model.startswith("zhimi.airfresh") or model.startswith("dmaker.airfresh"):
-        return DeviceCategory.AIR_FRESH
-    if (
-        model.startswith("zhimi.fan")
-        or model.startswith("dmaker.fan")
-        or model.startswith("leshow.fan")
-    ):
-        return DeviceCategory.FAN
-    if model.startswith("nwt.derh"):
-        return DeviceCategory.DEHUMIDIFIER
-    return DeviceCategory.UNKNOWN

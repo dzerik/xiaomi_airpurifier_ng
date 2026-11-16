@@ -17,18 +17,9 @@
     "step": {
       "user": {
         "title": "Configurar Xiaomi Air Purifier",
-        "description": "Introduce los datos de conexión de tu dispositivo Xiaomi.",
+        "description": "Elija cómo configurar el dispositivo. El acceso a la nube obtiene el token automáticamente.",
         "data": {
-          "host": "Host",
-          "token": "Token",
-          "name": "Nombre (opcional)",
-          "model": "Modelo (opcional, detección automática)"
-        },
-        "data_description": {
-          "host": "La dirección IP o el nombre de host de tu dispositivo Xiaomi.",
-          "token": "El token de 32 caracteres para la autenticación del dispositivo. Puedes obtenerlo utilizando los diversos métodos descritos en la documentación.",
-          "name": "Un nombre descriptivo para el dispositivo.",
-          "model": "El modelo del dispositivo. Déjalo vacío para la detección automática."
+          "setup_method": "Método de configuración"
         }
       },
       "reconfigure": {
@@ -49,16 +40,52 @@
         "data_description": {
           "token": "El nuevo token de 32 caracteres para la autenticación del dispositivo."
         }
+      },
+      "manual": {
+        "data": {
+          "host": "Host",
+          "token": "Token",
+          "name": "Nombre (opcional)",
+          "model": "Modelo (opcional, detección automática)"
+        },
+        "data_description": {
+          "host": "La dirección IP o el nombre de host de tu dispositivo Xiaomi.",
+          "token": "El token de 32 caracteres para la autenticación del dispositivo. Puedes obtenerlo utilizando los diversos métodos descritos en la documentación.",
+          "name": "Un nombre descriptivo para el dispositivo.",
+          "model": "El modelo del dispositivo. Déjalo vacío para la detección automática."
+        },
+        "title": "Configuración manual",
+        "description": "Introduzca los datos de conexión del dispositivo Xiaomi."
+      },
+      "cloud": {
+        "title": "Inicio de sesión en Xiaomi Cloud",
+        "description": "Introduzca sus credenciales de Xiaomi. Se usan una vez para obtener los tokens y no se guardan.",
+        "data": {
+          "cloud_username": "Correo / ID de Xiaomi",
+          "cloud_password": "Contraseña",
+          "cloud_server": "Región del servidor"
+        }
+      },
+      "select": {
+        "title": "Seleccionar dispositivo",
+        "description": "Elija el dispositivo que desea añadir.",
+        "data": {
+          "device": "Dispositivo"
+        }
       }
     },
     "error": {
       "cannot_connect": "No se pudo conectar al dispositivo. Por favor, verifica el host y el token.",
-      "unknown": "Se produjo un error inesperado."
+      "unknown": "Se produjo un error inesperado.",
+      "cloud_login_error": "No se pudo iniciar sesión en Xiaomi Cloud. Compruebe sus credenciales.",
+      "cloud_no_devices": "No se encontraron dispositivos compatibles en su cuenta Xiaomi.",
+      "unsupported_model": "Este modelo de dispositivo no es compatible."
     },
     "abort": {
       "already_configured": "Este dispositivo ya está configurado.",
       "reconfigure_successful": "Configuración actualizada correctamente.",
-      "reauth_successful": "Reautenticación exitosa."
+      "reauth_successful": "Reautenticación exitosa.",
+      "wrong_device": "El dispositivo conectado tiene otra dirección MAC. No se ha modificado la configuración existente."
     }
   },
   "entity": {
@@ -228,6 +255,12 @@
       },
       "gestures": {
         "name": "Control por gestos"
+      },
+      "clean_mode": {
+        "name": "Modo de limpieza"
+      },
+      "extra_features": {
+        "name": "Funciones adicionales"
       }
     },
     "button": {
@@ -303,6 +336,26 @@
     "yaml_deprecation": {
       "title": "Configuración YAML obsoleta",
       "description": "La configuración YAML para {integration} ({platform}) está obsoleta y se eliminará en una versión futura. Por favor, usa la interfaz de usuario para configurar esta integración yendo a Ajustes > Dispositivos y Servicios > Agregar integración."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "Este modelo de dispositivo no es compatible."
+    },
+    "unsupported_command": {
+      "message": "El dispositivo no admite el comando {command}."
+    },
+    "command_rejected": {
+      "message": "El dispositivo rechazó el comando o devolvió una respuesta no válida."
+    },
+    "communication_error": {
+      "message": "No se pudo comunicar con el dispositivo."
+    },
+    "invalid_humidity": {
+      "message": "La humedad debe estar entre {minimum} y {maximum} por ciento."
+    },
+    "invalid_value": {
+      "message": "Este modelo no admite este valor u opción."
     }
   }
 }

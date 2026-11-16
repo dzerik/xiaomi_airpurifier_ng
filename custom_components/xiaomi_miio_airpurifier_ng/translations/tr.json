@@ -17,18 +17,9 @@
     "step": {
       "user": {
         "title": "Xiaomi Air Purifier Yapılandırması",
-        "description": "Xiaomi cihazınız için bağlantı bilgilerini girin.",
+        "description": "Cihazın kurulum yöntemini seçin. Bulut oturumu cihaz belirtecini otomatik alır.",
         "data": {
-          "host": "Ana bilgisayar",
-          "token": "Token",
-          "name": "Ad (isteğe bağlı)",
-          "model": "Model (isteğe bağlı, otomatik algılama)"
-        },
-        "data_description": {
-          "host": "Xiaomi cihazınızın IP adresi veya ana bilgisayar adı.",
-          "token": "Cihaz kimlik doğrulaması için 32 karakterlik token. Bunu dokümantasyonda açıklanan çeşitli yöntemlerle elde edebilirsiniz.",
-          "name": "Cihaz için kolay anlaşılır bir ad.",
-          "model": "Cihaz modeli. Otomatik algılama için boş bırakın."
+          "setup_method": "Kurulum yöntemi"
         }
       },
       "reconfigure": {
@@ -49,16 +40,52 @@
         "data_description": {
           "token": "Cihaz kimlik doğrulaması için yeni 32 karakterlik token."
         }
+      },
+      "manual": {
+        "data": {
+          "host": "Ana bilgisayar",
+          "token": "Token",
+          "name": "Ad (isteğe bağlı)",
+          "model": "Model (isteğe bağlı, otomatik algılama)"
+        },
+        "data_description": {
+          "host": "Xiaomi cihazınızın IP adresi veya ana bilgisayar adı.",
+          "token": "Cihaz kimlik doğrulaması için 32 karakterlik token. Bunu dokümantasyonda açıklanan çeşitli yöntemlerle elde edebilirsiniz.",
+          "name": "Cihaz için kolay anlaşılır bir ad.",
+          "model": "Cihaz modeli. Otomatik algılama için boş bırakın."
+        },
+        "title": "Elle kurulum",
+        "description": "Xiaomi cihazınızın bağlantı bilgilerini girin."
+      },
+      "cloud": {
+        "title": "Xiaomi Cloud oturumu",
+        "description": "Xiaomi hesap bilgilerinizi girin. Cihaz belirteçlerini almak için bir kez kullanılır ve saklanmaz.",
+        "data": {
+          "cloud_username": "E-posta / Xiaomi kimliği",
+          "cloud_password": "Parola",
+          "cloud_server": "Sunucu bölgesi"
+        }
+      },
+      "select": {
+        "title": "Cihaz seç",
+        "description": "Eklemek istediğiniz cihazı seçin.",
+        "data": {
+          "device": "Cihaz"
+        }
       }
     },
     "error": {
       "cannot_connect": "Cihaza bağlanılamadı. Lütfen ana bilgisayar adresini ve token'ı kontrol edin.",
-      "unknown": "Beklenmeyen bir hata oluştu."
+      "unknown": "Beklenmeyen bir hata oluştu.",
+      "cloud_login_error": "Xiaomi Cloud oturumu açılamadı. Hesap bilgilerinizi kontrol edin.",
+      "cloud_no_devices": "Xiaomi hesabınızda desteklenen cihaz bulunamadı.",
+      "unsupported_model": "Bu cihaz modeli desteklenmiyor."
     },
     "abort": {
       "already_configured": "Bu cihaz zaten yapılandırılmış.",
       "reconfigure_successful": "Yapılandırma başarıyla güncellendi.",
-      "reauth_successful": "Yeniden kimlik doğrulama başarılı."
+      "reauth_successful": "Yeniden kimlik doğrulama başarılı.",
+      "wrong_device": "Bağlı cihazın MAC adresi farklı. Mevcut yapılandırma değiştirilmedi."
     }
   },
   "entity": {
@@ -228,6 +255,12 @@
       },
       "gestures": {
         "name": "Hareket Kontrolü"
+      },
+      "clean_mode": {
+        "name": "Temizleme modu"
+      },
+      "extra_features": {
+        "name": "Ek özellikler"
       }
     },
     "button": {
@@ -303,6 +336,26 @@
     "yaml_deprecation": {
       "title": "YAML Yapılandırması Kullanımdan Kaldırıldı",
       "description": "{integration} ({platform}) için YAML yapılandırması kullanımdan kaldırılmıştır ve gelecek bir sürümde kaldırılacaktır. Lütfen bu entegrasyonu yapılandırmak için Ayarlar > Cihazlar ve Hizmetler > Entegrasyon Ekle yolunu kullanarak arayüzden yapılandırın."
+    }
+  },
+  "exceptions": {
+    "unsupported_model": {
+      "message": "Bu cihaz modeli desteklenmiyor."
+    },
+    "unsupported_command": {
+      "message": "Cihaz {command} komutunu desteklemiyor."
+    },
+    "command_rejected": {
+      "message": "Cihaz komutu reddetti veya geçersiz bir yanıt döndürdü."
+    },
+    "communication_error": {
+      "message": "Cihazla iletişim kurulamadı."
+    },
+    "invalid_humidity": {
+      "message": "Nem yüzde {minimum} ile {maximum} arasında olmalıdır."
+    },
+    "invalid_value": {
+      "message": "Bu değer veya seçenek bu model tarafından desteklenmiyor."
     }
   }
 }
