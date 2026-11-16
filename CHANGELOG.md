@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.1] - 2026-11-17
+
+### Fixed
+- Pin the test and lint runners to Ubuntu 24.04, where the required Python 3.14.2 build is available. Ubuntu latest now resolves to 26.04 and cannot install this patch version.
+- No runtime behavior changes from 4.0.0.
+
 ## [4.0.0] - 2026-11-17
 
 ### Breaking Changes
